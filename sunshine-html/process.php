@@ -60,7 +60,7 @@ session_start();
                      <div class="full">
                         <div class="center-desk">
                            <div class="logo">
-                              <a href="index.html"><img src="images/logo.png" alt="#" /></a>
+                              <a href="index.php"><img src="images/logo.png" alt="#" /></a>
                            </div>
                         </div>
                      </div>
@@ -73,22 +73,22 @@ session_start();
                         <div class="collapse navbar-collapse" id="navbarsExample04">
                            <ul class="navbar-nav mr-auto">
                               <li class="nav-item ">
-                                 <a class="nav-link" href="index.php">Home</a>
+                                 <a class="nav-link" href="index.php">Thuis Pagina</a>
                               </li>
                               <li class="nav-item">
-                                 <a class="nav-link" href="about.php">About</a>
+                                 <a class="nav-link" href="about.php">Over Ons</a>
                               </li>
                               <li class="nav-item">
-                                 <a class="nav-link" href="product.php">Ons Product</a>
+                                 <a class="nav-link" href="product.php">Onze Producten</a>
                               </li>
                               <li class="nav-item">
-                                 <a class="nav-link" href="galerij.php">Galerij</a>
+                                 <a class="nav-link" href="gallery.php">Galerij</a>
                               </li>
                               <li class="nav-item">
                                  <a class="nav-link" href="stock.php">Stock</a>
                               </li>
                               <li class="nav-item">
-                                 <a class="nav-link" href="bestelformulier.php">Bestelformulier</a>
+                                 <a class="nav-link" href="order.php">Bestelformulier</a>
                               </li>
                               <li class="nav-item">
                                  <a class="nav-link" href="contact.php">Contacteer Ons</a>
@@ -101,26 +101,25 @@ session_start();
             </div>
          </div>
          <!-- end header inner -->
-         <!-- end header -->
-         <!-- banner -->
-       
       </header>
-      <!-- end banner -->
+      <!-- end header -->
+      <!-- banner -->
       <div class="back_re">
          <div class="container">
             <div class="row">
                <div class="col-md-12">
                   <div class="title">
-                          <h2>Info</h2>
+                     <h2>Info</h2>
                   </div>
                </div>
             </div>
          </div>
       </div>
+      <!-- end banner -->
       <?php
       // Hulp van : https://stackoverflow.com/questions/36240145/how-to-use-serverhttp-referer-correctly-in-php
       // Als de laatste pagina /contact.php is :
-      if($_SESSION['lastpage'] == "/sunshine-html/sunshine-html/contact.php")
+      if($_SESSION['lastpage'] == "/html_php_gip/sunshine-html/contact.php")
       {
          echo $_REQUEST["Name"], "<br><br>";
          echo $_REQUEST["Phone"], "<br><br>";
@@ -128,7 +127,7 @@ session_start();
          echo $_REQUEST["Message"], "<br><br>";
          $conn->close();
       } // Als de laatste pagina /login_page.php is; als er nog niet ingelogd is; als er aangeduid werd dat er word geregistreerd :
-      else if (($_SESSION['lastpage'] == "/sunshine-html/sunshine-html/login_page.php") && (empty($_SESSION["loggedIn"]) == true || $_SESSION["loggedIn"] != true)) {
+      else if (($_SESSION['lastpage'] == "/html_php_gip/sunshine-html/login_page.php") && (empty($_SESSION["loggedIn"]) == true || $_SESSION["loggedIn"] != true)) {
          // Hulp van : https://www.tutorialrepublic.com/php-tutorial/php-mysql-login-system.php
          // En : https://www.geeksforgeeks.org/how-to-insert-form-data-into-database-using-php/
          
@@ -287,7 +286,7 @@ session_start();
             $conn->close();
          }
          // Als de laatste pagina /product.php is
-      } else if ($_SESSION['lastpage'] == "/sunshine-html/sunshine-html/product.php") {
+      } else if ($_SESSION['lastpage'] == "/html_php_gip/sunshine-html/product.php") {
          echo "Uw bestelling zal worden doorgevoerd.<br>";
 
          // Een array aanmaken waarin we neerschrijven hoe vaak iets voorkomt in onze $_SESSION["lijst]
@@ -336,7 +335,7 @@ session_start();
          }
          $conn->close();
       } // Als de laatste pagina niet /login_page.php is :
-      else if ($_SESSION['lastpage'] != "/sunshine-html/sunshine-html/login_page.php") {
+      else if ($_SESSION['lastpage'] != "/html_php_gip/sunshine-html/login_page.php") {
          // From https://stackoverflow.com/questions/768431/how-do-i-make-a-redirect-in-php?page=1&tab=scoredesc#tab-top
          // User Hammad Khan
          // Learn output buffering dammit: https://stackoverflow.com/questions/2832010/what-is-output-buffering
@@ -357,42 +356,42 @@ session_start();
                <div class="row">
                   <div class="col-md-8 offset-md-2">
                      <div class="newslatter">
-                        <h4>Subscribe Our Newsletter</h4>
+                        <h4>Abboneer Aan Onze Nieuwsbrief</h4>
                         <form class="bottom_form">
-                           <input class="enter" placeholder="Enter your email" type="text" name="Enter your email">
-                           <button class="sub_btn">subscribe</button>
+                           <input class="enter" placeholder="Typ uw email" type="text" name="Typ uw email">
+                           <button class="sub_btn">Abboneer</button>
                         </form>
                      </div>
                   </div>
                   <div class="col-sm-12">
-                     <div class=" border_top1"></div>
+                     <div class="border_top1"></div>
                   </div>
                </div>
                <div class="row">
                   <div class="col-md-4">
                      <h3>menu LINKS</h3>
                      <ul class="link_menu">
-                        <li><a href="#">Home</a></li>
-                        <li><a href="about.php">About</a></li>
-                        <li><a href="product.php">Ons Product</a></li>
-                        <li><a href="galerij.php">Galerij</a></li>
-                        <li><a href="bestelformulier.php">Bestelformulier</a></li>
+                        <li><a href="#">Thuis Pagina</a></li>
+                        <li><a href="about.php">Over Ons</a></li>
+                        <li><a href="product.php">Onze Producten</a></li>
+                        <li><a href="gallery.php">Galerij</a></li>
+                        <li><a href="order.php">Bestelformulier</a></li>
                         <li><a href="stock.php">Stock</a></li>
                         <li><a href="contact.php">Contacteer Ons</a></li>
                      </ul>
                   </div>
-                  <div class=" col-md-3">
-                     <h3>TOP food</h3>
+                  <div class="col-md-3">
+                     <h3>TOP voedsel</h3>
                      <p class="many">
                         There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected
                      </p>
                   </div>
-                  <div class="col-lg-3 offset-mdlg-2     col-md-4 offset-md-1">
-                     <h3>Contact </h3>
+                  <div class="col-lg-3 offset-mdlg-2 col-md-4 offset-md-1">
+                     <h3>Contact</h3>
                      <ul class="conta">
-                        <li><i class="fa fa-map-marker" aria-hidden="true"></i> Location</li>
-                        <li> <i class="fa fa-envelope" aria-hidden="true"></i><a href="#"> demo@gmail.com</a></li>
-                        <li><i class="fa fa-mobile" aria-hidden="true"></i> Call : +01 1234567890</li>
+                        <li><i class="fa fa-map-marker" aria-hidden="true"></i>Locatie</li>
+                        <li><i class="fa fa-envelope" aria-hidden="true"></i><a href="#">demo@gmail.com</a></li>
+                        <li><i class="fa fa-mobile" aria-hidden="true"></i>Tell : +01 1234567890</li>
                      </ul>
                   </div>
                </div>

@@ -48,7 +48,7 @@ if (empty($_POST["logout"]) != true) {
          .wrapper{
             margin: auto;
             width: 100%;
-            max-width: 1000px;
+            max-width: 800px;
             padding:80px;
             background-color: hsla(455,75%,20%,0.05);
          }
@@ -93,7 +93,7 @@ if (empty($_POST["logout"]) != true) {
                      <div class="full">
                         <div class="center-desk">
                            <div class="logo">
-                              <a href="index.html"><img src="images/logo.png" alt="#" /></a>
+                              <a href="index.php"><img src="images/logo.png" alt="#" /></a>
                            </div>
                         </div>
                      </div>
@@ -106,22 +106,22 @@ if (empty($_POST["logout"]) != true) {
                         <div class="collapse navbar-collapse" id="navbarsExample04">
                            <ul class="navbar-nav mr-auto">
                               <li class="nav-item ">
-                                 <a class="nav-link" href="index.php">Home</a>
+                                 <a class="nav-link" href="index.php">Thuis Pagina</a>
                               </li>
                               <li class="nav-item">
-                                 <a class="nav-link" href="about.php">About</a>
+                                 <a class="nav-link" href="about.php">Over Ons</a>
                               </li>
                               <li class="nav-item active">
-                                 <a class="nav-link" href="product.php">Ons Product</a>
+                                 <a class="nav-link" href="product.php">Onze Producten</a>
                               </li>
                               <li class="nav-item">
-                                 <a class="nav-link" href="galerij.php">Galerij</a>
+                                 <a class="nav-link" href="gallery.php">Galerij</a>
                               </li>
                               <li class="nav-item">
                                  <a class="nav-link" href="stock.php">Stock</a>
                               </li>
                               <li class="nav-item">
-                                 <a class="nav-link" href="bestelformulier.php">Bestelformulier</a>
+                                 <a class="nav-link" href="order.php">Bestelformulier</a>
                               </li>
                               <li class="nav-item">
                                  <a class="nav-link" href="contact.php">Contacteer Ons</a>
@@ -129,7 +129,7 @@ if (empty($_POST["logout"]) != true) {
                               <li class="nav-item">
                                  <?php
                                  if (empty($_SESSION["loggedIn"]) == true || $_SESSION["loggedIn"] != true) { ?>
-                                    <a class="nav-link" href="login_page.php">Login</a>
+                                    <a class="nav-link" href="login.php">Login</a>
                                     <?php
                                  } else { ?>
                                     <form method="post">
@@ -148,30 +148,29 @@ if (empty($_POST["logout"]) != true) {
             </div>
          </div>
          <!-- end header inner -->
-         <!-- end header -->
-         <!-- banner -->
       </header>
-      <!-- end banner -->
+      <!-- end header -->
+      <!-- banner -->
        <div class="back_re">
          <div class="container">
             <div class="row">
                <div class="col-md-12">
                   <div class="title">
-                     <h2>Our Products</h2>
+                     <h2>Onze Producten</h2>
                   </div>
                </div>
             </div>
          </div>
       </div>
-    
+      <!-- end banner -->
       <!-- our products -->
       <div class="products">
          <div class="container">
             <div class="row">
                <div class="col-md-7">
                   <div class="titlepage">
-                    
-                     <span>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptu
+                     <span>
+                        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptu
                      </span>
                   </div>
                </div>
@@ -214,82 +213,28 @@ if (empty($_POST["logout"]) != true) {
             }
 
             echo '<div class="row">';
-            echo '<div class="col-lg-3 col-md-6 col-sm-6">';
-            echo '<div id="ho_bo" class="our_products">';
-            echo '<div class="product">';
-            echo '<figure><img src="images/pro1.png" alt="#"/></figure>';
-            echo '</div>';
-            $res = search($arr, 'id_product', $pID);
-            
-            foreach ($res as $var) {
-               echo "<h3>".ucfirst($var["product_naam"])."</h3 />"
-                  . "<span>Product info</span><br />"
-                  . "<p>Prijs per: €".$var["product_prijs"]."</p />"
-                  . "<p>In stock: ".$var["stock"]."</p>";
-               $pID++;
+            $sql = "SELECT id_product, product_naam, product_prijs, stock FROM product p, stock s WHERE p.id_stock = s.id_stock";
+            $result = $conn->query($sql);
+            while($row = $result->fetch_assoc()) {echo '<div class="col-lg-3 col-md-6 col-sm-6">';
+               echo '<div id="ho_bo" class="our_products">';
+               echo '<div class="product">';
+               echo '<figure><img src="images/pro'.$row["id_product"].'.png" alt="#"/></figure>';
+               echo '</div>';
+               $res = search($arr, 'id_product', $pID);
+               
+               foreach ($res as $var) {
+                  echo "<h3>".ucfirst($var["product_naam"])."</h3 />"
+                     . "<span>Product info</span><br />"
+                     . "<p>Prijs per: €".$var["product_prijs"]."</p />"
+                     . "<p>In stock: ".$var["stock"]."</p>";
+                  $pID++;
+               }
+               echo '<form class="sub_form" method="post">';
+               echo '<button class="send_btn" name="optieProduct" value="'.$var["product_naam"] . " " . $var["id_product"].'" type="submit" formtarget="_self">Toevoegen</button>';
+               echo '</form>';
+               echo '</div>';
+               echo '</div>';
             }
-            echo '<form class="sub_form" method="post">';
-            echo '<button class="send_btn" name="optieProduct" value="'.$var["product_naam"] . " " . $var["id_product"].'" type="submit" formtarget="_self">Toevoegen</button>';
-            echo '</form>';
-            echo '</div>';
-            echo '</div>';
-            echo '<div class="col-lg-3 col-md-6 col-sm-6">';
-            echo '<div id="ho_bo" class="our_products">';
-            echo '<div class="product">';
-            echo '<figure><img src="images/pro2.png" alt="#"/></figure>';
-            echo '</div>';
-            $res = search($arr, 'id_product', $pID);
-            
-            foreach ($res as $var) {
-               echo "<h3>".ucfirst($var["product_naam"])."</h3 />"
-                  . "<span>Product info</span><br />"
-                  . "<p>Prijs per: €".$var["product_prijs"]."</p />"
-                  . "<p>In stock: ".$var["stock"]."</p>";
-               $pID++;
-            }
-            echo '<form class="sub_form" method="post">';
-            echo '<button class="send_btn" name="optieProduct" value="'.$var["product_naam"] . " " . $var["id_product"].'" type="submit" formtarget="_self">Toevoegen</button>';
-            echo '</form>';
-            echo '</div>';
-            echo '</div>';
-            echo '<div class="col-lg-3 col-md-6 col-sm-6">';
-            echo '<div id="ho_bo" class="our_products">';
-            echo '<div class="product">';
-            echo '<figure><img src="images/pro3.png" alt="#"/></figure>';
-            echo '</div>';
-            $res = search($arr, 'id_product', $pID);
-            
-            foreach ($res as $var) {
-               echo "<h3>".ucfirst($var["product_naam"])."</h3 />"
-                  . "<span>Product info</span><br />"
-                  . "<p>Prijs per: €".$var["product_prijs"]."</p />"
-                  . "<p>In stock: ".$var["stock"]."</p>";
-               $pID++;
-            }
-            echo '<form class="sub_form" method="post">';
-            echo '<button class="send_btn" name="optieProduct" value="'.$var["product_naam"] . " " . $var["id_product"].'" type="submit" formtarget="_self">Toevoegen</button>';
-            echo '</form>';
-            echo '</div>';
-            echo '</div>';
-            echo '<div class="col-lg-3 col-md-6 col-sm-6">';
-            echo '<div id="ho_bo" class="our_products">';
-            echo '<div class="product">';
-            echo '<figure><img src="images/pro4.png" alt="#"/></figure>';
-            echo '</div>';
-            $res = search($arr, 'id_product', $pID);
-            
-            foreach ($res as $var) {
-               echo "<h3>".ucfirst($var["product_naam"])."</h3 />"
-                  . "<span>Product info</span><br />"
-                  . "<p>Prijs per: €".$var["product_prijs"]."</p />"
-                  . "<p>In stock: ".$var["stock"]."</p>";
-               $pID++;
-            }
-            echo '<form class="sub_form" method="post">';
-            echo '<button class="send_btn" name="optieProduct" value="'.$var["product_naam"] . " " . $var["id_product"].'" type="submit" formtarget="_self">Toevoegen</button>';
-            echo '</form>';
-            echo '</div>';
-            echo '</div>';
             echo '</div>';
             ?>
          </div>
@@ -297,7 +242,7 @@ if (empty($_POST["logout"]) != true) {
       <div class="sub_form">
          <div class="wrapper">
             <fieldset>
-               <legend>Uw order</legend>
+               <legend>Uw Order</legend>
                <hr>
                <?php
                if (isset($_POST["optieProduct"])) {
@@ -317,12 +262,13 @@ if (empty($_POST["logout"]) != true) {
                $num = 0;
                if (!empty($_SESSION["lijst"])) {
                   foreach ($_SESSION["lijst"] as $key => $val) {
-                     if (!is_float($num / 2)) {
-                        echo $var = preg_replace('/[0-9]+/', '', $val);
+                     if ($num != 4) {
+                        echo $product = preg_replace('/[0-9]+/', '', $val);
+                        $num++;
                      } else {
-                        echo "<br>Test<br>";
+                        echo "<br>";
+                        $num = 0;
                      }
-                     $num++;
                   }
                }
                
@@ -344,7 +290,6 @@ if (empty($_POST["logout"]) != true) {
       $conn->close();
       ?>
       <!-- end our products -->
-      
       <!--  footer -->
       <footer>
          <div class="footer">
@@ -352,42 +297,42 @@ if (empty($_POST["logout"]) != true) {
                <div class="row">
                   <div class="col-md-8 offset-md-2">
                      <div class="newslatter">
-                        <h4>Subscribe Our Newsletter</h4>
+                        <h4>Abboneer Aan Onze Nieuwsbrief</h4>
                         <form class="bottom_form">
-                           <input class="enter" placeholder="Enter your email" type="text" name="Enter your email">
-                           <button class="sub_btn">subscribe</button>
+                           <input class="enter" placeholder="Typ uw email" type="text" name="Typ uw email">
+                           <button class="sub_btn">Abboneer</button>
                         </form>
                      </div>
                   </div>
                   <div class="col-sm-12">
-                     <div class=" border_top1"></div>
+                     <div class="border_top1"></div>
                   </div>
                </div>
                <div class="row">
                   <div class="col-md-4">
                      <h3>menu LINKS</h3>
                      <ul class="link_menu">
-                        <li><a href="#">Home</a></li>
-                        <li><a href="about.php">About</a></li>
-                        <li><a href="product.php">Ons Product</a></li>
-                        <li><a href="galerij.php">Galerij</a></li>
-                        <li><a href="bestelformulier.php">Bestelformulier</a></li>
+                        <li><a href="#">Thuis Pagina</a></li>
+                        <li><a href="about.php">Over ons</a></li>
+                        <li><a href="product.php">Onze Producten</a></li>
+                        <li><a href="gallery.php">Galerij</a></li>
+                        <li><a href="order.php">Bestelformulier</a></li>
                         <li><a href="stock.php">Stock</a></li>
                         <li><a href="contact.php">Contacteer Ons</a></li>
                      </ul>
                   </div>
-                  <div class=" col-md-3">
-                     <h3>TOP food</h3>
+                  <div class="col-md-3">
+                     <h3>TOP voedsel</h3>
                      <p class="many">
                         There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected
                      </p>
                   </div>
-                  <div class="col-lg-3 offset-mdlg-2     col-md-4 offset-md-1">
-                     <h3>Contact </h3>
+                  <div class="col-lg-3 offset-mdlg-2 col-md-4 offset-md-1">
+                     <h3>Contact</h3>
                      <ul class="conta">
-                        <li><i class="fa fa-map-marker" aria-hidden="true"></i> Location</li>
-                        <li> <i class="fa fa-envelope" aria-hidden="true"></i><a href="#"> demo@gmail.com</a></li>
-                        <li><i class="fa fa-mobile" aria-hidden="true"></i> Call : +01 1234567890</li>
+                        <li><i class="fa fa-map-marker" aria-hidden="true"></i>Locatie</li>
+                        <li><i class="fa fa-envelope" aria-hidden="true"></i><a href="#">demo@gmail.com</a></li>
+                        <li><i class="fa fa-mobile" aria-hidden="true"></i>Tell : +01 1234567890</li>
                      </ul>
                   </div>
                </div>

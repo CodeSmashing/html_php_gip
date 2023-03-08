@@ -20,7 +20,7 @@ if (empty($_POST["logout"]) != true) {
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <meta name="viewport" content="initial-scale=1, maximum-scale=1">
       <!-- site metas -->
-      <title>Home</title>
+      <title>Thuis Pagina</title>
       <meta name="keywords" content="">
       <meta name="description" content="">
       <meta name="author" content="">
@@ -58,35 +58,35 @@ if (empty($_POST["logout"]) != true) {
                      <div class="full">
                         <div class="center-desk">
                            <div class="logo">
-                              <a href="index.html"><img src="images/logo.png" alt="#" /></a>
+                              <a href="index.php"><img src="images/logo.png" alt="#" /></a>
                            </div>
                         </div>
                      </div>
                   </div>
                   <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9">
-                     <nav class="navigation navbar navbar-expand-md navbar-dark ">
+                     <nav class="navigation navbar navbar-expand-md navbar-dark">
                         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample04" aria-controls="navbarsExample04" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                         </button>
                         <div class="collapse navbar-collapse" id="navbarsExample04">
                            <ul class="navbar-nav mr-auto">
                               <li class="nav-item active">
-                                 <a class="nav-link" href="index.php">Home</a>
+                                 <a class="nav-link" href="index.php">Thuis Pagina</a>
                               </li>
                               <li class="nav-item">
-                                 <a class="nav-link" href="about.php">About</a>
+                                 <a class="nav-link" href="about.php">Over Ons</a>
                               </li>
                               <li class="nav-item">
-                                 <a class="nav-link" href="product.php">Ons Product</a>
+                                 <a class="nav-link" href="product.php">Onze Producten</a>
                               </li>
                               <li class="nav-item">
-                                 <a class="nav-link" href="galerij.php">Galerij</a>
+                                 <a class="nav-link" href="gallery.php">Galerij</a>
                               </li>
                               <li class="nav-item">
                                  <a class="nav-link" href="stock.php">Stock</a>
                               </li>
                               <li class="nav-item">
-                                 <a class="nav-link" href="bestelformulier.php">Bestelformulier</a>
+                                 <a class="nav-link" href="order.php">Bestelformulier</a>
                               </li>
                               <li class="nav-item">
                                  <a class="nav-link" href="contact.php">Contacteer Ons</a>
@@ -94,7 +94,7 @@ if (empty($_POST["logout"]) != true) {
                               <li class="nav-item">
                                  <?php
                                  if (empty($_SESSION["loggedIn"]) == true || $_SESSION["loggedIn"] != true) { ?>
-                                    <a class="nav-link" href="login_page.php">Login</a>
+                                    <a class="nav-link" href="login.php">Login</a>
                                     <?php
                                  } else { ?>
                                     <form method="post">
@@ -113,7 +113,6 @@ if (empty($_POST["logout"]) != true) {
             </div>
          </div>
          <!-- end header inner -->
-         <!-- end header -->
          <!-- banner -->
          <section class="banner_main">
             <div class="container">
@@ -131,6 +130,7 @@ if (empty($_POST["logout"]) != true) {
             </div>
          </section>
       </header>
+      <!-- end header -->
       <!-- end banner -->
       <!-- about -->
       <div id="about" class="about">
@@ -138,14 +138,14 @@ if (empty($_POST["logout"]) != true) {
             <div class="row">
                <div class="col-md-6 offset-md-3">
                   <div class="titlepage">
-                     <h2>About Us</h2>
+                     <h2>Over Ons</h2>
                      <span>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptu </span>
                   </div>
                </div>
                <div class="col-md-12">
                   <div class="about_img">
                      <figure><img src="images/about.png" alt="#"/></figure>
-                     <a class="read_more" href="Javascript:void(0)"> Read More</a>
+                     <a class="read_more" href="Javascript:void(0)">Lees Meer</a>
                   </div>
                </div>
             </div>
@@ -158,8 +158,9 @@ if (empty($_POST["logout"]) != true) {
             <div class="row">
                <div class="col-md-7">
                   <div class="titlepage">
-                     <h2>Our Products</h2>
-                     <span>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptu
+                     <h2>Onze Producten</h2>
+                     <span>
+                        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptu
                      </span>
                   </div>
                </div>
@@ -217,7 +218,7 @@ if (empty($_POST["logout"]) != true) {
                   <div class="titlepage">
                      <h2 >Lorem Ipsum using</h2>
                      <p>Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure. To take a trivial example, which of us ever undertakes laborious physical exercise</p>
-                     <a class="read_more white_bg" href="Javascript:void(0)"> Read More</a>
+                     <a class="read_more white_bg" href="Javascript:void(0)">Lees Meer</a>
                   </div>
                </div>
                <div class="col-md-5 offset-md-1 padding_right0">
@@ -235,7 +236,7 @@ if (empty($_POST["logout"]) != true) {
             <div class="row">
                <div class="col-md-12">
                   <div class="titlepage">
-                     <h2>Gallery</h2>
+                     <h2>Galerij</h2>
                      <span>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy </span>
                   </div>
                </div>
@@ -325,10 +326,10 @@ if (empty($_POST["logout"]) != true) {
                <div class="row">
                   <div class="col-md-8 offset-md-2">
                      <div class="newslatter">
-                        <h4>Subscribe Our Newsletter</h4>
+                        <h4>Abboneer Aan Onze Nieuwsbrief</h4>
                         <form class="bottom_form">
-                           <input class="enter" placeholder="Enter your email" type="text" name="Enter your email">
-                           <button class="sub_btn">subscribe</button>
+                           <input class="enter" placeholder="Typ uw email" type="text" name="Typ uw email">
+                           <button class="sub_btn">Abboneer</button>
                         </form>
                      </div>
                   </div>
@@ -340,27 +341,27 @@ if (empty($_POST["logout"]) != true) {
                   <div class="col-md-4">
                      <h3>menu LINKS</h3>
                      <ul class="link_menu">
-                        <li><a href="#">Home</a></li>
-                        <li><a href="about.php"> About</a></li>
-                        <li><a href="product.php">Ons Product</a></li>
-                        <li><a href="galerij.php">Galerij</a></li>
-                        <li><a href="bestelformulier.php">Bestelformulier</a></li>
+                        <li><a href="#">Thuis Pagina</a></li>
+                        <li><a href="about.php">Over Ons</a></li>
+                        <li><a href="product.php">Onze Producten</a></li>
+                        <li><a href="gallery.php">Galerij</a></li>
+                        <li><a href="order.php">Bestelformulier</a></li>
                         <li><a href="stock.php">Stock</a></li>
                         <li><a href="contact.php">Contacteer Ons</a></li>
                      </ul>
                   </div>
                   <div class=" col-md-3">
-                     <h3>TOP food</h3>
+                     <h3>TOP voedsel</h3>
                      <p class="many">
                         There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected
                      </p>
                   </div>
-                  <div class="col-lg-3 offset-mdlg-2     col-md-4 offset-md-1">
-                     <h3>Contact </h3>
+                  <div class="col-lg-3 offset-mdlg-2 col-md-4 offset-md-1">
+                     <h3>Contact</h3>
                      <ul class="conta">
-                        <li><i class="fa fa-map-marker" aria-hidden="true"></i> Location</li>
-                        <li> <i class="fa fa-envelope" aria-hidden="true"></i><a href="#"> demo@gmail.com</a></li>
-                        <li><i class="fa fa-mobile" aria-hidden="true"></i> Call : +01 1234567890</li>
+                        <li><i class="fa fa-map-marker" aria-hidden="true"></i>Locatie</li>
+                        <li><i class="fa fa-envelope" aria-hidden="true"></i><a href="#">demo@gmail.com</a></li>
+                        <li><i class="fa fa-mobile" aria-hidden="true"></i>Tell : +01 1234567890</li>
                      </ul>
                   </div>
                </div>

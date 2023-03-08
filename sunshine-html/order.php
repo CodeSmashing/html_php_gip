@@ -83,7 +83,7 @@ if (empty($_POST["logout"]) != true) {
                      <div class="full">
                         <div class="center-desk">
                            <div class="logo">
-                              <a href="index.html"><img src="images/logo.png" alt="#" /></a>
+                              <a href="index.php"><img src="images/logo.png" alt="#" /></a>
                            </div>
                         </div>
                      </div>
@@ -96,22 +96,22 @@ if (empty($_POST["logout"]) != true) {
                         <div class="collapse navbar-collapse" id="navbarsExample04">
                               <ul class="navbar-nav mr-auto">
                                  <li class="nav-item ">
-                                    <a class="nav-link" href="index.php">Home</a>
+                                    <a class="nav-link" href="index.php">Thuis Pagina</a>
                                  </li>
                                  <li class="nav-item">
-                                    <a class="nav-link" href="about.php">About</a>
+                                    <a class="nav-link" href="about.php">Over Ons</a>
                                  </li>
                                  <li class="nav-item">
-                                    <a class="nav-link" href="product.php">Our Product</a>
+                                    <a class="nav-link" href="product.php">Ouze Producten</a>
                                  </li>
                                  <li class="nav-item">
-                                    <a class="nav-link" href="galerij.php">Galerij</a>
+                                    <a class="nav-link" href="gallery.php">Galerij</a>
                                  </li>
                                  <li class="nav-item">
                                     <a class="nav-link" href="stock.php">Stock</a>
                                  </li>
                                  <li class="nav-item active">
-                                    <a class="nav-link" href="bestelformulier.php">Bestelformulier</a>
+                                    <a class="nav-link" href="order.php">Bestelformulier</a>
                                  </li>
                                  <li class="nav-item">
                                     <a class="nav-link" href="contact.php">Contacteer Ons</a>
@@ -119,7 +119,7 @@ if (empty($_POST["logout"]) != true) {
                                  <li class="nav-item">
                                     <?php
                                     if (empty($_SESSION["loggedIn"]) == true || $_SESSION["loggedIn"] != true) { ?>
-                                       <a class="nav-link" href="login_page.php">Login</a>
+                                       <a class="nav-link" href="login.php">Login</a>
                                        <?php
                                     } else { ?>
                                        <form method="post">
@@ -138,11 +138,9 @@ if (empty($_POST["logout"]) != true) {
             </div>
          </div>
          <!-- end header inner -->
-         <!-- end header -->
-         <!-- banner -->
-      
       </header>
-      <!-- end banner -->
+      <!-- end header -->
+      <!-- banner -->
       <div class="back_re">
          <div class="container">
             <div class="row">
@@ -154,6 +152,7 @@ if (empty($_POST["logout"]) != true) {
             </div>
          </div>
       </div>
+      <!-- end banner -->
       <!--  bestelformulier
       class="order"
       class="col-md-12" -->
@@ -273,42 +272,42 @@ if (empty($_POST["logout"]) != true) {
                <div class="row">
                   <div class="col-md-8 offset-md-2">
                      <div class="newslatter">
-                        <h4>Subscribe Our Newsletter</h4>
+                        <h4>Abboneer Aan Onze Nieuwsbrief</h4>
                         <form class="bottom_form">
-                           <input class="enter" placeholder="Enter your email" type="text" name="Enter your email">
-                           <button class="sub_btn">subscribe</button>
+                           <input class="enter" placeholder="Typ uw email" type="text" name="Typ uw email">
+                           <button class="sub_btn">Abboneer</button>
                         </form>
                      </div>
                   </div>
                   <div class="col-sm-12">
-                     <div class=" border_top1"></div>
+                     <div class="border_top1"></div>
                   </div>
                </div>
                <div class="row">
                   <div class="col-md-4">
                      <h3>menu LINKS</h3>
                      <ul class="link_menu">
-                        <li><a href="#">Home</a></li>
-                        <li><a href="about.php">About</a></li>
-                        <li><a href="product.php">Ons Product</a></li>
-                        <li><a href="galerij.php">Galerij</a></li>
-                        <li><a href="bestelformulier.php">Bestelformulier</a></li>
+                        <li><a href="#">Thuis Pagina</a></li>
+                        <li><a href="about.php">Over Ons</a></li>
+                        <li><a href="product.php">Onze Producten</a></li>
+                        <li><a href="gallery.php">Galerij</a></li>
+                        <li><a href="order.php">Bestelformulier</a></li>
                         <li><a href="stock.php">Stock</a></li>
                         <li><a href="contact.php">Contacteer Ons</a></li>
                      </ul>
                   </div>
-                  <div class=" col-md-3">
-                     <h3>TOP food</h3>
+                  <div class="col-md-3">
+                     <h3>TOP voedsel</h3>
                      <p class="many">
                         There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected
                      </p>
                   </div>
-                  <div class="col-lg-3 offset-mdlg-2     col-md-4 offset-md-1">
-                     <h3>Contact </h3>
+                  <div class="col-lg-3 offset-mdlg-2 col-md-4 offset-md-1">
+                     <h3>Contact</h3>
                      <ul class="conta">
-                        <li><i class="fa fa-map-marker" aria-hidden="true"></i> Location</li>
-                        <li> <i class="fa fa-envelope" aria-hidden="true"></i><a href="#"> demo@gmail.com</a></li>
-                        <li><i class="fa fa-mobile" aria-hidden="true"></i> Call : +01 1234567890</li>
+                        <li><i class="fa fa-map-marker" aria-hidden="true"></i>Locatie</li>
+                        <li> <i class="fa fa-envelope" aria-hidden="true"></i><a href="#">demo@gmail.com</a></li>
+                        <li><i class="fa fa-mobile" aria-hidden="true"></i>Tell : +01 1234567890</li>
                      </ul>
                   </div>
                </div>
