@@ -1,12 +1,8 @@
 <?php
 session_start();
-$_SESSION['lastpage'] = $_SERVER['REQUEST_URI'];
-function UnsetLogin()
-{
+$_SESSION["lastpage"] = $_SERVER["REQUEST_URI"];
+if (isset($_POST["logout"])) {
    unset($_SESSION["loggedIn"]); 
-}
-if (empty($_POST["logout"]) != true) {
-   UnsetLogin();
    $_POST["logout"] = "";
 }
 ?>
@@ -94,43 +90,39 @@ if (empty($_POST["logout"]) != true) {
                         <span class="navbar-toggler-icon"></span>
                         </button>
                         <div class="collapse navbar-collapse" id="navbarsExample04">
-                              <ul class="navbar-nav mr-auto">
-                                 <li class="nav-item ">
-                                    <a class="nav-link" href="index.php">Thuis Pagina</a>
-                                 </li>
-                                 <li class="nav-item">
-                                    <a class="nav-link" href="about.php">Over Ons</a>
-                                 </li>
-                                 <li class="nav-item">
-                                    <a class="nav-link" href="product.php">Ouze Producten</a>
-                                 </li>
-                                 <li class="nav-item">
-                                    <a class="nav-link" href="gallery.php">Galerij</a>
-                                 </li>
-                                 <li class="nav-item">
-                                    <a class="nav-link" href="stock.php">Stock</a>
-                                 </li>
-                                 <li class="nav-item active">
-                                    <a class="nav-link" href="order.php">Bestelformulier</a>
-                                 </li>
-                                 <li class="nav-item">
-                                    <a class="nav-link" href="contact.php">Contacteer Ons</a>
-                                 </li>
-                                 <li class="nav-item">
-                                    <?php
-                                    if (empty($_SESSION["loggedIn"]) == true || $_SESSION["loggedIn"] != true) { ?>
-                                       <a class="nav-link" href="login.php">Login</a>
-                                       <?php
-                                    } else { ?>
-                                       <form method="post">
-                                       <button class="nav-link" name="logout" type="submit" value="1"
-                                       formtarget="_self" onclick="UnsetLogin()">Logout</button>
-                                       </form>
-                                       <?php
-                                    }
-                                    ?>
-                                 </li>
-                              </ul>
+                           <ul class="navbar-nav mr-auto">
+                              <li class="nav-item ">
+                                 <a class="nav-link" href="index.php">Thuis Pagina</a>
+                              </li>
+                              <li class="nav-item">
+                                 <a class="nav-link" href="about.php">Over Ons</a>
+                              </li>
+                              <li class="nav-item">
+                                 <a class="nav-link" href="product.php">Ouze Producten</a>
+                              </li>
+                              <li class="nav-item">
+                                 <a class="nav-link" href="gallery.php">Galerij</a>
+                              </li>
+                              <li class="nav-item">
+                                 <a class="nav-link" href="stock.php">Stock</a>
+                              </li>
+                              <li class="nav-item active">
+                                 <a class="nav-link" href="order.php">Bestelformulier</a>
+                              </li>
+                              <li class="nav-item">
+                                 <a class="nav-link" href="contact.php">Contacteer Ons</a>
+                              </li>
+                              <li class="nav-item">
+                                 <?php
+                                 $item = (empty($_SESSION["loggedIn"]) == true || $_SESSION["loggedIn"] != true) ? '<a class="nav-link" href="login.php">Login</a>' : '
+                                 <form method="post">
+                                 <button class="nav-link" name="logout" type="submit" value="1"
+                                 formtarget="_self">Logout</button>
+                                 </form>' ;
+                                 echo $item;
+                                 ?>
+                              </li>
+                           </ul>
                         </div>
                      </nav>
                   </div>

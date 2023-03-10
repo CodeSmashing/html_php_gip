@@ -1,12 +1,8 @@
 <?php
 session_start();
-$_SESSION['lastpage'] = $_SERVER['REQUEST_URI'];
-function UnsetLogin()
-{
+$_SESSION["lastpage"] = $_SERVER["REQUEST_URI"];
+if (isset($_POST["logout"])) {
    unset($_SESSION["loggedIn"]); 
-}
-if (empty($_POST["logout"]) != true) {
-   UnsetLogin();
    $_POST["logout"] = "";
 }
 ?>
@@ -93,16 +89,12 @@ if (empty($_POST["logout"]) != true) {
                               </li>
                               <li class="nav-item">
                                  <?php
-                                 if (empty($_SESSION["loggedIn"]) == true || $_SESSION["loggedIn"] != true) { ?>
-                                    <a class="nav-link" href="login.php">Login</a>
-                                    <?php
-                                 } else { ?>
-                                    <form method="post">
-                                    <button class="nav-link" name="logout" type="submit" value="1"
-                                    formtarget="_self" onclick="UnsetLogin()">Logout</button>
-                                    </form>
-                                    <?php
-                                 }
+                                 $item = (empty($_SESSION["loggedIn"]) == true || $_SESSION["loggedIn"] != true) ? '<a class="nav-link" href="login.php">Login</a>' : '
+                                 <form method="post">
+                                 <button class="nav-link" name="logout" type="submit" value="1"
+                                 formtarget="_self">Logout</button>
+                                 </form>' ;
+                                 echo $item;
                                  ?>
                               </li>
                            </ul>

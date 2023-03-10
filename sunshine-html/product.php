@@ -1,12 +1,8 @@
 <?php
 session_start();
-$_SESSION['lastpage'] = $_SERVER['REQUEST_URI'];
-function UnsetLogin()
-{
+$_SESSION["lastpage"] = $_SERVER["REQUEST_URI"];
+if (isset($_POST["logout"])) {
    unset($_SESSION["loggedIn"]); 
-}
-if (empty($_POST["logout"]) != true) {
-   UnsetLogin();
    $_POST["logout"] = "";
 }
 ?>
@@ -48,12 +44,19 @@ if (empty($_POST["logout"]) != true) {
          .wrapper{
             margin: auto;
             width: 100%;
-            max-width: 800px;
+            max-width: 100%;
             padding:80px;
             background-color: hsla(455,75%,20%,0.05);
          }
          fieldset{
             float: left;
+            width: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+         }
+         fieldset.orderField {
+            float: left;
+            width: 50%;
             display: inline-block;
             box-sizing: border-box;
          }
@@ -128,16 +131,12 @@ if (empty($_POST["logout"]) != true) {
                               </li>
                               <li class="nav-item">
                                  <?php
-                                 if (empty($_SESSION["loggedIn"]) == true || $_SESSION["loggedIn"] != true) { ?>
-                                    <a class="nav-link" href="login.php">Login</a>
-                                    <?php
-                                 } else { ?>
-                                    <form method="post">
-                                    <button class="nav-link" name="logout" type="submit" value="1"
-                                    formtarget="_self" onclick="UnsetLogin()">Logout</button>
-                                    </form>
-                                    <?php
-                                 }
+                                 $item = (empty($_SESSION["loggedIn"]) == true || $_SESSION["loggedIn"] != true) ? '<a class="nav-link" href="login.php">Login</a>' : '
+                                 <form method="post">
+                                 <button class="nav-link" name="logout" type="submit" value="1"
+                                 formtarget="_self">Logout</button>
+                                 </form>' ;
+                                 echo $item;
                                  ?>
                               </li>
                            </ul>
@@ -212,80 +211,85 @@ if (empty($_POST["logout"]) != true) {
                return $results;
             }
 
-            echo '<div class="row">';
-            $sql = "SELECT id_product, product_naam, product_prijs, stock FROM product p, stock s WHERE p.id_stock = s.id_stock";
-            $result = $conn->query($sql);
-            while($row = $result->fetch_assoc()) {echo '<div class="col-lg-3 col-md-6 col-sm-6">';
-               echo '<div id="ho_bo" class="our_products">';
-               echo '<div class="product">';
-               echo '<figure><img src="images/pro'.$row["id_product"].'.png" alt="#"/></figure>';
-               echo '</div>';
-               $res = search($arr, 'id_product', $pID);
-               
-               foreach ($res as $var) {
-                  echo "<h3>".ucfirst($var["product_naam"])."</h3 />"
-                     . "<span>Product info</span><br />"
-                     . "<p>Prijs per: €".$var["product_prijs"]."</p />"
-                     . "<p>In stock: ".$var["stock"]."</p>";
-                  $pID++;
-               }
-               echo '<form class="sub_form" method="post">';
-               echo '<button class="send_btn" name="optieProduct" value="'.$var["product_naam"] . " " . $var["id_product"].'" type="submit" formtarget="_self">Toevoegen</button>';
-               echo '</form>';
-               echo '</div>';
-               echo '</div>';
-            }
-            echo '</div>';
             ?>
-         </div>
-      </div>
-      <div class="sub_form">
-         <div class="wrapper">
-            <fieldset>
-               <legend>Uw Order</legend>
-               <hr>
-               <?php
-               if (isset($_POST["optieProduct"])) {
-                  if (empty($_SESSION["lijst"])) {
-                     $_SESSION["lijst"]["Optie " . 0] = $_POST["optieProduct"];
-                  } else {
-                     $_SESSION["lijst"]["Optie " . count($_SESSION["lijst"])] = $_POST["optieProduct"];
-                  }
-                  foreach ($_SESSION["lijst"] as $key => $product) {
-                     echo "$key = $product\n<br>";
-                  }
-                  unset($_POST["optieProduct"]);
-               } else if (empty($_SESSION["lijst"]) == true) {
-                  echo "de session is leeg";
-               }
-               
-               $num = 0;
-               if (!empty($_SESSION["lijst"])) {
-                  foreach ($_SESSION["lijst"] as $key => $val) {
-                     if ($num != 4) {
-                        echo $product = preg_replace('/[0-9]+/', '', $val);
-                        $num++;
-                     } else {
-                        echo "<br>";
-                        $num = 0;
+            <div class="sub_form">
+               <div class="wrapper">
+                  <fieldset>
+                     <legend>Uw Order</legend>
+                     <hr>
+                     <?php
+                     if (isset($_POST["optieProduct"])) {
+                        if (empty($_SESSION["lijst"])) {
+                           $_SESSION["lijst"]["Optie " . 0] = $_POST["optieProduct"];
+                        } else {
+                           $_SESSION["lijst"]["Optie " . count($_SESSION["lijst"])] = $_POST["optieProduct"];
+                        }
+                        foreach ($_SESSION["lijst"] as $key => $product) {
+                           echo "$key = $product\n<br>";
+                        }
+                        unset($_POST["optieProduct"]);
+                     } else if (empty($_SESSION["lijst"]) == true) {
+                        echo "de session is leeg";
                      }
-                  }
-               }
-               
-               echo "<br>";
+                     
+                     $num = 0;
+                     if (!empty($_SESSION["lijst"])) {
+                        foreach ($_SESSION["lijst"] as $key => $val) {
+                           if ($num != 4) {
+                              echo $product = preg_replace('/[0-9]+/', '', $val);
+                              $num++;
+                           } else {
+                              echo "<br>";
+                              $num = 0;
+                           }
+                        }
+                     }
+                     
+                     echo "<br>";
 
-               if (!empty($_SESSION["lijst"])) {
-               ?>
-            <form class="sub_form" action="verwerken.php">
-               <button class="send_btn" name="optieSend" value="1" type="submit">Finaliseren</button>
-            </form>
-            <?php
-            }
-            ?>
-            </fieldset>
-            <div id="breaker"></div>
+                     if (!empty($_SESSION["lijst"])) {
+                     ?>
+                     <form class="sub_form" action="process.php">
+                        <button class="send_btn" name="optieSend" value="1" type="submit">Finaliseren</button>
+                     </form>
+                     <?php
+                     }
+                     ?>
+                  </fieldset>
+                  <div id="breaker"></div>
+               </div>
+            </div>
+                  <fieldset class="orderField">
+                  <?php
+                  echo '<div class="row">';
+                  $sql = "SELECT id_product, product_naam, product_prijs, stock FROM product p, stock s WHERE p.id_stock = s.id_stock";
+                  $result = $conn->query($sql);
+                  while($row = $result->fetch_assoc()) {echo '<div class="col-lg-3 col-md-6 col-sm-6">';
+                     echo '<div id="ho_bo" class="our_products">';
+                     echo '<div class="product">';
+                     echo '<figure><img src="images/pro'.$row["id_product"].'.png" alt="#"/></figure>';
+                     echo '</div>';
+                     $res = search($arr, 'id_product', $pID);
+                     
+                     foreach ($res as $var) {
+                        echo "<h3>".ucfirst($var["product_naam"])."</h3 />"
+                           . "<span>Product info</span><br />"
+                           . "<p>Prijs per: €".$var["product_prijs"]."</p />"
+                           . "<p>In stock: ".$var["stock"]."</p>";
+                        $pID++;
+                     }
+                     echo '<form class="sub_form" method="post">';
+                     echo '<button class="send_btn" name="optieProduct" value="'.$var["product_naam"] . " " . $var["id_product"].'" type="submit" formtarget="_self">Toevoegen</button>';
+                     echo '</form>';
+                     echo '</div>';
+                     echo '</div>';
+                  }
+                  echo '</div>';
+                  ?>
+                  </fieldset>
          </div>
       </div>
+      
       <?php
       $conn->close();
       ?>

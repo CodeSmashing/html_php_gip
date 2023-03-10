@@ -1,12 +1,8 @@
 <?php
 session_start();
 $_SESSION["lastpage"] = $_SERVER["REQUEST_URI"];
-function UnsetLogin()
-{
+if (isset($_POST["logout"])) {
    unset($_SESSION["loggedIn"]); 
-}
-if (empty($_POST["logout"]) != true) {
-   UnsetLogin();
    $_POST["logout"] = "";
 }
 ?>
@@ -20,15 +16,8 @@ if (empty($_POST["logout"]) != true) {
    <meta name="viewport" content="width=device-width, initial-scale=1">
    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
    <!-- site metas -->
-   <?php
-   if ((empty($_POST["optieInlog"]) == true) || ($_POST["optieInlog"] == "2")) { ?>
-      <title>Registratie</title>
-      <?php
-   } else { ?>
-      <title>Login</title>
-      <?php
-   }
-   ?>
+   <?php $title = (empty($_POST["optieInlog"]) || $_POST["optieInlog"] == "2") ? "Registratie" : "Login"; ?>
+   <title><?php echo $title; ?></title>
    <meta name="keywords" content="">
    <meta name="description" content="">
    <meta name="author" content="">
@@ -101,17 +90,12 @@ if (empty($_POST["logout"]) != true) {
                            </li>
                            <li class="nav-item active">
                               <?php
-                              if (empty($_SESSION["loggedIn"]) == true || $_SESSION["loggedIn"] != true) { ?>
-                                 <a class="nav-link" href="login.php">Login</a>
-                                 <?php
-                              } else { ?>
-                                 <form method="post">
-                                 <button class="nav-link" name="logout" type="submit" value="1"
-                                 formtarget="_self" onclick="UnsetLogin()">Logout</button>
-                                 </form>
-                                 <?php
-                              }
-                              ?>
+                              $item = (empty($_SESSION["loggedIn"]) == true || $_SESSION["loggedIn"] != true) ? '<a class="nav-link" href="login.php">Login</a>' : '
+                              <form method="post">
+                              <button class="nav-link" name="logout" type="submit" value="1"
+                              formtarget="_self">Logout</button>
+                              </form>' ;
+                              echo $item; ?>
                            </li>
                         </ul>
                      </div>
@@ -130,13 +114,8 @@ if (empty($_POST["logout"]) != true) {
             <div class="col-md-12">
                <div class="title">
                   <?php
-                  if ((empty($_POST["optieInlog"]) == true) || ($_POST["optieInlog"] == "2")) { ?>
-                     <h2>Registratie</h2>
-                     <?php
-                  } else { ?>
-                     <h2>Login</h2>
-                     <?php
-                  }
+                  $item = (empty($_POST["optieInlog"]) == true || $_POST["optieInlog"] == "2") ? '<h2>Registratie</h2>' : '<h2>Login</h2>' ;
+                  echo $item;
                   ?>
                </div>
             </div>
@@ -150,13 +129,9 @@ if (empty($_POST["logout"]) != true) {
          <div class="col-md-6 offset-md-3">
             <div class="titlepage">
                <?php
-               if ((empty($_POST["optieInlog"]) == true) || ($_POST["optieInlog"] == "2")) { ?>
-                  <span>Welkom tot de registratie pagina, hier kunt u zich een account registreren.</span>
-                  <?php
-               } else { ?>
-                  <span>Welkom tot de inlog pagina, hier kunt u zich inloggen.</span>
-                  <?php
-               }
+               $item = (empty($_POST["optieInlog"]) == true || $_POST["optieInlog"] == "2") ? '<span>Welkom tot de registratie pagina, hier kunt u zich een account registreren.</span>' : '
+               <span>Welkom tot de inlog pagina, hier kunt u zich inloggen.</span>' ;
+               echo $item;
                ?>
             </div>
          </div>
@@ -164,42 +139,34 @@ if (empty($_POST["logout"]) != true) {
    </div>
    <div class="containerInlog">
       <?php
-      if ((empty($_POST["optieInlog"]) == true) || ($_POST["optieInlog"] == "2")) {
-         ?>
-         <form action="verwerken.php" method="post">
-            <div class="inputInlog">
-               <hr><b>Gebruikersnaam :</b><br>
-               <input type="text" name="eName" pattern="[A-z0-9À-ž\s]{2,}" title="Drie of meer characters"
-                  required><br><br>
-
-               <b>Paswoord :</b><br>
-               <input type="password" name="pass" pattern=".{8,}" title="Acht of meer characters"
-                  required><br><br>
-            </div>
-                  <button class="sub_btnInlog" name="registreren" type="submit" value="1">Registreren</button><br>
-         </form>
-         <form method="post">
-            <button class="sub_btnInlog" name="optieInlog" type="submit" value="1" formtarget="_self">Inloggen</button><hr>
-         </form>
-      <?php } else if ($_POST["optieInlog"] == "1") {
-         ?>
-         <form action="verwerken.php" method="post">
-            <div class="inputInlog">
-               <hr><b>Gebruikersnaam :</b><br>
-               <input type="text" name="eName" pattern="[A-z0-9À-ž\s]{2,}" title="Drie of meer characters"
-                  required><br><br>
-                  
-               <b>Paswoord :</b><br>
-               <input type="password" name="pass" pattern=".{8,}" title="Acht of meer characters"
-                  required><br><br>
-            </div>
-            <button class="sub_btnInlog" name="registreren" type="submit" value="0">Inloggen</button><br>
-         </form>
-         <form method="post">
-            <button class="sub_btnInlog" name="optieInlog" type="submit" value="2" formtarget="_self">Registreren</button><hr>
-         </form>
-      <?php }
+      $optieInlog = isset($_POST["optieInlog"]) ? $_POST["optieInlog"] : "2";
+      $formAction = ($optieInlog == "2") ? "Registreren" : "Inloggen";
+      $buttonValue = ($optieInlog == "2") ? "1" : "0";
       ?>
+
+      <form action="process.php" method="post">
+         <div class="inputInlog">
+            <hr><b>Gebruikersnaam :</b><br>
+            <input type="text" name="eName" pattern="[A-z0-9À-ž\s]{2,}" title="Drie of meer characters"
+            required><br><br>
+            
+            <b>Paswoord :</b><br>
+            <input type="password" name="pass" pattern=".{8,}" title="Acht of meer characters"
+            required><br><br>
+         </div>
+
+         <button class="sub_btnInlog" name="registreren" type="submit" value="<?php echo $buttonValue; ?>">
+            <?php echo $formAction; ?>
+         </button>
+         <br>
+      </form>
+
+      <form method="post">
+         <button class="sub_btnInlog" name="optieInlog" type="submit" value="<?php echo ($optieInlog == "2") ? "1" : "2"; ?>" formtarget="_self">
+            <?php echo ($optieInlog == "2") ? "Inloggen" : "Registreren"; ?>
+         </button>
+         <hr>
+      </form>
    </div>
    <!-- end about -->
    <!--  footer -->

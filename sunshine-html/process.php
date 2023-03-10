@@ -33,11 +33,20 @@ session_start();
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->
       <?php
-      // Connectie creëeren
-      $conn = new mysqli("localhost", "root", "", "gip"); 
-      // Connectie checken
-      if ($conn->connect_errno) {
-         die("Connectie mislukt: " . $conn->connect_error);
+      require_once('config.php');
+
+      try {
+         // create a PDO object and set connection parameters
+         $dsn = "mysql:host=$db_host;dbname=$db_name;charset=utf8mb4";
+         $options = array(
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_EMULATE_PREPARES => false,
+         );
+         $pdo = new PDO($dsn, $db_user, $db_pass, $options);
+      } catch(PDOException $e) {
+         // handle any errors that may occur during connection
+         echo "Connection failed: " . $e->getMessage();
+         exit();
       }
       ?>
    </head>
@@ -125,9 +134,9 @@ session_start();
          echo $_REQUEST["Phone"], "<br><br>";
          echo $_REQUEST["Email"], "<br><br>";
          echo $_REQUEST["Message"], "<br><br>";
-         $conn->close();
+         $pdo = null;
       } // Als de laatste pagina /login_page.php is; als er nog niet ingelogd is; als er aangeduid werd dat er word geregistreerd :
-      else if (($_SESSION['lastpage'] == "/html_php_gip/sunshine-html/login_page.php") && (empty($_SESSION["loggedIn"]) == true || $_SESSION["loggedIn"] != true)) {
+      else if (($_SESSION['lastpage'] == "/html_php_gip/sunshine-html/login.php") && (empty($_SESSION["loggedIn"]) == true || $_SESSION["loggedIn"] != true)) {
          // Hulp van : https://www.tutorialrepublic.com/php-tutorial/php-mysql-login-system.php
          // En : https://www.geeksforgeeks.org/how-to-insert-form-data-into-database-using-php/
          
@@ -153,41 +162,47 @@ session_start();
 
          // Als de gebruiker heeft aangeduid dat die wilt registreren (default optie)
          if ($_REQUEST["registreren"] == "1") {
-            // Een insert statement declareren
+            // Een select statement declareren
             $sql = "SELECT id_gebruiker FROM gebruikers WHERE gebruiker_naam = ?";
-            // Een insert statement voorbereiden
-            if ($stmt = $conn->prepare($sql)) {
-               // Variabelen binden aan de voorbereidde insert als parameters
-               $stmt->bind_param("s", $param_username);
+            // De select statement voorbereiden
+            if ($stmt = $pdo->prepare($sql)) {
+               // Variabelen binden aan de voorbereidde select als parameters
+               $stmt->bindParam(1, $param_username);
 
                // Parameters bepalen
                $param_username = trim($_SESSION["gbr"]);
 
                // Proberen de voorbereidde statement uit te voeren
                if ($stmt->execute()) {
-                     // Resultaat bewaren
-                     $stmt->store_result();
-                     // Als het resultaat al één of meerdere keren voorkomt
-                     if ($stmt->num_rows >= 1) {
-                        echo "Deze gebruikersnaam is al in gebruik.111<br>
-                        U zal worden herleidt naar de registratie pagina.<br>";
-                        header("Refresh: 4; url=login_page.php", true, 0);
-                        exit();
-                     }
+                  // Het resultaat pakken
+                  $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                  $i = 0;
+                  foreach ($results as $row) {
+                     $i++;
+                  }
+
+                  // Als het resultaat al één of meerdere keren voorkomt
+                  if ($i > 1) {
+                     echo "Deze gebruikersnaam is al in gebruik.<br>
+                     U zal worden herleidt naar de vorige pagina.<br>";
+                     header("Refresh: 4; url=".$_SESSION['lastpage']."", true, 0);
+                     exit();
+                  }
                } else {
-                  echo "Oops! Iets ging mis met het controleren van de gebruikersnaam, u word terug gestuurd.";
-                  header("Refresh: 4; url=login_page.php", true, 0);
+                  echo "Oops! Iets ging mis met het uitvoeren van het programma, u word terug gestuurd.";
+                  header("Refresh: 4; url=".$_SESSION['lastpage']."", true, 0);
                   exit();
-               } 
+               }
                // Statement sluiten
-               $stmt->close();
+               $stmt->closeCursor();
             }
 
             // Zien als het paswoord leeg is of niet
             if (empty($_SESSION["pwd"])) {
                echo "U heeft geen passwoord ingegeven.<br>
-               U zal worden herleidt naar de registratie pagina.<br>";
-               header("Refresh: 4; url=login_page.php", true, 0);
+               U zal worden herleidt naar de vorige pagina.<br>";
+               header("Refresh: 4; url=".$_SESSION['lastpage']."", true, 0);
                exit();
             }
 
@@ -196,9 +211,10 @@ session_start();
                // Een insert statement declareren
                $sql = "INSERT INTO gebruikers (gebruiker_naam, gebruiker_pass) VALUES (?, ?)";
                // Een insert statement voorbereiden
-               if ($stmt = $conn->prepare($sql)) {
+               if ($stmt = $pdo->prepare($sql)) {
                   // Variabelen binden aan de voorbereidde insert als parameters
-                  $stmt->bind_param("ss", $param_username, $param_password);
+                  $stmt->bindParam(1, $param_username);
+                  $stmt->bindParam(2, $param_password);
 
                   // Parameters declareren
                   $param_username = $_SESSION["gbr"];
@@ -214,59 +230,52 @@ session_start();
                      
                   } else {
                      echo "Oops! Iets ging fout bij het registreren.<br>
-                     U zal worden herleidt naar de registratie pagina.<br>";
-                     header("Refresh: 4; url=login_page.php", true, 0);
+                     U zal worden herleidt naar de vorige pagina.<br>";
+                     header("Refresh: 4; url=".$_SESSION['lastpage']."", true, 0);
                      exit();
                   }
-                  // Statement sluiten
-                  $stmt->close();
                }
+               // Statement sluiten
+               $stmt->closeCursor();
             } else {
                echo "Oops! Ofwel is er geen paswoord, ofwel geen gebruikersnaam ingegeven.<br>
-               U zal worden herleidt naar de registratie pagina.<br>";
-               header("Refresh: 4; url=login_page.php", true, 0);
+               U zal worden herleidt naar de vorige pagina.<br>";
+               header("Refresh: 4; url=".$_SESSION['lastpage']."", true, 0);
                exit();
             }  
             // Connectie beëindigen
-            $conn->close();
-         } // Als de gebruiker heeft aangeduid dat die wilt niet wilt registreren
+            $pdo = null;
+         } // Als de gebruiker heeft aangeduid dat die niet wilt registreren
          else if ($_REQUEST["registreren"] == "0") {
             // Een insert statement declareren
             $sql = "SELECT gebruiker_pass FROM gebruikers WHERE gebruiker_naam = ?";
+            
             // Een insert statement voorbereiden
-            if ($stmt = $conn->prepare($sql)) {
+            if ($stmt = $pdo->prepare($sql)) {
                // Variabelen binden aan de voorbereidde insert als 'parameters'
-               $stmt->bind_param("s", $param_username);
+               $stmt->bindParam(1, $param_username);
 
                // Parameters bepalen
                $param_username = trim($_REQUEST["eName"]);
 
                // Proberen de voorbereidde statement uit te voeren
                if ($stmt->execute()) {
-                  // Resultaat bewaren
-                  $stmt->store_result();
-
-                  // Resultaat binden (voor tijdelijke 'opslag')
-                  $stmt->bind_result($result);
 
                   // Als de 'fetch' lukt, bepalen we de te vergelijken met hash
                   if ($stmt->fetch()){
-                     $hash = $result;
+                     $hash = $stmt->fetch(PDO::FETCH_ASSOC);
                   }
-
-                  // Resultaat vrij laten
-                  $stmt->free_result();
                } else {
                    echo "Oops! Iets ging mis met het controleren van het passwoord, u word terug gestuurd.";
                    header("Refresh: 4; url=login_page.php", true, 0);
                    exit();
                }
                // Statement sluiten
-               $stmt->close();
+               $stmt->closeCursor();
             }
 
             // De $_REQUEST["pass"] vergelijken we nu met onze hash
-            if (password_verify($_REQUEST["pass"], $hash) == true) {
+            if (password_verify($_REQUEST["pass"], $hash["gebruiker_pass"]) == true) {
                echo "Bedankt om in te loggen.<br>";
                echo 'Last page: '.$_SESSION['lastpage'];
                // De gebruiker zijn session word aangeduid als ingelogged
@@ -278,76 +287,81 @@ session_start();
                <?php
             } else {
                echo "Sorry, maar iets ging fout bij de paswoord verificatie.<br>
-               U zal worden herleidt naar de registratie pagina.<br>";
-               header("Refresh: 4; url=login_page.php", true, 0);
+               U zal worden herleidt naar de vorige pagina.<br>";
+               header("Refresh: 4; url=".$_SESSION['lastpage']."", true, 0);
                exit();
             }
             // Connectie beëindigen
-            $conn->close();
+            $pdo = null;
          }
          // Als de laatste pagina /product.php is
       } else if ($_SESSION['lastpage'] == "/html_php_gip/sunshine-html/product.php") {
          echo "Uw bestelling zal worden doorgevoerd.<br>";
 
-         // Een array aanmaken waarin we neerschrijven hoe vaak iets voorkomt in onze $_SESSION["lijst]
-         foreach ($_SESSION["lijst"] as $key => $val) {
+         // Initialize array for counting products
+         $u = array();
+
+         // Count number of products in the order
+         foreach ($_SESSION["lijst"] as $val) {
             $var = (int)filter_var($val, FILTER_SANITIZE_NUMBER_INT);
-            $u["Num ".$var]["Count"] = count(array_keys($_SESSION["lijst"], $val));
-         }
-
-         $sql = "SELECT stock, id_stock FROM stock";
-         $result = $conn->query($sql);
-
-         $counter = 0;
-         while ($row = $result->fetch_assoc()) {
-            $counter++;
-         }
-         
-         // Zeker maken dat de array even groot is als onze aantal producten
-         for ($m = 1; $m <= $counter; $m++) {
-            if (array_key_exists("Num ".$m, $u) === FALSE) {
-               $u["Num ".$m]["Count"] = 0;
+            if (!isset($u["Num " . $var]["Count"])) {
+               $u["Num " . $var]["Count"] = 1;
+            } else {
+               $u["Num " . $var]["Count"]++;
             }
          }
 
-         $sql = "SELECT stock, id_stock FROM stock";
-         $result = $conn->query($sql);
+         // Count number of products in stock
+         $sql = "SELECT COUNT(*) AS count FROM stock";
+         $stmt = $pdo->query($sql);
+         $result = $stmt->fetch(PDO::FETCH_ASSOC);
+         $stock_count = $result["count"];
 
-         
+         // Make sure the product count array is the same size as the number of products in stock
+         for ($m = 1; $m <= $stock_count; $m++) {
+            if (!isset($u["Num " . $m]["Count"])) {
+               $u["Num " . $m]["Count"] = 0;
+            }
+         }
+
          // De database updaten
-         while ($row = $result->fetch_assoc()) {
-            foreach ($u["Num ".$row["id_stock"]] as $key => $val) {
-               echo "<br>Dit is de geselecteerde stock: ".$row["stock"]."<br>";
-               
-               $calc = $row["stock"] - $val;
-               echo "<br>Dit is onze stock als we er ".$val." van af trekken: ".$calc."<br>";
-               
-               $sql2 = "UPDATE stock SET stock = $calc WHERE stock.id_stock = ".$row["id_stock"].";";
-               $result2 = $conn->query($sql2);
-               echo $row["stock"]." is de zogezegde stock<br>";
-               echo $val." is de zogezegde value<br>";
-               echo $calc." is de zogezegde calc<br>";
+         $sql = "SELECT stock, id_stock FROM stock ORDER BY id_stock";
+         $stmt = $pdo->query($sql);
 
-               $sql3 = "SELECT stock, id_stock FROM stock";
-               $result3 = $conn->query($sql3);
-               $row3 = $result3->fetch_assoc();
+         $newStocks = array(); // initialize an array to hold the new stock values
+
+         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $newStock = $row["stock"]; // initialize the new stock value
+            foreach ($u["Num ".$row["id_stock"]] as $key => $val) {
+               echo "<br>Dit is de geselecteerde stock: ".$newStock."<br>";                   
+               $newStock = $newStock - $val;
+               echo "<br>Dit is onze stock als we er ".$val." van af trekken: ".$newStock."<br>";
             }
+            $newStocks[$row["id_stock"]] = $newStock; // store the new stock value in the array
          }
-         $conn->close();
+
+         foreach ($newStocks as $id_stock => $newStock) {
+            $sql = "UPDATE stock SET stock = $newStock WHERE id_stock = $id_stock;";
+            $result = $pdo->query($sql);
+         }
+         $pdo = null;
+         
+         echo "Bedankt om een bestelling te plaatsen.<br>
+         U zal worden herleidt naar de home pagina";
+         header("Refresh: 4; url=index.php", true, 0);
+         exit();
       } // Als de laatste pagina niet /login_page.php is :
-      else if ($_SESSION['lastpage'] != "/html_php_gip/sunshine-html/login_page.php") {
+      else {
          // From https://stackoverflow.com/questions/768431/how-do-i-make-a-redirect-in-php?page=1&tab=scoredesc#tab-top
          // User Hammad Khan
          // Learn output buffering dammit: https://stackoverflow.com/questions/2832010/what-is-output-buffering
          // http://web.archive.org/web/20101216035343/http://dev-tips.com/featured/output-buffering-for-web-developers-a-beginners-guide
 
-         echo "Sorry, maar dit mag niet.<br>";
-         $conn->close();
-         header("Refresh: 4; url=login_page.php", true, 0);
+         echo "Sorry, maar u komt van een pagina waarvoor we nog geen data kunnen processeren.<br>
+         U zal worden terug gestuur naar de vorige pagina.";
+         $pdo = null;
+         header("Refresh: 4; url=".$_SESSION['lastpage']."", true, 0);
          exit();
-      } else {
-         echo "seems ya did it.<br>";
-         $conn->close();
       }
       ?>
         <footer>
