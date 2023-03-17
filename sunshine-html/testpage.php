@@ -5,6 +5,34 @@
     </head>
 
     <body>
+        
+    <style>
+            // Define a variable for the primary color
+            $primary-color: #007bff;
+
+            // Define a mixin for creating box shadows
+            @mixin box-shadow($x, $y, $blur, $color) {
+            box-shadow: $x $y $blur $color;
+            }
+
+            // Define a class for a button
+            .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: $primary-color;
+            color: #fff;
+            border-radius: 4px;
+            text-decoration: none;
+            
+            // Use the mixin to add a box shadow to the button
+            @include box-shadow(0px, 2px, 4px, rgba(0,0,0,0.2));
+            
+            // Add a hover state to the button
+            &:hover {
+                background-color: darken($primary-color, 10%);
+            }
+            }
+        </style>
         <h2>Bestellen</h2>
         <form action="verwerken.php" method="post" id="request">
             <fieldset>
@@ -54,7 +82,7 @@
                     <label for="birthday">Birthday : </label>
                     <input type="date" id="birthday" name="birthday"><br><br>
                 </p>
-                <input type="submit" value="Submit"><br>
+                <input class="btn" type="submit" value="Submit"><br>
             </fieldset>
         </form>
         <fieldset>

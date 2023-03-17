@@ -81,7 +81,7 @@ session_start();
                         </button>
                         <div class="collapse navbar-collapse" id="navbarsExample04">
                            <ul class="navbar-nav mr-auto">
-                              <li class="nav-item ">
+                              <li class="nav-item">
                                  <a class="nav-link" href="index.php">Thuis Pagina</a>
                               </li>
                               <li class="nav-item">
