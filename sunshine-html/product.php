@@ -50,13 +50,11 @@ if (isset($_POST["logout"])) {
          }
          fieldset{
             float: left;
-            width: 50%;
             display: inline-block;
             box-sizing: border-box;
          }
          fieldset.orderField {
             float: left;
-            width: 50%;
             display: inline-block;
             box-sizing: border-box;
          }
@@ -214,6 +212,34 @@ if (isset($_POST["logout"])) {
             ?>
             <div class="sub_form">
                <div class="wrapper">
+                  <fieldset class="orderField">
+                  <?php
+                  echo '<div class="row">';
+                  $sql = "SELECT id_product, product_naam, product_prijs, stock FROM product p, stock s WHERE p.id_stock = s.id_stock";
+                  $result = $conn->query($sql);
+                  while($row = $result->fetch_assoc()) {echo '<div class="col-lg-3 col-md-6 col-sm-6">';
+                     echo '<div id="ho_bo" class="our_products">';
+                     echo '<div class="product">';
+                     echo '<figure><img src="images/pro'.$row["id_product"].'.png" alt="#"/></figure>';
+                     echo '</div>';
+                     $res = search($arr, 'id_product', $pID);
+                     
+                     foreach ($res as $var) {
+                        echo "<h3>".ucfirst($var["product_naam"])."</h3 />"
+                           . "<span>Product info</span><br />"
+                           . "<p>Prijs per: €".$var["product_prijs"]."</p />"
+                           . "<p>In stock: ".$var["stock"]."</p>";
+                        $pID++;
+                     }
+                     echo '<form class="sub_form" method="post">';
+                     echo '<button class="send_btn" name="optieProduct" value="'.$var["product_naam"] . " " . $var["id_product"].'" type="submit" formtarget="_self">Toevoegen</button>';
+                     echo '</form>';
+                     echo '</div>';
+                     echo '</div>';
+                  }
+                  echo '</div>';
+                  ?>
+                  </fieldset>
                   <fieldset>
                      <legend>Uw Order</legend>
                      <hr>
@@ -259,34 +285,6 @@ if (isset($_POST["logout"])) {
                   <div id="breaker"></div>
                </div>
             </div>
-                  <fieldset class="orderField">
-                  <?php
-                  echo '<div class="row">';
-                  $sql = "SELECT id_product, product_naam, product_prijs, stock FROM product p, stock s WHERE p.id_stock = s.id_stock";
-                  $result = $conn->query($sql);
-                  while($row = $result->fetch_assoc()) {echo '<div class="col-lg-3 col-md-6 col-sm-6">';
-                     echo '<div id="ho_bo" class="our_products">';
-                     echo '<div class="product">';
-                     echo '<figure><img src="images/pro'.$row["id_product"].'.png" alt="#"/></figure>';
-                     echo '</div>';
-                     $res = search($arr, 'id_product', $pID);
-                     
-                     foreach ($res as $var) {
-                        echo "<h3>".ucfirst($var["product_naam"])."</h3 />"
-                           . "<span>Product info</span><br />"
-                           . "<p>Prijs per: €".$var["product_prijs"]."</p />"
-                           . "<p>In stock: ".$var["stock"]."</p>";
-                        $pID++;
-                     }
-                     echo '<form class="sub_form" method="post">';
-                     echo '<button class="send_btn" name="optieProduct" value="'.$var["product_naam"] . " " . $var["id_product"].'" type="submit" formtarget="_self">Toevoegen</button>';
-                     echo '</form>';
-                     echo '</div>';
-                     echo '</div>';
-                  }
-                  echo '</div>';
-                  ?>
-                  </fieldset>
          </div>
       </div>
       
