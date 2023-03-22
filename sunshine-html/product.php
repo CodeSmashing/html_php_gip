@@ -38,11 +38,20 @@ if (isset($_POST["logout"])) {
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->
       <?php
-      // Connectie creëeren
-      $conn = new mysqli("localhost", "root", "", "gip"); 
-      // Connectie checken
-      if ($conn->connect_errno) {
-            die("Connectie mislukt: " . $conn->connect_error);
+      require_once('config.php');
+
+      try {
+         // create a PDO object and set connection parameters
+         $dsn = "mysql:host=$db_host;dbname=$db_name;charset=utf8mb4";
+         $options = array(
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_EMULATE_PREPARES => false,
+         );
+         $pdo = new PDO($dsn, $db_user, $db_pass, $options);
+      } catch(PDOException $e) {
+         // handle any errors that may occur during connection
+         echo "Connection failed: " . $e->getMessage();
+         exit();
       }
       $pID = 1;
       ?>
@@ -146,10 +155,10 @@ if (isset($_POST["logout"])) {
             </div>
             <?php
             $sql = "SELECT id_product, product_naam, product_prijs, stock FROM product p, stock s WHERE p.id_stock = s.id_stock";
-            $result = $conn->query($sql);
+            $result = $pdo->query($sql);
             $arr = array();
 
-            while($row = $result->fetch_assoc()) {
+            while($row = $result->fetchAll(PDO::FETCH_ASSOC)) {
                $arr[] = $row;
             }
             
@@ -236,8 +245,8 @@ if (isset($_POST["logout"])) {
                      <div class="row">
                      <?php
                      $sql = "SELECT id_product, product_naam, product_prijs, stock FROM product p, stock s WHERE p.id_stock = s.id_stock";
-                     $result = $conn->query($sql);
-                     while($row = $result->fetch_assoc()) {
+                     $result = $pdo->query($sql);
+                     while($row = $result->fetch(PDO::FETCH_ASSOC)) {
                         ?>
                         <div class="col-lg-3 col-md-6 col-sm-6">
                            <div id="ho_bo" class="our_products">
@@ -269,9 +278,8 @@ if (isset($_POST["logout"])) {
             </div>
          </div>
       </div>
-      
       <?php
-      $conn->close();
+      $pdo = null;
       ?>
       <!-- end our products -->
       <!--  footer -->
