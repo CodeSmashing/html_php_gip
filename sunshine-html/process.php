@@ -128,7 +128,7 @@ session_start();
       <?php
       // Hulp van : https://stackoverflow.com/questions/36240145/how-to-use-serverhttp-referer-correctly-in-php
       // Als de laatste pagina /contact.php is :
-      if($_SESSION['lastpage'] == "/html_php_gip/sunshine-html/contact.php")
+      if($_SESSION['lastpage'] == "/html_php_gip/html_php_gip/sunshine-html/contact.php")
       {
          echo $_REQUEST["Name"], "<br><br>";
          echo $_REQUEST["Phone"], "<br><br>";
@@ -136,7 +136,7 @@ session_start();
          echo $_REQUEST["Message"], "<br><br>";
          $pdo = null;
       } // Als de laatste pagina /login_page.php is; als er nog niet ingelogd is; als er aangeduid werd dat er word geregistreerd :
-      else if (($_SESSION['lastpage'] == "/html_php_gip/sunshine-html/login.php") && (empty($_SESSION["loggedIn"]) == true || $_SESSION["loggedIn"] != true)) {
+      else if (($_SESSION['lastpage'] == "/html_php_gip/html_php_gip/sunshine-html/login.php") && (empty($_SESSION["loggedIn"]) == true || $_SESSION["loggedIn"] != true)) {
          // Hulp van : https://www.tutorialrepublic.com/php-tutorial/php-mysql-login-system.php
          // En : https://www.geeksforgeeks.org/how-to-insert-form-data-into-database-using-php/
          
@@ -295,7 +295,7 @@ session_start();
             $pdo = null;
          }
          // Als de laatste pagina /product.php is
-      } else if ($_SESSION['lastpage'] == "/html_php_gip/sunshine-html/product.php") {
+      } else if ($_SESSION['lastpage'] == "/html_php_gip/html_php_gip/sunshine-html/product.php") {
          echo "Uw bestelling zal worden doorgevoerd.<br>";
 
          // Initialize array for counting products
@@ -346,6 +346,7 @@ session_start();
          }
          $pdo = null;
          
+         unset($_SESSION["lijst"]);
          echo "Bedankt om een bestelling te plaatsen.<br>
          U zal worden herleidt naar de home pagina";
          header("Refresh: 4; url=index.php", true, 0);
