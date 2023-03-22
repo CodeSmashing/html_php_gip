@@ -688,6 +688,37 @@ div.sub_form div.wrapper fieldset.orderField {
 .order input { display: table-cell; }
 
 /** eind bestel sectie **/
+/** stockbeheer **/
+
+.stock {
+     padding: 60px 0px 30px 0px;
+     margin-top: 90px;
+     background-color: #f4f4f4;
+}
+.stock .container {
+     max-width: 1700px;
+}
+.stock .titlepage {
+     text-align: center;
+}
+.stock .gallery_img {
+     overflow: hidden;
+     margin-bottom: 30px;
+     background-color: #ffffff;
+}
+.stock .gallery_img figure {
+     margin: 0;
+}
+.stock .gallery_img figure img {
+     width: 10%;
+     transition: all .5s;
+}
+.stock .gallery_img figure img:hover {
+     transform: scale(1.2);
+     cursor: pointer;
+}
+
+/** eind stockbeheer **/
 /** footer **/
 
 .footer {

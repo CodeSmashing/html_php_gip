@@ -270,6 +270,7 @@ if (isset($_POST["logout"])) {
                            </div>
                         </div>
                      <?php }
+                     $pdo = null;
                      ?>
                      </div>
                   </fieldset>
@@ -278,9 +279,6 @@ if (isset($_POST["logout"])) {
             </div>
          </div>
       </div>
-      <?php
-      $pdo = null;
-      ?>
       <!-- end our products -->
       <!--  footer -->
       <footer>

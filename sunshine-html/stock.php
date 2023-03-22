@@ -36,13 +36,32 @@ if (isset($_POST["logout"])) {
       <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->
+      <?php
+      require_once('config.php');
+
+      try {
+         // create a PDO object and set connection parameters
+         $dsn = "mysql:host=$db_host;dbname=$db_name;charset=utf8mb4";
+         $options = array(
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_EMULATE_PREPARES => false,
+         );
+         $pdo = new PDO($dsn, $db_user, $db_pass, $options);
+      } catch(PDOException $e) {
+         // handle any errors that may occur during connection
+         echo "Connection failed: " . $e->getMessage();
+         exit();
+      }
+      ?>
    </head>
    <!-- body -->
    <body class="main-layout inner_page">
       <!-- loader  -->
+      <!--
       <div class="loader_bg">
          <div class="loader"><img src="images/loading.gif" alt="#"/></div>
       </div>
+      -->
       <!-- end loader -->
       <!-- header -->
       <header class="full_bg">
@@ -121,7 +140,7 @@ if (isset($_POST["logout"])) {
       </div>
       <!-- end banner -->
       <!-- start main page -->
-      <div  class="gallery">
+      <div class="stock">
          <div class="container">
             <div class="row">
                <div class="col-md-12">
@@ -130,53 +149,23 @@ if (isset($_POST["logout"])) {
                   </div>
                </div>
             </div>
-            <div class="row">
-               <div class="col-md-4 col-sm-6">
-                  <div class="gallery_img">
-                     <figure><img src="images/gallery1.png" alt="#"/></figure>
-                  </div>
+            <form action="process.php" method="post">
+               <div class="row">
+                  <?php
+                  $sql = "SELECT id_product, product_naam, product_prijs, stock FROM product p, stock s WHERE p.id_stock = s.id_stock";
+                  $result = $pdo->query($sql);
+                  while($row = $result->fetch(PDO::FETCH_ASSOC)) {
+                     ?>
+                     <div class="gallery_img">
+                        <figure><img src="images/pro<?php echo $row["product_naam"]; ?>.png" alt="#"/></figure>
+                     </div>
+                  <input type="text" placeholder="Test"></input>
+                  <input type="text" placeholder="Test2"></input>
+                  <?php }
+                  $pdo = null;
+                  ?>
                </div>
-               <div class="col-md-4 col-sm-6">
-                  <div class="gallery_img">
-                     <figure><img src="images/gallery2.png" alt="#"/></figure>
-                  </div>
-               </div>
-               <div class="col-md-4 col-sm-6">
-                  <div class="gallery_img">
-                     <figure><img src="images/gallery3.png" alt="#"/></figure>
-                  </div>
-               </div>
-               <div class="col-md-4 col-sm-6">
-                  <div class="gallery_img">
-                     <figure><img src="images/gallery4.png" alt="#"/></figure>
-                  </div>
-               </div>
-               <div class="col-md-4 col-sm-6">
-                  <div class="gallery_img">
-                     <figure><img src="images/gallery5.png" alt="#"/></figure>
-                  </div>
-               </div>
-               <div class="col-md-4 col-sm-6">
-                  <div class="gallery_img">
-                     <figure><img src="images/gallery6.png" alt="#"/></figure>
-                  </div>
-               </div>
-               <div class="col-md-4 col-sm-6">
-                  <div class="gallery_img">
-                     <figure><img src="images/gallery6.png" alt="#"/></figure>
-                  </div>
-               </div>
-               <div class="col-md-4 col-sm-6">
-                  <div class="gallery_img">
-                     <figure><img src="images/gallery6.png" alt="#"/></figure>
-                  </div>
-               </div>
-               <div class="col-md-4 col-sm-6">
-                  <div class="gallery_img">
-                     <figure><img src="images/gallery6.png" alt="#"/></figure>
-                  </div>
-               </div>
-            </div>
+            </form>
          </div>
       </div>
       <!-- end main page -->
