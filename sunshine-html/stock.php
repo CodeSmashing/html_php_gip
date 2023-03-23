@@ -149,22 +149,26 @@ if (isset($_POST["logout"])) {
                   </div>
                </div>
             </div>
-            <form action="process.php" method="post">
-               <div class="row">
-                  <?php
-                  $sql = "SELECT id_product, product_naam, product_prijs, stock FROM product p, stock s WHERE p.id_stock = s.id_stock";
-                  $result = $pdo->query($sql);
-                  while($row = $result->fetch(PDO::FETCH_ASSOC)) {
-                     ?>
+            <form id="form stock" action="process.php" method="post">
+               <?php
+               $sql = "SELECT * FROM product p, stock s WHERE p.id_stock = s.id_stock";
+               $result = $pdo->query($sql);
+               while($row = $result->fetch(PDO::FETCH_ASSOC)) {
+                  ?>
+                  <div class="row sum">
                      <div class="gallery_img">
                         <figure><img src="images/pro<?php echo $row["product_naam"]; ?>.png" alt="#"/></figure>
                      </div>
-                  <input type="text" placeholder="Test"></input>
-                  <input type="text" placeholder="Test2"></input>
-                  <?php }
-                  $pdo = null;
-                  ?>
-               </div>
+                     <?php
+                     echo " | ".$row["id_product"]." | ".$row["id_stock"]." | ".$row["product_naam"]." | ".$row["stock"]." | ";
+                     ?>
+                     <input type="text" placeholder="Test"></input>
+                     <input type="text" placeholder="Test2"></input>
+                     <a href="stock.php"><img class="vink" src="images/vink.png" alt="#"></a>
+                  </div>
+               <?php }
+               $pdo = null;
+               ?>
             </form>
          </div>
       </div>

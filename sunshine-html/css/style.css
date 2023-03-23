@@ -690,34 +690,51 @@ div.sub_form div.wrapper fieldset.orderField {
 /** eind bestel sectie **/
 /** stockbeheer **/
 
-.stock {
+div.stock {
      padding: 60px 0px 30px 0px;
      margin-top: 90px;
      background-color: #f4f4f4;
 }
-.stock .container {
+div.stock div.container {
      max-width: 1700px;
 }
-.stock .titlepage {
+div.stock div.titlepage {
      text-align: center;
 }
-.stock .gallery_img {
+div.stock div.gallery_img {
      overflow: hidden;
+     width: 30px;
      margin-bottom: 30px;
      background-color: #ffffff;
 }
-.stock .gallery_img figure {
-     margin: 0;
+div.stock div.gallery_img figure {
+     margin: 2px;
 }
-.stock .gallery_img figure img {
-     width: 10%;
+div.stock div.gallery_img figure img {
+     width: 30px;
      transition: all .5s;
 }
-.stock .gallery_img figure img:hover {
+div.stock div.gallery_img figure img:hover {
      transform: scale(1.2);
      cursor: pointer;
 }
-
+div.stock input[type="text"] {
+     width: 120px;
+     height: 30px;
+}
+div.stock form[id="form stock"] {
+     display: table;
+}
+div.stock div.row.sum{
+     display: table-row;
+}
+div.stock div.row.sum div.gallery_img, div.stock div.row.sum input, div.stock div.row.sum img.vink{
+     display: table-cell;
+}
+div.stock div.row.sum img.vink{
+     width: 25px;
+     height: 25px;
+}
 /** eind stockbeheer **/
 /** footer **/
 
