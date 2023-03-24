@@ -695,9 +695,11 @@ div.stock {
      margin-top: 90px;
      background-color: #f4f4f4;
 }
+/*
 div.stock div.container {
-     max-width: 1700px;
+     max-width: 2000px;
 }
+*/
 div.stock div.titlepage {
      text-align: center;
 }
@@ -719,21 +721,43 @@ div.stock div.gallery_img figure img:hover {
      cursor: pointer;
 }
 div.stock input[type="text"] {
-     width: 120px;
+     width: 11%;
      height: 30px;
 }
 div.stock form[id="form stock"] {
      display: table;
 }
-div.stock div.row.sum{
+div.stock div.row.sum {
      display: table-row;
 }
-div.stock div.row.sum div.gallery_img, div.stock div.row.sum input, div.stock div.row.sum img.vink{
+div.stock div.row.sum div.gallery_img, div.stock div.row.sum input, div.stock div.row.sum img.vink {
      display: table-cell;
 }
-div.stock div.row.sum img.vink{
+div.stock div.row.sum img.vink {
      width: 25px;
      height: 25px;
+}
+div.stock div.row.sum button {
+     background-color: #f4f4f4;
+}
+div.stock form[id="form stock"] div.row.sum span.list {
+     border: 1px solid grey;
+     background-color: white;
+     color: #000;
+     display: block;
+     border-radius: 2px;
+     width: 10%;
+     height: 30px;
+     padding-left: 10px;
+     float: left;
+}
+div.stock form[id="form stock"] div.row.sum span.list[id="name"] {
+     width: 230px;
+     padding-left: 10px;
+}
+div.stock form[id="form stock"] div.row.sum span.list[id="num"] {
+     width: 190px;
+     padding-left: 10px;
 }
 /** eind stockbeheer **/
 /** footer **/

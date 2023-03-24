@@ -351,6 +351,13 @@ session_start();
          U zal worden herleidt naar de home pagina";
          header("Refresh: 4; url=index.php", true, 0);
          exit();
+      } else if ($_SESSION['lastpage'] == "/html_php_gip/html_php_gip/sunshine-html/stock.php") {
+         /*
+         while ($num = 0; str_contains($num)) {
+            str_contains();
+         }
+         echo $_REQUEST["product $num price"]
+         */
       } // Als de laatste pagina niet /login_page.php is :
       else {
          // From https://stackoverflow.com/questions/768431/how-do-i-make-a-redirect-in-php?page=1&tab=scoredesc#tab-top

@@ -160,11 +160,15 @@ if (isset($_POST["logout"])) {
                         <figure><img src="images/pro<?php echo $row["product_naam"]; ?>.png" alt="#"/></figure>
                      </div>
                      <?php
-                     echo " | ".$row["id_product"]." | ".$row["id_stock"]." | ".$row["product_naam"]." | ".$row["stock"]." | ";
+                     echo '<span class="list">Product Id '.$row["id_product"].'</span>';
+                     echo '<span class="list">Stock Id '.$row["id_stock"].'</span>';
+                     echo '<span class="list" id="name">Naam '.$row["product_naam"].'</span>';
+                     echo '<span class="list" id="num">Huidige Prijs '.$row["product_prijs"].'</span>';
+                     echo '<span class="list" id="num">Huidige Stock '.$row["stock"].'</span>';
                      ?>
-                     <input type="text" placeholder="Test"></input>
-                     <input type="text" placeholder="Test2"></input>
-                     <a href="stock.php"><img class="vink" src="images/vink.png" alt="#"></a>
+                     <input type="text" id="product <?php echo $row['id_product']; ?> price" placeholder="Input Prijs"></input>
+                     <input type="text" id="product <?php echo $row['id_product']; ?> stock" placeholder="Input Stock"></input>
+                     <button type="submit"><img class="vink" src="images/vink.png" alt="#"></button>
                   </div>
                <?php }
                $pdo = null;
