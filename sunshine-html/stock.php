@@ -2,7 +2,8 @@
 session_start();
 $_SESSION["lastpage"] = $_SERVER["REQUEST_URI"];
 if (isset($_POST["logout"])) {
-   unset($_SESSION["loggedIn"]); 
+   unset($_SESSION["loggedIn"]);
+   unset($_SESSION["beheerderLoggedIn"]);
    $_POST["logout"] = "";
 }
 ?>
@@ -86,29 +87,28 @@ if (isset($_POST["logout"])) {
                         <div class="collapse navbar-collapse" id="navbarsExample04">
                            <ul class="navbar-nav mr-auto">
                               <li class="nav-item ">
-                                 <a class="nav-link" href="index.php">Thuis Pagina</a>
+                                 <a class="nav-link" href="index.php">Thuis</a>
                               </li>
                               <li class="nav-item">
                                  <a class="nav-link" href="about.php">Over Ons</a>
                               </li>
                               <li class="nav-item">
-                                 <a class="nav-link" href="product.php">Onze Producten</a>
+                                 <a class="nav-link" href="product.php">Producten</a>
                               </li>
                               <li class="nav-item">
                                  <a class="nav-link" href="gallery.php">Galerij</a>
                               </li>
-                              <li class="nav-item active">
-                                 <a class="nav-link" href="stock.php">Stock</a>
-                              </li>
+                              <?php if (!empty($_SESSION["beheerderLoggedIn"])) { ?>
+                                 <li class="nav-item active">
+                                    <a class="nav-link" href="stock.php">Stock</a>
+                                 </li>
+                              <?php } ?>
                               <li class="nav-item">
-                                 <a class="nav-link" href="order.php">Bestelformulier</a>
-                              </li>
-                              <li class="nav-item">
-                                 <a class="nav-link" href="contact.php">Contacteer Ons</a>
+                                 <a class="nav-link" href="contact.php">Contact</a>
                               </li>
                               <li class="nav-item">
                                  <?php
-                                 $item = (empty($_SESSION["loggedIn"]) == true || $_SESSION["loggedIn"] != true) ? '<a class="nav-link" href="login.php">Login</a>' : '
+                                 $item = ((empty($_SESSION["loggedIn"]) == true || $_SESSION["loggedIn"] != true) && (empty($_SESSION["beheerderLoggedIn"]) == true)) ? '<a class="nav-link" href="login.php">Login</a>' : '
                                  <form method="post">
                                  <button class="nav-link" name="logout" type="submit" value="1"
                                  formtarget="_self">Logout</button>
@@ -159,15 +159,13 @@ if (isset($_POST["logout"])) {
                      <div class="gallery_img">
                         <figure><img src="images/pro<?php echo $row["product_naam"]; ?>.png" alt="#"/></figure>
                      </div>
-                     <?php
-                     echo '<span class="list">Product Id '.$row["id_product"].'</span>';
-                     echo '<span class="list">Stock Id '.$row["id_stock"].'</span>';
-                     echo '<span class="list" id="name">Naam '.$row["product_naam"].'</span>';
-                     echo '<span class="list" id="num">Huidige Prijs '.$row["product_prijs"].'</span>';
-                     echo '<span class="list" id="num">Huidige Stock '.$row["stock"].'</span>';
-                     ?>
-                     <input type="text" id="product <?php echo $row['id_product']; ?> price" placeholder="Input Prijs"></input>
-                     <input type="text" id="product <?php echo $row['id_product']; ?> stock" placeholder="Input Stock"></input>
+                     <span class="list" id="id">Product Id <?php echo $row["id_product"]; ?></span>
+                     <span class="list" id="id">Stock Id: <?php echo $row["id_stock"]; ?></span>
+                     <span class="list" id="name">Naam: <?php echo $row["product_naam"]; ?> </span>
+                     <span class="list" id="num">Huidige Prijs: <?php echo $row["product_prijs"]; ?></span>
+                     <span class="list" id="num">Huidige Stock: <?php echo $row["stock"]; ?></span>
+                     <input type="text" name="product[<?php echo $row['id_product']; ?>][price]" placeholder="Input Prijs"></input>
+                     <input type="text" name="product[<?php echo $row['id_stock']; ?>][stock]" placeholder="Input Stock"></input>
                      <button type="submit"><img class="vink" src="images/vink.png" alt="#"></button>
                   </div>
                <?php }

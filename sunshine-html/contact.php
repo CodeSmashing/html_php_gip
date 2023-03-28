@@ -2,7 +2,8 @@
 session_start();
 $_SESSION["lastpage"] = $_SERVER["REQUEST_URI"];
 if (isset($_POST["logout"])) {
-   unset($_SESSION["loggedIn"]); 
+   unset($_SESSION["loggedIn"]);
+   unset($_SESSION["beheerderLoggedIn"]);
    $_POST["logout"] = "";
 }
 ?>
@@ -67,29 +68,28 @@ if (isset($_POST["logout"])) {
                         <div class="collapse navbar-collapse" id="navbarsExample04">
                            <ul class="navbar-nav mr-auto">
                               <li class="nav-item ">
-                                 <a class="nav-link" href="index.php">Thuis Pagina</a>
+                                 <a class="nav-link" href="index.php">Thuis</a>
                               </li>
                               <li class="nav-item">
                                  <a class="nav-link" href="about.php">Over Ons</a>
                               </li>
                               <li class="nav-item">
-                                 <a class="nav-link" href="product.php">Onze Producten</a>
+                                 <a class="nav-link" href="product.php">Producten</a>
                               </li>
                               <li class="nav-item">
                                  <a class="nav-link" href="gallery.php">Galerij</a>
                               </li>
-                              <li class="nav-item">
-                                 <a class="nav-link" href="stock.php">Stock</a>
-                              </li>
-                              <li class="nav-item">
-                                 <a class="nav-link" href="order.php">Bestelformulier</a>
-                              </li>
+                              <?php if (!empty($_SESSION["beheerderLoggedIn"])) { ?>
+                                 <li class="nav-item">
+                                    <a class="nav-link" href="stock.php">Stock</a>
+                                 </li>
+                              <?php } ?>
                               <li class="nav-item active">
-                                 <a class="nav-link" href="contact.php">Contacteer Ons</a>
+                                 <a class="nav-link" href="contact.php">Contact</a>
                               </li>
                               <li class="nav-item">
                                  <?php
-                                 $item = (empty($_SESSION["loggedIn"]) == true || $_SESSION["loggedIn"] != true) ? '<a class="nav-link" href="login.php">Login</a>' : '
+                                 $item = ((empty($_SESSION["loggedIn"]) == true || $_SESSION["loggedIn"] != true) && (empty($_SESSION["beheerderLoggedIn"]) == true)) ? '<a class="nav-link" href="login.php">Login</a>' : '
                                  <form method="post">
                                  <button class="nav-link" name="logout" type="submit" value="1"
                                  formtarget="_self">Logout</button>

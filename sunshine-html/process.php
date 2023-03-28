@@ -82,13 +82,13 @@ session_start();
                         <div class="collapse navbar-collapse" id="navbarsExample04">
                            <ul class="navbar-nav mr-auto">
                               <li class="nav-item">
-                                 <a class="nav-link" href="index.php">Thuis Pagina</a>
+                                 <a class="nav-link" href="index.php">Thuis</a>
                               </li>
                               <li class="nav-item">
                                  <a class="nav-link" href="about.php">Over Ons</a>
                               </li>
                               <li class="nav-item">
-                                 <a class="nav-link" href="product.php">Onze Producten</a>
+                                 <a class="nav-link" href="product.php">Producten</a>
                               </li>
                               <li class="nav-item">
                                  <a class="nav-link" href="gallery.php">Galerij</a>
@@ -97,10 +97,7 @@ session_start();
                                  <a class="nav-link" href="stock.php">Stock</a>
                               </li>
                               <li class="nav-item">
-                                 <a class="nav-link" href="order.php">Bestelformulier</a>
-                              </li>
-                              <li class="nav-item">
-                                 <a class="nav-link" href="contact.php">Contacteer Ons</a>
+                                 <a class="nav-link" href="contact.php">Contact</a>
                               </li>
                            </ul>
                         </div>
@@ -128,7 +125,7 @@ session_start();
       <?php
       // Hulp van : https://stackoverflow.com/questions/36240145/how-to-use-serverhttp-referer-correctly-in-php
       // Als de laatste pagina /contact.php is :
-      if($_SESSION['lastpage'] == "/html_php_gip/html_php_gip/sunshine-html/contact.php")
+      if($_SESSION['lastpage'] == "/html_php_gip/sunshine-html/contact.php")
       {
          echo $_REQUEST["Name"], "<br><br>";
          echo $_REQUEST["Phone"], "<br><br>";
@@ -136,7 +133,7 @@ session_start();
          echo $_REQUEST["Message"], "<br><br>";
          $pdo = null;
       } // Als de laatste pagina /login_page.php is; als er nog niet ingelogd is; als er aangeduid werd dat er word geregistreerd :
-      else if (($_SESSION['lastpage'] == "/html_php_gip/html_php_gip/sunshine-html/login.php") && (empty($_SESSION["loggedIn"]) == true || $_SESSION["loggedIn"] != true)) {
+      else if (($_SESSION['lastpage'] == "/html_php_gip/sunshine-html/login.php") && (empty($_SESSION["loggedIn"]) == true || $_SESSION["loggedIn"] != true)) {
          // Hulp van : https://www.tutorialrepublic.com/php-tutorial/php-mysql-login-system.php
          // En : https://www.geeksforgeeks.org/how-to-insert-form-data-into-database-using-php/
          
@@ -293,9 +290,49 @@ session_start();
             }
             // Connectie beëindigen
             $pdo = null;
+         } // Als de gebruiker heeft aangeduid dat die wilt inloggen als beheerder
+         else if ($_REQUEST["registreren"] == "3") {
+            // Een select statement declareren
+            $sql = "SELECT * FROM gebruikers WHERE gebruiker_naam = ? AND gebruiker_level = 1";
+            // De select statement voorbereiden
+            if ($stmt = $pdo->prepare($sql)) {
+               // Variabelen binden aan de voorbereidde select als parameters
+               $stmt->bindParam(1, $param_username);
+
+               // Parameters bepalen
+               $param_username = trim($_SESSION["gbr"]);
+
+               // Proberen de voorbereidde statement uit te voeren
+               if ($stmt->execute()) {
+                  // Het resultaat pakken
+                  $results = $stmt->fetch(PDO::FETCH_ASSOC);
+                  // De gebruiker's paswoord hash pakken
+                  $hash = $results["gebruiker_pass"];
+                  // Deze vergelijken met de ingevulde passwoord
+                  if (password_verify($_REQUEST["pass"], $hash)) {
+                     echo "Alles klopt, u zult worden aangemeld als beheerder.<br>
+                     U zal worden herleidt naar de home pagina.<br>";
+                     $_SESSION["beheerderLoggedIn"] = true;
+                     header("Refresh: 4; url=index.php", true, 0);
+                     exit();
+                  } else {
+                     echo "Sorry maar dit paswoord is verkeerd, u zal worden herleidt naat de vorige pagina.<br>";
+                     header("Refresh: 4; url=".$_SESSION['lastpage']."", true, 0);
+                     exit();
+                  }
+               } else {
+                  echo "Oops! Iets ging mis met het uitvoeren van het programma, u word terug gestuurd.";
+                  header("Refresh: 4; url=".$_SESSION['lastpage']."", true, 0);
+                  exit();
+               }
+               // Statement sluiten
+               $stmt->closeCursor();
+            }
+            // Connectie beëindigen
+            $pdo = null;
          }
-         // Als de laatste pagina /product.php is
-      } else if ($_SESSION['lastpage'] == "/html_php_gip/html_php_gip/sunshine-html/product.php") {
+      } // Als de laatste pagina /product.php is
+      else if ($_SESSION['lastpage'] == "/html_php_gip/sunshine-html/product.php") {
          echo "Uw bestelling zal worden doorgevoerd.<br>";
 
          // Initialize array for counting products
@@ -351,13 +388,20 @@ session_start();
          U zal worden herleidt naar de home pagina";
          header("Refresh: 4; url=index.php", true, 0);
          exit();
-      } else if ($_SESSION['lastpage'] == "/html_php_gip/html_php_gip/sunshine-html/stock.php") {
-         /*
-         while ($num = 0; str_contains($num)) {
-            str_contains();
+      } else if ($_SESSION['lastpage'] == "/html_php_gip/sunshine-html/stock.php") {
+         foreach ($_POST['product'] as $productId => $values) {
+            echo "Product id: ". $productId ." | New price: ".$values['price']." | New stock: ". $values['stock'] ."<br>";
+            if ($values['price'] != NULL) {
+               $sql = "UPDATE product SET product_prijs = ".$values['price']." WHERE id_product = $productId";
+               $result = $pdo->query($sql);
+            }
+            if ($values['stock'] != NULL) {
+               $sql = "UPDATE stock SET stock = ".$values['stock']." WHERE id_stock = $productId";
+               $result = $pdo->query($sql);
+            }
          }
-         echo $_REQUEST["product $num price"]
-         */
+         unset($_POST['product']);
+         $pdo = null;
       } // Als de laatste pagina niet /login_page.php is :
       else {
          // From https://stackoverflow.com/questions/768431/how-do-i-make-a-redirect-in-php?page=1&tab=scoredesc#tab-top

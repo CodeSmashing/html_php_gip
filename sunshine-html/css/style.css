@@ -733,7 +733,7 @@ div.stock div.row.sum {
 div.stock div.row.sum div.gallery_img, div.stock div.row.sum input, div.stock div.row.sum img.vink {
      display: table-cell;
 }
-div.stock div.row.sum img.vink {
+div.stock div.row.sum img.vink, div.stock div.row.sum button[type="submit"] {
      width: 25px;
      height: 25px;
 }
@@ -758,6 +758,57 @@ div.stock form[id="form stock"] div.row.sum span.list[id="name"] {
 div.stock form[id="form stock"] div.row.sum span.list[id="num"] {
      width: 190px;
      padding-left: 10px;
+}
+
+@media only screen and (max-width: 1154px) {
+     div.stock div.gallery_img, div.stock div.gallery_img figure, div.stock div.gallery_img figure img {
+          all: revert;
+          display: none;
+     }
+     div.stock form[id="form stock"] div.row.sum span.list[id="id"] {
+          width: 25%;
+     }
+     div.stock form[id="form stock"] div.row.sum span.list[id="name"] {
+          width: 50%;
+     }
+     div.stock form[id="form stock"] div.row.sum span.list[id="num"] {
+          width: 50%;
+     }
+     div.stock div.row.sum input {
+          width: 50%;
+     }
+     div.stock div.row.sum button[type="submit"] {
+          position: relative;
+          left: 50%;
+          margin-bottom: 20px;
+     }
+}
+
+@media only screen and (max-width: 500px) {
+     div.stock div.gallery_img, div.stock div.gallery_img figure, div.stock div.gallery_img figure img {
+          all: revert;
+          display: none;
+     }
+     div.stock div.row.sum {
+          display: inline-block;
+     }
+     div.stock form[id="form stock"] div.row.sum span.list[id="id"] {
+          width: 50%;
+     }
+     div.stock form[id="form stock"] div.row.sum span.list[id="name"] {
+          width: 100%;
+     }
+     div.stock form[id="form stock"] div.row.sum span.list[id="num"] {
+          width: 100%;
+     }
+     div.stock div.row.sum input {
+          width: 50%;
+     }
+     div.stock div.row.sum button[type="submit"] {
+          position: relative;
+          left: 50%;
+          margin-bottom: 20px;
+     }
 }
 /** eind stockbeheer **/
 /** footer **/
