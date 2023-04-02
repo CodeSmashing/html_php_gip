@@ -22,7 +22,7 @@ if (isset($_POST["logout"])) {
       <meta name="description" content="">
       <meta name="author" content="">
       <!-- bootstrap css -->
-      <link rel="stylesheet" href="css/bootstrap.min.css">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
       <!-- style css -->
       <link rel="stylesheet" href="css/style.css">
       <!-- Responsive-->
@@ -36,14 +36,41 @@ if (isset($_POST["logout"])) {
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" media="screen">
       <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+      <![endif]-->
+
+      <?php
+      $db_host = 'localhost';
+      $db_user = 'root';
+      $db_pass = '';
+      $db_name = 'gip';
+
+      require_once('config.php');
+
+      try {
+         // create a PDO object and set connection parameters
+         $dsn = "mysql:host=$db_host;dbname=$db_name;charset=utf8mb4";
+         $options = array(
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_EMULATE_PREPARES => false,
+         );
+         $pdo = new PDO($dsn, $db_user, $db_pass, $options);
+      } catch(PDOException $e) {
+         // handle any errors that may occur during connection
+         echo "Connection failed: " . $e->getMessage();
+         exit();
+      }
+      $pID = 1;
+      ?>
    </head>
    <!-- body -->
    <body class="main-layout">
       <!-- loader  -->
+      <!--
       <div class="loader_bg">
          <div class="loader"><img src="images/loading.gif" alt="#"/></div>
       </div>
+      -->
       <!-- end loader -->
       <!-- header -->
       <header class="full_bg">
@@ -157,47 +184,55 @@ if (isset($_POST["logout"])) {
                   </div>
                </div>
             </div>
-            <div class="row">
-               <div class="col-lg-3 col-md-6 col-sm-6">
-                  <div id="ho_bo" class="our_products">
-                     <div class="product">
-                        <figure><img src="images/pro1.png" alt="#"/></figure>
+            <?php
+            $sql = "SELECT * FROM product p, stock s WHERE p.id_stock = s.id_stock";
+            $result = $pdo->query($sql);
+            $products = $result->fetchAll(PDO::FETCH_ASSOC)
+            ?>
+            <div id="productCarousel" class="carousel slide" data-ride="carousel">
+               <!-- Indicators -->
+               <ol class="carousel-indicators">
+                  <?php
+                  $num_slides = ceil(count($products) / 4);
+                  for ($i = 0; $i < $num_slides; $i++) { ?>
+                     <li data-target="#productCarousel" data-slide-to="<?php echo $i; ?>" <?php if ($i == 0) { ?>class="active"<?php } ?>></li>
+                  <?php } ?>
+               </ol>
+
+               <!-- Wrapper for slides -->
+               <div class="carousel-inner">
+                  <?php for ($i = 0; $i < $num_slides; $i++) { ?>
+                     <div class="carousel-item <?php if ($i == 0) { ?>active<?php } ?>">
+                        <div class="row">
+                           <?php for ($j = $i * 4; $j < ($i + 1) * 4 && $j < count($products); $j++) { ?>
+                              <div class="col-lg-3 col-md-6 col-sm-6">
+                                 <div class="our_products">
+                                    <div class="product">
+                                       <figure><img src="images/pro<?php echo $products[$j]['product_naam']; ?>.png" alt="#"></figure>
+                                    </div>
+                                    <h3><?php echo ucfirst($products[$j]['product_naam']); ?></h3>
+                                    <span>Product info</span><br/>
+                                    <p>Prijs per: € <?php echo $products[$j]['product_prijs']; ?></p>
+                                    <p>In stock: <?php echo $products[$j]['stock']; ?></p>
+                                    <a href="product.php" class="btn btn-primary">Koop nu</a>
+                                 </div>
+                              </div>
+                           <?php } ?>
+                        </div>
                      </div>
-                     <h3>Mangoes For Juice</h3>
-                     <span>Nam libero tempore</span>
-                     <p>Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non </p>
-                  </div>
+                  <?php }
+                  $pdo = null; ?>
                </div>
-               <div class="col-lg-3 col-md-6 col-sm-6">
-                  <div id="ho_bo" class="our_products">
-                     <div class="product">
-                        <figure><img src="images/pro2.png" alt="#"/></figure>
-                     </div>
-                     <h3>Apple For Juice</h3>
-                     <span>Nam libero tempore</span>
-                     <p>Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non </p>
-                  </div>
-               </div>
-               <div class="col-lg-3 col-md-6 col-sm-6">
-                  <div id="ho_bo" class="our_products">
-                     <div class="product">
-                        <figure><img src="images/pro3.png" alt="#"/></figure>
-                     </div>
-                     <h3>Orange For Juice</h3>
-                     <span>Nam libero tempore</span>
-                     <p>Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non </p>
-                  </div>
-               </div>
-               <div class="col-lg-3 col-md-6 col-sm-6">
-                  <div id="ho_bo" class="our_products">
-                     <div class="product">
-                        <figure><img src="images/pro4.png" alt="#"/></figure>
-                     </div>
-                     <h3>Pineapple For Juice</h3>
-                     <span>Nam libero tempore</span>
-                     <p>Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non </p>
-                  </div>
-               </div>
+               
+               <!-- Controls -->
+               <a class="carousel-control-prev" href="#productCarousel" role="button" data-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="sr-only">Previous</span>
+               </a>
+               <a class="carousel-control-next" href="#productCarousel" role="button" data-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="sr-only">Next</span>
+               </a>
             </div>
          </div>
       </div>
@@ -372,8 +407,8 @@ if (isset($_POST["logout"])) {
       <!-- end footer -->
       <!-- Javascript files-->
       <script src="js/jquery.min.js"></script>
-      <script src="js/bootstrap.bundle.min.js"></script>
-      <script src="js/jquery-3.0.0.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
       <!-- sidebar -->
       <script src="js/jquery.mCustomScrollbar.concat.min.js"></script>
       <script src="js/custom.js"></script>

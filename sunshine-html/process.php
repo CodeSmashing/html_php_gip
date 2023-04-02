@@ -17,7 +17,7 @@ session_start();
       <meta name="description" content="">
       <meta name="author" content="">
       <!-- bootstrap css -->
-      <link rel="stylesheet" href="css/bootstrap.min.css">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
       <!-- style css -->
       <link rel="stylesheet" href="css/style.css">
       <!-- Responsive-->
@@ -31,8 +31,15 @@ session_start();
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" media="screen">
       <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+      <![endif]-->
+
       <?php
+      $db_host = 'localhost';
+      $db_user = 'root';
+      $db_pass = '';
+      $db_name = 'gip';
+
       require_once('config.php');
 
       try {
@@ -191,9 +198,9 @@ session_start();
                   header("Refresh: 4; url=".$_SESSION['lastpage']."", true, 0);
                   exit();
                }
-               // Statement sluiten
-               $stmt->closeCursor();
             }
+            // Statement sluiten
+            $stmt->closeCursor();
 
             // Zien als het paswoord leeg is of niet
             if (empty($_SESSION["pwd"])) {
@@ -267,9 +274,9 @@ session_start();
                    header("Refresh: 4; url=login_page.php", true, 0);
                    exit();
                }
-               // Statement sluiten
-               $stmt->closeCursor();
             }
+            // Statement sluiten
+            $stmt->closeCursor();
 
             // De $_REQUEST["pass"] vergelijken we nu met onze hash
             if (password_verify($_REQUEST["pass"], $hash["gebruiker_pass"]) == true) {
@@ -325,9 +332,10 @@ session_start();
                   header("Refresh: 4; url=".$_SESSION['lastpage']."", true, 0);
                   exit();
                }
-               // Statement sluiten
-               $stmt->closeCursor();
             }
+            // Statement sluiten
+            $stmt->closeCursor();
+
             // Connectie beëindigen
             $pdo = null;
          }
@@ -473,13 +481,14 @@ session_start();
             </div>
          </div>
       </footer>
-        <!-- Javascript files-->
-        <script src="js/jquery.min.js"></script>
-        <script src="js/bootstrap.bundle.min.js"></script>
-        <script src="js/jquery-3.0.0.min.js"></script>
-        <!-- sidebar -->
-        <script src="js/jquery.mCustomScrollbar.concat.min.js"></script>
-        <script src="js/custom.js"></script>
+      <!-- end footer -->
+      <!-- Javascript files-->
+      <script src="js/jquery.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+      <!-- sidebar -->
+      <script src="js/jquery.mCustomScrollbar.concat.min.js"></script>
+      <script src="js/custom.js"></script>
     </body>
 </html>
 <?php ob_end_flush(); ?>

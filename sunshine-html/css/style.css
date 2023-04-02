@@ -32,7 +32,8 @@
      box-sizing: border-box !important;
 }
 .container {
-     max-width: 1170px;
+     width: 100%;
+     max-width: 1920px;
 }
 html {
      scroll-behavior: smooth;
@@ -358,6 +359,20 @@ button {
      border-radius: 30px;
 }
 
+/** index section **/
+
+div.products div.container div#productCarousel.carousel.slide a.carousel-control-prev {
+     left: -120px;
+     width: 10%;
+     background-color: #e9e7e7;;
+}
+div.products div.container div#productCarousel.carousel.slide a.carousel-control-next {
+     right: -120px;
+     width: 10%;
+     background-color: #e9e7e7;;
+}
+
+/** end index section **/
 /** about section **/
 
 .about {
@@ -438,56 +453,100 @@ button {
 /** end using section **/
 /** our products section **/
 
-.products {
-     padding: 60px 0 30px 0;
+div.products {
+     padding: 60px 0px 30px 0px;
      margin-bottom: 90px;
      background-color: #f4f4f4;
 }
-.products .titlepage {
-     text-align: left;
+div.products div.container div.row div.col-md-12 div.titlepage span{
+     text-align: center;
 }
-.our_products {
-     padding: 0 15px 15px 15px;
+div.products div.container div.sub_form div.wrapper fieldset.test {
+     max-width: 1020px;
+     max-height: 500px;
+}
+div.products div.container div.sub_form div.wrapper fieldset.orderField {
+     max-width: 1420px;
+     max-height: 1000px;
+}
+div.products div.container div.sub_form div.wrapper fieldset.orderField div.row div.col-lg-3.col-md-6.col-sm-6 div[id="ho_bo"].our_products {
+     padding: 0px 15px 15px 15px;
      transition: ease-in all 0.3s;
+     height: 100%;
      margin-bottom: 30px;
 }
-#ho_bo:hover.our_products {
+div.products div.container div.sub_form div.wrapper fieldset.orderField div.row div.col-lg-3.col-md-6.col-sm-6 div#ho_bo:hover.our_products {
      box-shadow: 0px 0px 9px rgba(255, 53, 86, 0.33);
      transition: ease-in all 0.3s;
-     margin-top: -10px;
-     cursor: pointer;
+     margin-top: -5px;
      background-color: #fff;
 }
-.our_products h3 {
+div.products div.container div.sub_form div.wrapper fieldset.orderField div.row div.col-lg-3.col-md-6.col-sm-6 div#ho_bo.our_products h3 {
+     overflow-wrap: break-word;
      margin-top: 15px;
      font-size: 22px;
      line-height: 31px;
      color: #000;
      font-weight: 500;
      padding-bottom: 10px;
+     position: relative;
+     bottom: -5%;
 }
-.our_products span {
+div.products div.container div.sub_form div.wrapper fieldset.orderField div.row div.col-lg-3.col-md-6.col-sm-6 div#ho_bo.our_products span {
      font-size: 17px;
      line-height: 20px;
      font-weight: 500;
      color: #ff3556;
+     position: relative;
+     bottom: -5%;
 }
-.our_products p {
+div.products div.container div.sub_form div.wrapper fieldset.orderField div.row div.col-lg-3.col-md-6.col-sm-6 div#ho_bo.our_products p {
      font-size: 15px;
      line-height: 21px;
      font-weight: 400;
      color: #000000;
+     position: relative;
+     bottom: -5%;
 }
-.product {
+div.products div.container div.sub_form div.wrapper fieldset.orderField div.row div.col-lg-3.col-md-6.col-sm-6 div#ho_bo.our_products div.product {
      background-color: #fff;
      text-align: center;
      margin: 0 -15px 0px -15px !important;
+     width: fit-content;
+     height: fit-content;
 }
-.product figure {
+div.products div.container div.sub_form div.wrapper fieldset.orderField div.row div.col-lg-3.col-md-6.col-sm-6 div#ho_bo.our_products div.product figure {
      margin: 0;
+}
+div.products div.container div.sub_form div.wrapper fieldset.orderField div.row div.col-lg-3.col-md-6.col-sm-6 div#ho_bo.our_products form[method="post"]
+button.send_btn {
+     font-size: 13px;
+     transition: ease-in all 0.5s;
+     background-color: #000000;
+     text-transform: uppercase;
+     color: #fff;
+     padding: 8px 0px;
+     max-width: 144px;
+     width: 100%;
+     margin-top: 25px !important;
+     font-weight: 500;
+}
+div.products div.container div.sub_form div.wrapper fieldset.orderField div.row div.col-lg-3.col-md-6.col-sm-6 div#ho_bo.our_products form[method="post"] button.send_btn:hover {
+     background-color: #ff3556;
+     transition: ease-in all 0.2s;
 }
 .padding_left0 {
      padding-left: 0;
+}
+div.products div.container div.sub_form div.wrapper fieldset.orderField div#productCarousel.carousel.slide a.carousel-control-prev {
+     left: -90px;
+     width: 10%;
+     background-color: #e9e7e7;;
+}
+div.products div.container div.sub_form div.wrapper fieldset.orderField div#productCarousel.carousel.slide a.carousel-control-next {
+     right: -90px;
+     width: 10%;
+     background-color: #e9e7e7;;
 }
 
 /** end our products section **/
@@ -591,10 +650,19 @@ button {
 
 /** end contact section **/
 /** bestel sectie **/
+
 .sub_form {
      width: 100%;
      max-width: 2000px;
-     background-color: hsla(455,75%,20%,0.05);
+     /* background-color: #f0f0f0; */
+     /* background-color: hsla(455,75%,20%,0.05); */
+     margin: auto;
+     padding: 60px;
+     display: table;
+}
+div.products div.container div.sub_form {
+     width: 100%;
+     max-width: 2000px;
      margin: auto;
      padding: 60px;
      display: table;
@@ -610,7 +678,7 @@ div.sub_form div.wrapper fieldset.test {
      width: 33%;
 }
 div.sub_form div.wrapper fieldset.test legend {
-     border-radius: 20%;
+     border-radius: 5px;
      width: 100%;
      max-width: 85%;
      padding: 20px;
@@ -636,6 +704,7 @@ div.sub_form div.wrapper fieldset.orderField {
      padding: 15px 50px;
 }
 */
+/*
 .sub_form .orderUs {
      border: #fff solid 1px;
      padding: 0px 20px;
@@ -662,6 +731,8 @@ div.sub_form div.wrapper fieldset.orderField {
 }
 .sub_form .send_btn {
      font-size: 13px;
+     position: relative;
+     bottom: -100%;
      transition: ease-in all 0.5s;
      background-color: #000000;
      text-transform: uppercase;
@@ -678,6 +749,7 @@ div.sub_form div.wrapper fieldset.orderField {
      transition: ease-in all 0.2s;
      color: #fff;
 }
+*/
 #request *::placeholder {
      color: #636363;;
      opacity: 1;
@@ -695,11 +767,9 @@ div.stock {
      margin-top: 90px;
      background-color: #f4f4f4;
 }
-/*
 div.stock div.container {
-     max-width: 2000px;
+     max-width: 1300px;
 }
-*/
 div.stock div.titlepage {
      text-align: center;
 }
@@ -759,6 +829,9 @@ div.stock form[id="form stock"] div.row.sum span.list[id="num"] {
      width: 190px;
      padding-left: 10px;
 }
+div.stock form[id="form stock"] div.row.sum span.list[id="id"] {
+     width: 130px;
+}
 
 @media only screen and (max-width: 1154px) {
      div.stock div.gallery_img, div.stock div.gallery_img figure, div.stock div.gallery_img figure img {
@@ -810,6 +883,7 @@ div.stock form[id="form stock"] div.row.sum span.list[id="num"] {
           margin-bottom: 20px;
      }
 }
+
 /** eind stockbeheer **/
 /** footer **/
 
@@ -988,10 +1062,10 @@ li.nav-item button.nav-link {
      background-color: transparent;
 }
 .containerInlog {
-     width: auto;
+     width: 100%;
      padding: 32px 16px 32px 16px;
-     margin: 0px 32px 0px 32px;
-     background-color: rgb(219, 219, 219);
+     /* background-color: rgb(219, 219, 219); */
+     background-color: #f4f4f4;
      box-sizing: border-box;
      text-align: center;
 }

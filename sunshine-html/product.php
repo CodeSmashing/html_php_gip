@@ -23,7 +23,7 @@ if (isset($_POST["logout"])) {
       <meta name="description" content="">
       <meta name="author" content="">
       <!-- bootstrap css -->
-      <link rel="stylesheet" href="css/bootstrap.min.css">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
       <!-- style css -->
       <link rel="stylesheet" href="css/style.css">
       <!-- Responsive-->
@@ -37,8 +37,15 @@ if (isset($_POST["logout"])) {
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" media="screen">
       <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+      <![endif]-->
+      
       <?php
+      $db_host = 'localhost';
+      $db_user = 'root';
+      $db_pass = '';
+      $db_name = 'gip';
+
       require_once('config.php');
 
       try {
@@ -145,7 +152,7 @@ if (isset($_POST["logout"])) {
       <div class="products">
          <div class="container">
             <div class="row">
-               <div class="col-md-7">
+               <div class="col-md-12">
                   <div class="titlepage">
                      <span>
                         Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptu
@@ -153,43 +160,10 @@ if (isset($_POST["logout"])) {
                   </div>
                </div>
             </div>
-            <?php
-            $sql = "SELECT id_product, product_naam, product_prijs, stock FROM product p, stock s WHERE p.id_stock = s.id_stock";
-            $result = $pdo->query($sql);
-            $arr = array();
-
-            while($row = $result->fetchAll(PDO::FETCH_ASSOC)) {
-               $arr[] = $row;
-            }
-            
-            // https://stackoverflow.com/questions/4729322/selecting-mysql-table-data-into-an-array
-            // used solution: https://www.geeksforgeeks.org/how-to-search-by-keyvalue-in-a-multidimensional-array-in-php/?ref=rp
-            
-            // Function to recursively search for a
-            // given key=>value 
-            function search($array, $key, $value) {
-               $results = array();
-                  
-               // if it is array
-               if (is_array($array)) {
-                     
-                  // if array has required key and value
-                  // matched store result 
-                  if (isset($array[$key]) && $array[$key] == $value) {
-                        $results[] = $array;
-                  }
-                     
-                  // Iterate for each element in array
-                  foreach ($array as $subarray) {
-                        
-                        // recur through each element and append result 
-                        $results = array_merge($results, 
-                              search($subarray, $key, $value));
-                  }
-               }
-               return $results;
-            }
-            ?>
+         </div>
+      </div>
+      <div class="products">
+         <div class="container">
             <div class="sub_form">
                <div class="wrapper">
                   <fieldset class="test">
@@ -228,7 +202,7 @@ if (isset($_POST["logout"])) {
                            }
                         }
                      } else {
-                        echo "de session is leeg";
+                        echo "Uw winkelmandje is leeg";
                      }
                      echo "<br>";
 
@@ -242,36 +216,67 @@ if (isset($_POST["logout"])) {
                      ?>
                   </fieldset>
                   <fieldset class="orderField">
-                     <div class="row">
                      <?php
-                     $sql = "SELECT id_product, product_naam, product_prijs, stock FROM product p, stock s WHERE p.id_stock = s.id_stock";
+                     $sql = "SELECT * FROM product p, stock s WHERE p.id_stock = s.id_stock";
                      $result = $pdo->query($sql);
-                     while($row = $result->fetch(PDO::FETCH_ASSOC)) {
-                        ?>
-                        <div class="col-lg-3 col-md-6 col-sm-6">
-                           <div id="ho_bo" class="our_products">
-                              <div class="product">
-                              <figure><img src="images/pro<?php echo $row["product_naam"]; ?>.png" alt="#"/></figure>
-                              </div>
-                              <?php
-                              $res = search($arr, 'id_product', $pID);
-                              
-                              foreach ($res as $var) {
-                                 echo "<h3>".ucfirst($var["product_naam"])."</h3/>"
-                                    . "<span>Product info</span><br />"
-                                    . "<p>Prijs per: €".$var["product_prijs"]."</p/>"
-                                    . "<p>In stock: ".$var["stock"]."</p>";
-                                 $pID++;
-                              }
-                              ?>
-                              <form method="post">
-                                 <button class="send_btn" name="optieProduct" value="<?php echo $var["product_naam"] . " " . $var["id_product"]; ?>" formtarget="_self">Toevoegen</button>
-                              </form>
-                           </div>
-                        </div>
-                     <?php }
-                     $pdo = null;
+                     $products = $result->fetchAll(PDO::FETCH_ASSOC);
                      ?>
+                     <div id="productCarousel" class="carousel slide" data-ride="carousel">
+                        <!-- Indicators -->
+                        <ol class="carousel-indicators">
+                           <?php
+                           $num_slides = ceil(count($products) / (ceil(count($products)) / 2));
+                           for ($i = 0; $i < $num_slides; $i++) { 
+                           ?>
+                           <li data-target="#productCarousel" data-slide-to="<?php echo $i; ?>" <?php if ($i == 0) { ?>class="active"<?php } ?>></li>
+                           <?php } ?>
+                        </ol>
+
+                        <!-- Wrapper for slides -->
+                        <div class="carousel-inner">
+                           <?php 
+                           $last_index = -1;
+                           for ($i = 0; $i < $num_slides; $i++) {
+                           ?>
+                           <div class="carousel-item <?php if ($i == 0) { ?>active<?php } ?>">
+                              <div class="row">
+                                 <?php 
+                                 for ($j = $i * 4; $j < ($i + 1) * 8 && $j < count($products); $j++) { 
+                                    if ($j <= $last_index) {
+                                       continue;
+                                    } ?>
+                                    <div class="col-lg-3 col-md-6 col-sm-6">
+                                       <div id="ho_bo" class="our_products">
+                                          <div class="our_products">
+                                             <div class="product">
+                                                <figure><img src="images/pro<?php echo $products[$j]['product_naam']; ?>.png" alt="#"></figure>
+                                             </div>
+                                             <h3><?php echo ucfirst($products[$j]['product_naam']); ?></h3>
+                                             <span>Product info</span><br/>
+                                             <p>Prijs per: € <?php echo $products[$j]['product_prijs']; ?></p>
+                                             <p>In stock: <?php echo $products[$j]['stock']; ?></p>
+                                             <form method="post">
+                                                <button class="send_btn" name="optieProduct" value="<?php echo $products[$j]["product_naam"] . " " . $products[$j]["id_product"]; ?>" formtarget="_self">Toevoegen</button>
+                                             </form>
+                                          </div>
+                                       </div>
+                                    </div>
+                                 <?php 
+                                 $last_index = $j; } ?>
+                              </div>
+                           </div>
+                           <?php }
+                           $pdo = null; ?>
+                        </div>
+                        <!-- Controls -->
+                        <a class="carousel-control-prev" href="#productCarousel" role="button" data-slide="prev">
+                           <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                           <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" href="#productCarousel" role="button" data-slide="next">
+                           <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                           <span class="sr-only">Next</span>
+                        </a>
                      </div>
                   </fieldset>
                   <div id="breaker"></div>
@@ -341,8 +346,8 @@ if (isset($_POST["logout"])) {
       <!-- end footer -->
       <!-- Javascript files-->
       <script src="js/jquery.min.js"></script>
-      <script src="js/bootstrap.bundle.min.js"></script>
-      <script src="js/jquery-3.0.0.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
       <!-- sidebar -->
       <script src="js/jquery.mCustomScrollbar.concat.min.js"></script>
       <script src="js/custom.js"></script>
