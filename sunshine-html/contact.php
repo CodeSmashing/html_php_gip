@@ -75,10 +75,10 @@ if (isset($_POST["logout"])) {
                                  <a class="nav-link" href="about.php">Over Ons</a>
                               </li>
                               <li class="nav-item">
-                                 <a class="nav-link" href="product.php">Producten</a>
+                                 <a class="nav-link" href="order.php">Bestel</a>
                               </li>
                               <li class="nav-item">
-                                 <a class="nav-link" href="gallery.php">Galerij</a>
+                                 <a class="nav-link" href="products.php">Producten</a>
                               </li>
                               <?php if (!empty($_SESSION["beheerderLoggedIn"])) { ?>
                                  <li class="nav-item">
@@ -135,17 +135,17 @@ if (isset($_POST["logout"])) {
                <div class="col-md-6 padding_left0">
                   <form action="verwerken.php" method="post" id="request" class="main_form">
                      <div class="row">
-                        <div class="col-md-12 ">
-                           <input class="contactus" placeholder="Name" type="type" name="Name"> 
+                        <div class="col-md-12">
+                           <input class="contactus" placeholder="Name" name="Name"> 
                         </div>
                         <div class="col-md-12">
-                           <input class="contactus" placeholder="Phone" type="type" name="Phone"> 
+                           <input class="contactus" placeholder="Phone" name="Phone"> 
                         </div>
                         <div class="col-md-12">
-                           <input class="contactus" placeholder="Email" type="type" name="Email">                          
+                           <input class="contactus" placeholder="Email" name="Email">                          
                         </div>
                         <div class="col-md-12">
-                           <textarea class="textarea" placeholder="Message" type="type" name="Message"></textarea>
+                           <textarea class="textarea" placeholder="Message" name="Message"></textarea>
                         </div>
                         <div class="col-md-12">
                            <button class="send_btn">Send</button>
@@ -181,10 +181,8 @@ if (isset($_POST["logout"])) {
                      <ul class="link_menu">
                         <li><a href="#">Thuis Pagina</a></li>
                         <li><a href="about.php">Over Ons</a></li>
-                        <li><a href="product.php">Onze Producten</a></li>
-                        <li><a href="gallery.php">Galerij</a></li>
-                        <li><a href="order.php">Bestelformulier</a></li>
-                        <li><a href="stock.php">Stock</a></li>
+                        <li><a href="order.php">Bestel</a></li>
+                        <li><a href="products.php">Producten</a></li>
                         <li><a href="contact.php">Contacteer Ons</a></li>
                      </ul>
                   </div>

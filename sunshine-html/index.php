@@ -101,10 +101,10 @@ if (isset($_POST["logout"])) {
                                  <a class="nav-link" href="about.php">Over Ons</a>
                               </li>
                               <li class="nav-item">
-                                 <a class="nav-link" href="product.php">Producten</a>
+                                 <a class="nav-link" href="order.php">Bestel</a>
                               </li>
                               <li class="nav-item">
-                                 <a class="nav-link" href="gallery.php">Galerij</a>
+                                 <a class="nav-link" href="products.php">Producten</a>
                               </li>
                               <?php if (!empty($_SESSION["beheerderLoggedIn"])) { ?>
                                  <li class="nav-item">
@@ -172,10 +172,10 @@ if (isset($_POST["logout"])) {
       </div>
       <!-- end about -->
       <!-- our products -->
-      <div class="products">
+      <div class="index">
          <div class="container">
             <div class="row">
-               <div class="col-md-7">
+               <div class="col-md-6 offset-md-3">
                   <div class="titlepage">
                      <h2>Onze Producten</h2>
                      <span>
@@ -205,17 +205,17 @@ if (isset($_POST["logout"])) {
                      <div class="carousel-item <?php if ($i == 0) { ?>active<?php } ?>">
                         <div class="row">
                            <?php for ($j = $i * 4; $j < ($i + 1) * 4 && $j < count($products); $j++) { ?>
-                              <div class="col-lg-3 col-md-6 col-sm-6">
-                                 <div class="our_products">
-                                    <div class="product">
-                                       <figure><img src="images/pro<?php echo $products[$j]['product_naam']; ?>.png" alt="#"></figure>
-                                    </div>
-                                    <h3><?php echo ucfirst($products[$j]['product_naam']); ?></h3>
-                                    <span>Product info</span><br/>
-                                    <p>Prijs per: € <?php echo $products[$j]['product_prijs']; ?></p>
-                                    <p>In stock: <?php echo $products[$j]['stock']; ?></p>
-                                    <a href="product.php" class="btn btn-primary">Koop nu</a>
+                              <div class="our_products">
+                                 <div class="product">
+                                    <figure><img src="images/pro<?php echo $products[$j]['product_naam']; ?>.png" alt="#"></figure>
                                  </div>
+                                 <h3><?php echo ucfirst($products[$j]['product_naam']); ?></h3>
+                                 <span>Product info</span><br/>
+                                 <p>Prijs per: € <?php echo $products[$j]['product_prijs']; ?></p>
+                                 <p>In stock: <?php echo $products[$j]['stock']; ?></p>
+                                 <form action="product.php" method="post">
+                                    <button class="send_btn">Koop nu</button>
+                                 </form>
                               </div>
                            <?php } ?>
                         </div>
@@ -370,9 +370,8 @@ if (isset($_POST["logout"])) {
                      <ul class="link_menu">
                         <li><a href="#">Thuis Pagina</a></li>
                         <li><a href="about.php">Over Ons</a></li>
-                        <li><a href="product.php">Onze Producten</a></li>
-                        <li><a href="gallery.php">Galerij</a></li>
-                        <li><a href="order.php">Bestelformulier</a></li>
+                        <li><a href="order.php">Bestel</a></li>
+                        <li><a href="products.php">Producten</a></li>
                         <li><a href="stock.php">Stock</a></li>
                         <li><a href="contact.php">Contacteer Ons</a></li>
                      </ul>

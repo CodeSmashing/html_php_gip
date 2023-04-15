@@ -76,10 +76,10 @@ if (isset($_POST["logout"])) {
                               <a class="nav-link" href="about.php">Over Ons</a>
                            </li>
                            <li class="nav-item">
-                              <a class="nav-link" href="product.php">Producten</a>
+                              <a class="nav-link" href="order.php">Bestel</a>
                            </li>
                            <li class="nav-item">
-                              <a class="nav-link" href="gallery.php">Galerij</a>
+                              <a class="nav-link" href="products.php">Producten</a>
                            </li>
                            <?php if (!empty($_SESSION["beheerderLoggedIn"])) { ?>
                               <li class="nav-item">
@@ -124,8 +124,8 @@ if (isset($_POST["logout"])) {
       </div>
    </div>
    <!-- end banner -->
-   <!-- about -->
-   <div id="about" class="about">
+   <!-- login -->
+   <div class="login">
       <div class="row">
          <div class="col-md-6 offset-md-3">
             <div class="titlepage">
@@ -137,8 +137,6 @@ if (isset($_POST["logout"])) {
             </div>
          </div>
       </div>
-   </div>
-   <div class="containerInlog">
       <?php
       $optieInlog = isset($_POST["optieInlog"]) ? htmlspecialchars($_POST["optieInlog"]) : "2";
       $formAction = ($optieInlog == "2") ? "Registreren" : (($optieInlog == "3") ? "Login als beheerder" : "Inloggen");
@@ -156,26 +154,26 @@ if (isset($_POST["logout"])) {
             required><br><br>
          </div>
 
-         <button class="sub_btnInlog" name="registreren" type="submit" value="<?php echo htmlspecialchars($buttonValue); ?>">
+         <button class="sub_btn" name="registreren" type="submit" value="<?php echo htmlspecialchars($buttonValue); ?>">
             <?php echo htmlspecialchars($formAction); ?>
          </button>
          <br>
       </form>
 
       <form method="post">
-         <button class="sub_btnInlog" name="optieInlog" type="submit" value="<?php echo htmlspecialchars(($optieInlog == "2") ? "1" : "2"); ?>">
+         <button class="sub_btn" name="optieInlog" type="submit" value="<?php echo htmlspecialchars(($optieInlog == "2") ? "1" : "2"); ?>">
             <?php echo htmlspecialchars(($optieInlog == "2") ? "Inloggen" : "Registreren"); ?>
          </button><br>
 
          <?php if ($optieInlog != "3") { ?>
-            <button class="sub_btnInlog" name="optieInlog" type="submit" value="3">
+            <button class="sub_btn" name="optieInlog" type="submit" value="3">
                Beheerder Inlog
             </button>
          <?php } ?>
       </form>
       <hr>
    </div>
-   <!-- end about -->
+   <!-- end login -->
    <!--  footer -->
    <footer>
       <div class="footer">
@@ -200,10 +198,8 @@ if (isset($_POST["logout"])) {
                   <ul class="link_menu">
                      <li><a href="#">Thuis Pagina</a></li>
                      <li><a href="about.php">Over Ons</a></li>
-                     <li><a href="product.php">Onze Producten</a></li>
-                     <li><a href="gallery.php">Galerij</a></li>
-                     <li><a href="order.php">Bestelformulier</a></li>
-                     <li><a href="stock.php">Stock</a></li>
+                     <li><a href="order.php">Bestel</a></li>
+                     <li><a href="products.php">Producten</a></li>
                      <li><a href="contact.php">Contacteer Ons</a></li>
                   </ul>
                </div>

@@ -93,17 +93,17 @@ if (isset($_POST["logout"])) {
                         </button>
                         <div class="collapse navbar-collapse" id="navbarsExample04">
                            <ul class="navbar-nav mr-auto">
-                              <li class="nav-item ">
+                              <li class="nav-item">
                                  <a class="nav-link" href="index.php">Thuis</a>
                               </li>
                               <li class="nav-item">
                                  <a class="nav-link" href="about.php">Over Ons</a>
                               </li>
                               <li class="nav-item">
-                                 <a class="nav-link" href="product.php">Producten</a>
+                                 <a class="nav-link" href="order.php">Bestel</a>
                               </li>
                               <li class="nav-item">
-                                 <a class="nav-link" href="gallery.php">Galerij</a>
+                                 <a class="nav-link" href="products.php">Producten</a>
                               </li>
                               <?php if (!empty($_SESSION["beheerderLoggedIn"])) { ?>
                                  <li class="nav-item active">
@@ -168,7 +168,7 @@ if (isset($_POST["logout"])) {
                      </div>
                      <span class="list" id="id">Product Id <?php echo $row["id_product"]; ?></span>
                      <span class="list" id="id">Stock Id: <?php echo $row["id_stock"]; ?></span>
-                     <span class="list" id="name">Naam: <?php echo $row["product_naam"]; ?> </span>
+                     <span class="list" id="name">Naam: <?php echo $row["product_naam"]; ?></span>
                      <span class="list" id="num">Huidige Prijs: <?php echo $row["product_prijs"]; ?></span>
                      <span class="list" id="num">Huidige Stock: <?php echo $row["stock"]; ?></span>
                      <input type="text" name="product[<?php echo $row['id_product']; ?>][price]" placeholder="Input Prijs"></input>
@@ -205,10 +205,8 @@ if (isset($_POST["logout"])) {
                      <ul class="link_menu">
                         <li><a href="#">Thuis Pagina</a></li>
                         <li><a href="about.php">Over Ons</a></li>
-                        <li><a href="product.php">Ons Product</a></li>
-                        <li><a href="gallery.php">Galerij</a></li>
-                        <li><a href="order.php">Bestelformulier</a></li>
-                        <li><a href="stock.php">Stock</a></li>
+                        <li><a href="order.php">Bestel</a></li>
+                        <li><a href="products.php">Producten</a></li>
                         <li><a href="contact.php">Contacteer Ons</a></li>
                      </ul>
                   </div>

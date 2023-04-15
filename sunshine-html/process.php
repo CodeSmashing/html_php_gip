@@ -95,10 +95,10 @@ session_start();
                                  <a class="nav-link" href="about.php">Over Ons</a>
                               </li>
                               <li class="nav-item">
-                                 <a class="nav-link" href="product.php">Producten</a>
+                                 <a class="nav-link" href="order.php">Bestel</a>
                               </li>
                               <li class="nav-item">
-                                 <a class="nav-link" href="gallery.php">Galerij</a>
+                                 <a class="nav-link" href="products.php">Producten</a>
                               </li>
                               <li class="nav-item">
                                  <a class="nav-link" href="stock.php">Stock</a>
@@ -447,10 +447,8 @@ session_start();
                      <ul class="link_menu">
                         <li><a href="#">Thuis Pagina</a></li>
                         <li><a href="about.php">Over Ons</a></li>
-                        <li><a href="product.php">Onze Producten</a></li>
-                        <li><a href="gallery.php">Galerij</a></li>
-                        <li><a href="order.php">Bestelformulier</a></li>
-                        <li><a href="stock.php">Stock</a></li>
+                        <li><a href="order.php">Bestel</a></li>
+                        <li><a href="products.php">Products</a></li>
                         <li><a href="contact.php">Contacteer Ons</a></li>
                      </ul>
                   </div>

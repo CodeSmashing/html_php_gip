@@ -75,10 +75,10 @@ if (isset($_POST["logout"])) {
                                  <a class="nav-link" href="about.php">Over Ons</a>
                               </li>
                               <li class="nav-item">
-                                 <a class="nav-link" href="product.php">Producten</a>
+                                 <a class="nav-link" href="order.php">Bestel</a>
                               </li>
                               <li class="nav-item">
-                                 <a class="nav-link" href="gallery.php">Galerij</a>
+                                 <a class="nav-link" href="products.php">Producten</a>
                               </li>
                               <?php if (!empty($_SESSION["beheerderLoggedIn"])) { ?>
                                  <li class="nav-item">
@@ -166,14 +166,12 @@ if (isset($_POST["logout"])) {
                      <ul class="link_menu">
                         <li><a href="#">Thuis Pagina</a></li>
                         <li><a href="about.php">Over Ons</a></li>
-                        <li><a href="product.php">Onze Producten</a></li>
-                        <li><a href="gallery.php">Galerij</a></li>
-                        <li><a href="order.php">Bestelformulier</a></li>
-                        <li><a href="stock.php">Stock</a></li>
+                        <li><a href="order.php">Bestel</a></li>
+                        <li><a href="products.php">Producten</a></li>
                         <li><a href="contact.php">Contacteer Ons</a></li>
                      </ul>
                   </div>
-                  <div class=" col-md-3">
+                  <div class="col-md-3">
                      <h3>TOP voedsel</h3>
                      <p class="many">
                         There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected

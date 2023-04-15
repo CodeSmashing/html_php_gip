@@ -1,8 +1,10 @@
 <?php
 session_start();
 $_SESSION["lastpage"] = $_SERVER["REQUEST_URI"];
+
 if (isset($_POST["logout"])) {
-   unset($_SESSION["loggedIn"]); 
+   unset($_SESSION["loggedIn"]);
+   unset($_SESSION["beheerderLoggedIn"]);
    $_POST["logout"] = "";
 }
 ?>
@@ -16,12 +18,12 @@ if (isset($_POST["logout"])) {
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <meta name="viewport" content="initial-scale=1, maximum-scale=1">
       <!-- site metas -->
-      <title>Bestelformulier</title>
+      <title>Product</title>
       <meta name="keywords" content="">
       <meta name="description" content="">
       <meta name="author" content="">
       <!-- bootstrap css -->
-      <link rel="stylesheet" href="css/bootstrap.min.css">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
       <!-- style css -->
       <link rel="stylesheet" href="css/style.css">
       <!-- Responsive-->
@@ -35,40 +37,42 @@ if (isset($_POST["logout"])) {
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" media="screen">
       <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->
-      <style>
-         *{
-            box-sizing: border-box;
-            margin: 0;
-         }
-         .wrapper{
-            margin: auto;
-            width: 100%;
-            max-width: 1000px;
-            padding:80px;
-            background-color: hsla(455,75%,20%,0.05);
-         }
-         fieldset{
-            float: left;
-            width: 33%;
-            display: inline-block;
-            box-sizing: border-box;
-         }
-         fieldset input{
-            width: 80%;
-         }
-         .wrapper #breaker{
-            clear: both;
-         }
-      </style>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+      <![endif]-->
+      
+      <?php
+      $db_host = 'localhost';
+      $db_user = 'root';
+      $db_pass = '';
+      $db_name = 'gip';
+
+      require_once('config.php');
+
+      try {
+         // create a PDO object and set connection parameters
+         $dsn = "mysql:host=$db_host;dbname=$db_name;charset=utf8mb4";
+         $options = array(
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_EMULATE_PREPARES => false,
+         );
+         $pdo = new PDO($dsn, $db_user, $db_pass, $options);
+      } catch(PDOException $e) {
+         // handle any errors that may occur during connection
+         echo "Connection failed: " . $e->getMessage();
+         exit();
+      }
+      $pID = 1;
+      ?>
    </head>
    <!-- body -->
    <body class="main-layout inner_page">
-      <!-- loader  --><!--
+      <!-- loader  -->
+      <!--
       <div class="loader_bg">
          <div class="loader"><img src="images/loading.gif" alt="#"/></div>
       </div>
-         --><!-- end loader -->
+      -->
+      <!-- end loader -->
       <!-- header -->
       <header class="full_bg">
          <!-- header inner -->
@@ -92,29 +96,28 @@ if (isset($_POST["logout"])) {
                         <div class="collapse navbar-collapse" id="navbarsExample04">
                            <ul class="navbar-nav mr-auto">
                               <li class="nav-item ">
-                                 <a class="nav-link" href="index.php">Thuis Pagina</a>
+                                 <a class="nav-link" href="index.php">Thuis</a>
                               </li>
                               <li class="nav-item">
                                  <a class="nav-link" href="about.php">Over Ons</a>
                               </li>
-                              <li class="nav-item">
-                                 <a class="nav-link" href="product.php">Ouze Producten</a>
-                              </li>
-                              <li class="nav-item">
-                                 <a class="nav-link" href="gallery.php">Galerij</a>
-                              </li>
-                              <li class="nav-item">
-                                 <a class="nav-link" href="stock.php">Stock</a>
-                              </li>
                               <li class="nav-item active">
-                                 <a class="nav-link" href="order.php">Bestelformulier</a>
+                                 <a class="nav-link" href="order.php">Bestel</a>
                               </li>
                               <li class="nav-item">
-                                 <a class="nav-link" href="contact.php">Contacteer Ons</a>
+                                 <a class="nav-link" href="products.php">Producten</a>
+                              </li>
+                              <?php if (!empty($_SESSION["beheerderLoggedIn"])) { ?>
+                                 <li class="nav-item">
+                                    <a class="nav-link" href="stock.php">Stock</a>
+                                 </li>
+                              <?php } ?>
+                              <li class="nav-item">
+                                 <a class="nav-link" href="contact.php">Contact</a>
                               </li>
                               <li class="nav-item">
                                  <?php
-                                 $item = (empty($_SESSION["loggedIn"]) == true || $_SESSION["loggedIn"] != true) ? '<a class="nav-link" href="login.php">Login</a>' : '
+                                 $item = ((empty($_SESSION["loggedIn"]) == true || $_SESSION["loggedIn"] != true) && (empty($_SESSION["beheerderLoggedIn"]) == true)) ? '<a class="nav-link" href="login.php">Login</a>' : '
                                  <form method="post">
                                  <button class="nav-link" name="logout" type="submit" value="1"
                                  formtarget="_self">Logout</button>
@@ -138,126 +141,149 @@ if (isset($_POST["logout"])) {
             <div class="row">
                <div class="col-md-12">
                   <div class="title">
-                        <h2>Bestellen</h2>
+                     <h2>Uw Bestelling Plaatsen</h2>
                   </div>
                </div>
             </div>
          </div>
       </div>
       <!-- end banner -->
-      <!--  bestelformulier
-      class="order"
-      class="col-md-12" -->
-      <div>
-         <div class="sub_form">
-            <div class="wrapper">
-               <fieldset>
-                  <legend>Producten lijst</legend>
-                  <hr>
-                  <?php
-                  // Connectie creëeren
-                  $conn = new mysqli("localhost", "root", "", "gip"); 
-                  // Connectie checken
-                  if ($conn->connect_errno) {
-                     die("Connectie mislukt: " . $conn->connect_error);
-                  }
-
-                  $result = $conn->query("SELECT product_naam, product_prijs FROM product");
-                  echo '<ul class="link_menu">';
-                  while ($row = $result->fetch_assoc()) {
-                     unset($name);
-                     unset($price);
-                     $name = ucfirst($row["product_naam"]);
-                     $price = $row["product_prijs"];
-                     echo '<li class="">'.$name.' € '.$price.'</li><br>';
-                  }
-                  echo '</ul>';
-                  $conn->close();
-                  ?>
-               </fieldset>
-               <form method="post" id="request">
-               <fieldset>
-                  <legend>Een order plaatsen</legend>
-                  <hr>
-                  <?php
-                  // Connectie creëeren
-                  $conn = new mysqli("localhost", "root", "", "gip"); 
-                  // Connectie checken
-                  if ($conn->connect_errno) {
-                        die("Connectie mislukt: " . $conn->connect_error);
-                  }
-                  
-                  $result = $conn->query("SELECT product_naam FROM product");
-                  
-                  $j = 0;
-                  while ($row = $result->fetch_assoc()) {
-                     $resultArray[$j] = $row["product_naam"];
-                     $j++;
-                     print_r($row);
-                  }
-                  print_r($resultArray);
-                  /*
-                  foreach ($result as $arr) {
-                     $resultArray[$j] = $result->fetch_assoc();
-                     $j++;
-                  }
-                  */
-                  $result = $conn->query("SELECT product_naam FROM product");
-                  echo '<select class="orderUs" name="productLijst" id="productLijst" onchange="selection()">';
-                  echo '<option value="" selected disabled hidden>Kies hier</option>';
-                  while ($row = $result->fetch_assoc()) {
-                     unset($name);
-                     $name = ucfirst($row["product_naam"]);
-                     echo '<option value="'.$name.'">'.$name.'</option>';
-                  }
-                  echo '</select>';
-                  if (empty($_COOKIE["gekozenProduct"]) != true) {
-                        $gekozenProduct = $_COOKIE["gekozenProduct"];
-                        $result = $conn->query("SELECT product_prijs FROM product WHERE product_naam = '".mysqli_real_escape_string($conn, $gekozenProduct)."'");
-                  }
-
-                  while($row = $result->fetch_assoc()) {
-                        $_COOKIE["price"] = $row["product_prijs"];
-                  }
-                  $conn->close();
-                  // if (empty($_COOKIE["price"]) != true) { echo $_COOKIE["price"]; }
-                  ?>
-                  <div>
-                     <input class="orderUs" placeholder="Aantal" type="number" id="aantal" name="aantal" value="" min="1" max="300" step="1"><br>
+      <!-- our products -->
+      <div class="products">
+         <div class="container">
+            <div class="row">
+               <div class="col-md-12">
+                  <div class="titlepage">
+                     <span>
+                        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptu
+                     </span>
                   </div>
-                  <div>
-                     <button class="send_btn" type="button" onclick="AddInput()">+1</button>
-                     <button class="send_btn" type="submit" formtarget="_self">Finaliseren</button>
-                  </div>
-               </fieldset>
-               </form>
-               <fieldset>
-                  <legend>Uw order</legend>
-                  <hr>
-               </fieldset>
-               <fieldset>
-                  <legend>Al de variabelen</legend>
-                  <hr>
-                  <?php
-                  if (empty($_COOKIE["gekozenProduct"]) != true) {
-                     echo "Het geselecteerde product zou " . $_COOKIE["gekozenProduct"] . " moeten zijn.<br>";
-                  } else {
-                     echo "We konden het geselecteerde product niet aflezen.<br>";
-                  }
-
-                  if (empty($_COOKIE["price"]) != true) {
-                     echo "De prijs zou " . $_COOKIE["price"] . " moeten zijn.<br>";
-                  } else {
-                     echo "We konden de prijs van het geselecteerde product niet aflezen.<br>";
-                  }
-                  print_r($resultArray);
-                  ?>
-               </fieldset>
-               <div id="breaker"></div>
+               </div>
             </div>
          </div>
       </div>
-      <!-- end bestelformulier -->
+      <div class="products">
+         <div class="container">
+            <div class="sub_form">
+               <div class="wrapper">
+                  <fieldset class="list">
+                     <legend>Uw Order</legend>
+                     <hr>
+                     <?php
+                     if (isset($_POST["optieProduct"])) {
+                        if (empty($_SESSION["lijst"])) {
+                           $_SESSION["lijst"]["Optie " . 0] = $_POST["optieProduct"];
+                        } else {
+                           $_SESSION["lijst"]["Optie " . count($_SESSION["lijst"])] = $_POST["optieProduct"];
+                        }
+                     }
+
+                     if (isset($_SESSION["lijst"])) {
+                        // Initialize array for counting products
+                        $u = array();
+
+                        // Count number of products in the list
+                        foreach ($_SESSION["lijst"] as $val) {
+                           // The text
+                           $var2 = preg_replace('/[0-9]+/', '', $val);
+                           // The number
+                           $var = filter_var($val, FILTER_SANITIZE_NUMBER_INT);
+                           
+                           if (!isset($u[$var2]["Count"])) {
+                              $u[$var2]["Count"] = 1;
+                           } else {
+                              $u[$var2]["Count"]++;
+                           }
+                        }
+
+                        if (!empty($u)) {
+                           foreach ($u as $key => $val) {
+                              echo "U heeft ".$val["Count"]." ".$key."<br>";
+                           }
+                        }
+                     } else {
+                        echo "Uw winkelmandje is leeg";
+                     }
+                     echo "<br>";
+
+                     if (!empty($_SESSION["lijst"])) {
+                     ?>
+                     <form action="process.php">
+                        <button class="send_btn" name="optieSend" value="1" type="submit">Finaliseren</button>
+                     </form>
+                     <?php
+                     }
+                     ?>
+                  </fieldset>
+                  <fieldset class="orderField">
+                     <?php
+                     $sql = "SELECT * FROM product p, stock s WHERE p.id_stock = s.id_stock";
+                     $result = $pdo->query($sql);
+                     $products = $result->fetchAll(PDO::FETCH_ASSOC);
+                     ?>
+                     <div id="productCarousel" class="carousel slide" data-ride="carousel">
+                        <!-- Indicators -->
+                        <ol class="carousel-indicators">
+                           <?php
+                           $num_slides = ceil(count($products) / (ceil(count($products)) / 2));
+                           for ($i = 0; $i < $num_slides; $i++) { 
+                           ?>
+                           <li data-target="#productCarousel" data-slide-to="<?php echo $i; ?>" <?php if ($i == 0) { ?>class="active"<?php } ?>></li>
+                           <?php } ?>
+                        </ol>
+
+                        <!-- Wrapper for slides -->
+                        <div class="carousel-inner">
+                           <?php 
+                           $last_index = -1;
+                           for ($i = 0; $i < $num_slides; $i++) {
+                           ?>
+                           <div class="carousel-item <?php if ($i == 0) { ?>active<?php } ?>">
+                              <div class="row">
+                                 <?php 
+                                 for ($j = $i * 4; $j < ($i + 1) * 8 && $j < count($products); $j++) { 
+                                    if ($j <= $last_index) {
+                                       continue;
+                                    } ?>
+                                    <div id="ho_bo" class="our_products">
+                                       <div class="our_products">
+                                          <div class="product">
+                                             <figure><img src="images/pro<?php echo $products[$j]['product_naam']; ?>.png" alt="#"></figure>
+                                          </div>
+                                          <h3><?php echo ucfirst($products[$j]['product_naam']); ?></h3>
+                                          <span>Product info</span><br/>
+                                          <p>Prijs per: € <?php echo $products[$j]['product_prijs']; ?></p>
+                                          <p>In stock: <?php echo $products[$j]['stock']; ?></p>
+                                          <form method="post">
+                                             <button class="send_btn" name="optieProduct" value="<?php echo $products[$j]["product_naam"] . " " . $products[$j]["id_product"]; ?>" formtarget="_self">Toevoegen</button>
+                                          </form>
+                                       </div>
+                                    </div>
+                                 <?php 
+                                 $last_index = $j; } ?>
+                              </div>
+                           </div>
+                           <?php }
+                           $pdo = null; ?>
+                        </div>
+                        <!-- Controls -->
+                        <a class="carousel-control-prev" href="#productCarousel" role="button" data-slide="prev">
+                           <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                           <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" href="#productCarousel" role="button" data-slide="next">
+                           <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                           <span class="sr-only">Next</span>
+                        </a>
+                     </div>
+                  </fieldset>
+                  <div id="breaker"></div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <!-- end our products -->
+      <!--  footer -->
       <footer>
          <div class="footer">
             <div class="container">
@@ -280,11 +306,9 @@ if (isset($_POST["logout"])) {
                      <h3>menu LINKS</h3>
                      <ul class="link_menu">
                         <li><a href="#">Thuis Pagina</a></li>
-                        <li><a href="about.php">Over Ons</a></li>
-                        <li><a href="product.php">Onze Producten</a></li>
-                        <li><a href="gallery.php">Galerij</a></li>
-                        <li><a href="order.php">Bestelformulier</a></li>
-                        <li><a href="stock.php">Stock</a></li>
+                        <li><a href="about.php">Over ons</a></li>
+                        <li><a href="order.php">Bestel</a></li>
+                        <li><a href="products.php">Producten</a></li>
                         <li><a href="contact.php">Contacteer Ons</a></li>
                      </ul>
                   </div>
@@ -298,7 +322,7 @@ if (isset($_POST["logout"])) {
                      <h3>Contact</h3>
                      <ul class="conta">
                         <li><i class="fa fa-map-marker" aria-hidden="true"></i>Locatie</li>
-                        <li> <i class="fa fa-envelope" aria-hidden="true"></i><a href="#">demo@gmail.com</a></li>
+                        <li><i class="fa fa-envelope" aria-hidden="true"></i><a href="#">demo@gmail.com</a></li>
                         <li><i class="fa fa-mobile" aria-hidden="true"></i>Tell : +01 1234567890</li>
                      </ul>
                   </div>
@@ -315,61 +339,13 @@ if (isset($_POST["logout"])) {
             </div>
          </div>
       </footer>
+      <!-- end footer -->
       <!-- Javascript files-->
       <script src="js/jquery.min.js"></script>
-      <script src="js/bootstrap.bundle.min.js"></script>
-      <script src="js/jquery-3.0.0.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
       <!-- sidebar -->
       <script src="js/jquery.mCustomScrollbar.concat.min.js"></script>
       <script src="js/custom.js"></script>
-      <script>
-            function selectionnnnn() {
-            var x = document.getElementById("product").value;
-            document.cookie = "gekozenProduct = " + x;
-            }
-      </script>
-      <script>
-         // Holy fucking shit is dit cool
-         // https://stackoverflow.com/questions/10418518/when-all-previous-fields-are-filled-add-new-input-field
-         // http://jsfiddle.net/F8qR2/
-         // http://jsfiddle.net/puVPc/
-         function AddInput() {
-            var passedArray = <?php echo json_encode($resultArray); ?>;
-            
-            alert(passedArray);
-            
-            var cnt = $("select", $("#request")).size() + 1;
-            $("<hr><select class='orderUs' name='productLijst" + cnt + "' id='productLijst" + cnt + "' onchange='selection()'> <option value='' selected disabled hidden>Kies hier</option> <option value=''>Test</option>" +
-            /*
-               while(var i = 0; i < passedArray.length; i++)
-               {
-                  "<option value=''>" + passedArray[i] + "</option>";
-               }
-            */
-            + "</select>").insertAfter("#request input[type='number']:last");
-            $("input", $("#request")).unbind("keyup").bind("keyup", function(){ AdditionEvent() });
-
-            var cnt2 = $("input[type='number']", $("#request")).size() + 1;
-            $("<div><input class='orderUs' placeholder='AantalV" + cnt2 + "' type='number' name='aantalV" + cnt + "' id='aantalV" + cnt2 + "' value='' min='1' max='300' step='1'/></div>").insertAfter("#request select:last");
-            $("input", $("#request")).unbind("keyup").bind("keyup", function(){ AdditionEvent() });
-         }
-         
-         function AddInput() {
-            console.log("adding inputs")
-            var passedArray = <?php echo json_encode($resultArray); ?>;
-            
-            let select = document.createElement("SELECT")
-
-            console.log(passedArray)
-            for(let i = 0; i < passedArray.length; i++) {
-               console.log(passedArray[i])
-            }
-            let i = 0;
-            
-            // alert(passedArray);
-            
-            
-         }
-      </script>
    </body>
 </html>
