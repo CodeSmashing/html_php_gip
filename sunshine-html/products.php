@@ -38,6 +38,28 @@ if (isset($_POST["logout"])) {
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
       <![endif]-->
+      <?php
+      $db_host = 'localhost';
+      $db_user = 'root';
+      $db_pass = '';
+      $db_name = 'gip';
+
+      require_once('config.php');
+
+      try {
+         // create a PDO object and set connection parameters
+         $dsn = "mysql:host=$db_host;dbname=$db_name;charset=utf8mb4";
+         $options = array(
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_EMULATE_PREPARES => false,
+         );
+         $pdo = new PDO($dsn, $db_user, $db_pass, $options);
+      } catch(PDOException $e) {
+         // handle any errors that may occur during connection
+         echo "Connection failed: " . $e->getMessage();
+         exit();
+      }
+      ?>
    </head>
    <!-- body -->
    <body class="main-layout inner_page">
@@ -123,8 +145,8 @@ if (isset($_POST["logout"])) {
          </div>
       </div>
       <!-- end banner -->
-      <!-- gallery -->
-      <div class="gallery">
+      <!-- products/gallery -->
+      <div class="products">
          <div class="container">
             <div class="row">
                <div class="col-md-12">
@@ -134,40 +156,21 @@ if (isset($_POST["logout"])) {
                </div>
             </div>
             <div class="row">
-               <div class="col-md-4 col-sm-6">
-                  <div class="gallery_img">
-                     <figure><img src="images/gallery1.png" alt="#"/></figure>
+               <?php
+               $sql = "SELECT product_naam FROM product";
+               $result = $pdo->query($sql);
+               $products = $result->fetchAll(PDO::FETCH_ASSOC);
+               ?>
+               <?php for ($j = 0; $j < count($products); $j++) { ?>
+                  <div class="products_img">
+                     <figure><img src="images/pro<?php echo ucfirst($products[$j]['product_naam']); ?>.png" alt="#"></figure>
                   </div>
-               </div>
-               <div class="col-md-4 col-sm-6">
-                  <div class="gallery_img">
-                     <figure><img src="images/gallery2.png" alt="#"/></figure>
-                  </div>
-               </div>
-               <div class="col-md-4 col-sm-6">
-                  <div class="gallery_img">
-                     <figure><img src="images/gallery3.png" alt="#"/></figure>
-                  </div>
-               </div>
-               <div class="col-md-4 col-sm-6">
-                  <div class="gallery_img">
-                     <figure><img src="images/gallery4.png" alt="#"/></figure>
-                  </div>
-               </div>
-               <div class="col-md-4 col-sm-6">
-                  <div class="gallery_img">
-                     <figure><img src="images/gallery5.png" alt="#"/></figure>
-                  </div>
-               </div>
-               <div class="col-md-4 col-sm-6">
-                  <div class="gallery_img">
-                     <figure><img src="images/gallery6.png" alt="#"/></figure>
-                  </div>
-               </div>
+               <?php }
+               $pdo = null; ?>
             </div>
          </div>
       </div>
-      <!-- end gallery -->
+      <!-- end products/gallery -->
       <!--  footer -->
       <footer>
          <div class="footer">

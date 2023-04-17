@@ -162,7 +162,7 @@ if (isset($_POST["logout"])) {
             </div>
          </div>
       </div>
-      <div class="products">
+      <div class="order">
          <div class="container">
             <div class="sub_form">
                <div class="wrapper">
@@ -170,49 +170,51 @@ if (isset($_POST["logout"])) {
                      <legend>Uw Order</legend>
                      <hr>
                      <?php
-                     if (isset($_POST["optieProduct"])) {
-                        if (empty($_SESSION["lijst"])) {
-                           $_SESSION["lijst"]["Optie " . 0] = $_POST["optieProduct"];
-                        } else {
-                           $_SESSION["lijst"]["Optie " . count($_SESSION["lijst"])] = $_POST["optieProduct"];
+                        // initialize cart if it doesn't exist
+                        if (!isset($_SESSION["cart"])) {
+                           $_SESSION["cart"] = array();
                         }
-                     }
-
-                     if (isset($_SESSION["lijst"])) {
-                        // Initialize array for counting products
-                        $u = array();
-
-                        // Count number of products in the list
-                        foreach ($_SESSION["lijst"] as $val) {
-                           // The text
-                           $var2 = preg_replace('/[0-9]+/', '', $val);
-                           // The number
-                           $var = filter_var($val, FILTER_SANITIZE_NUMBER_INT);
+                        
+                        // add product to cart if submitted
+                        if (isset($_POST["add_to_cart"])) {
+                           $product_name = $_POST["product_name"];
+                           ((int)$_POST["product_quantity"] == 0) ? $product_quantity = 1 : $product_quantity = (int)$_POST["product_quantity"];
+                           $product_price = (float)$_POST["product_price"];
                            
-                           if (!isset($u[$var2]["Count"])) {
-                              $u[$var2]["Count"] = 1;
+                           if (isset($_SESSION["cart"][$product_name])) {
+                              $_SESSION["cart"][$product_name]["quantity"] += $product_quantity;
                            } else {
-                              $u[$var2]["Count"]++;
+                              $_SESSION["cart"][$product_name] = array("quantity" => $product_quantity, "price" => $product_price);
                            }
                         }
-
-                        if (!empty($u)) {
-                           foreach ($u as $key => $val) {
-                              echo "U heeft ".$val["Count"]." ".$key."<br>";
-                           }
+                        
+                        // remove product from cart if submitted
+                        if (isset($_POST["remove_from_cart"])) {
+                           $product_name = $_POST["product_name"];
+                           unset($_SESSION["cart"][$product_name]);
                         }
-                     } else {
-                        echo "Uw winkelmandje is leeg";
-                     }
-                     echo "<br>";
 
-                     if (!empty($_SESSION["lijst"])) {
-                     ?>
-                     <form action="process.php">
-                        <button class="send_btn" name="optieSend" value="1" type="submit">Finaliseren</button>
-                     </form>
-                     <?php
-                     }
+                        // display cart
+                        if (empty($_SESSION["cart"])) {
+                           echo "<p>Uw winkelmandje is leeg</p>";
+                        } else {
+                           echo "<ul>";
+                           $total_price = 0;
+                           foreach ($_SESSION["cart"] as $product_name => $product) {
+                              $product_price = $product["price"];
+                              $product_quantity = $product["quantity"];
+                              $product_total_price = $product_price * $product_quantity;
+                              $total_price += $product_total_price;
+
+                              echo "<li>" . $product_name . " x " . $product_quantity . " = €" . $product_total_price . " <form method='post'><input type='hidden' name='product_name' value='$product_name'><button class='remove_btn' name='remove_from_cart' type='submit'>Remove</button></form></li>";
+                           }
+                           echo "</ul>"; ?>
+                           <br><span>Uw totaal komt uit tot: €<?php echo $total_price; ?></span>
+                           <form action="process.php">
+                              <button class="send_btn" name="optieSend" type="submit">Finaliseren</button>
+                           </form>
+                        <?php
+                        }
                      ?>
                   </fieldset>
                   <fieldset class="orderField">
@@ -255,7 +257,10 @@ if (isset($_POST["logout"])) {
                                           <p>Prijs per: € <?php echo $products[$j]['product_prijs']; ?></p>
                                           <p>In stock: <?php echo $products[$j]['stock']; ?></p>
                                           <form method="post">
-                                             <button class="send_btn" name="optieProduct" value="<?php echo $products[$j]["product_naam"] . " " . $products[$j]["id_product"]; ?>" formtarget="_self">Toevoegen</button>
+                                             <input type="hidden" name="product_price" value="<?php echo $products[$j]["product_prijs"]; ?>"></input>
+                                             <input type="hidden" name="product_name" value="<?php echo $products[$j]["product_naam"]; ?>"></input>
+                                             <input type="number" name="product_quantity" placeholder="Hoeveelheid" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" ></input>
+                                             <button type="submit" name="add_to_cart" class="send_btn">Toevoegen</input>
                                           </form>
                                        </div>
                                     </div>

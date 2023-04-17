@@ -340,58 +340,19 @@ session_start();
             $pdo = null;
          }
       } // Als de laatste pagina /product.php is
-      else if ($_SESSION['lastpage'] == "/html_php_gip/sunshine-html/product.php") {
+      else if ($_SESSION['lastpage'] == "/html_php_gip/sunshine-html/order.php") {
          echo "Uw bestelling zal worden doorgevoerd.<br>";
 
-         // Initialize array for counting products
-         $u = array();
-
-         // Count number of products in the order
-         foreach ($_SESSION["lijst"] as $val) {
-            $var = (int)filter_var($val, FILTER_SANITIZE_NUMBER_INT);
-            if (!isset($u["Num " . $var]["Count"])) {
-               $u["Num " . $var]["Count"] = 1;
-            } else {
-               $u["Num " . $var]["Count"]++;
-            }
+         // Subtract items in cart from stock
+         foreach ($_SESSION["cart"] as $product_name => $product) {
+            $product_quantity = $product["quantity"];
+            $sql = "UPDATE product a, stock s SET stock = stock - :quantity WHERE product_naam = :productName AND a.id_stock = s.id_stock";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute(['quantity' => $product_quantity, 'productName' => $product_name]);
          }
 
-         // Count number of products in stock
-         $sql = "SELECT COUNT(*) AS count FROM stock";
-         $stmt = $pdo->query($sql);
-         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-         $stock_count = $result["count"];
-
-         // Make sure the product count array is the same size as the number of products in stock
-         for ($m = 1; $m <= $stock_count; $m++) {
-            if (!isset($u["Num " . $m]["Count"])) {
-               $u["Num " . $m]["Count"] = 0;
-            }
-         }
-
-         // De database updaten
-         $sql = "SELECT stock, id_stock FROM stock ORDER BY id_stock";
-         $stmt = $pdo->query($sql);
-
-         $newStocks = array(); // initialize an array to hold the new stock values
-
-         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $newStock = $row["stock"]; // initialize the new stock value
-            foreach ($u["Num ".$row["id_stock"]] as $key => $val) {
-               echo "<br>Dit is de geselecteerde stock: ".$newStock."<br>";                   
-               $newStock = $newStock - $val;
-               echo "<br>Dit is onze stock als we er ".$val." van af trekken: ".$newStock."<br>";
-            }
-            $newStocks[$row["id_stock"]] = $newStock; // store the new stock value in the array
-         }
-
-         foreach ($newStocks as $id_stock => $newStock) {
-            $sql = "UPDATE stock SET stock = $newStock WHERE id_stock = $id_stock;";
-            $result = $pdo->query($sql);
-         }
-         $pdo = null;
-         
-         unset($_SESSION["lijst"]);
+         // Clear cart and redirect to home page
+         unset($_SESSION["cart"]);
          echo "Bedankt om een bestelling te plaatsen.<br>
          U zal worden herleidt naar de home pagina";
          header("Refresh: 4; url=index.php", true, 0);

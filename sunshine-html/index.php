@@ -187,7 +187,7 @@ if (isset($_POST["logout"])) {
             <?php
             $sql = "SELECT * FROM product p, stock s WHERE p.id_stock = s.id_stock";
             $result = $pdo->query($sql);
-            $products = $result->fetchAll(PDO::FETCH_ASSOC)
+            $products = $result->fetchAll(PDO::FETCH_ASSOC);
             ?>
             <div id="productCarousel" class="carousel slide" data-ride="carousel">
                <!-- Indicators -->
@@ -220,8 +220,7 @@ if (isset($_POST["logout"])) {
                            <?php } ?>
                         </div>
                      </div>
-                  <?php }
-                  $pdo = null; ?>
+                  <?php } ?>
                </div>
                
                <!-- Controls -->
@@ -257,8 +256,8 @@ if (isset($_POST["logout"])) {
          </div>
       </div>
       <!-- end using -->
-      <!-- gallery -->
-      <div  class="gallery">
+      <!-- products/gallery -->
+      <div  class="products">
          <div class="container">
             <div class="row">
                <div class="col-md-12">
@@ -269,40 +268,21 @@ if (isset($_POST["logout"])) {
                </div>
             </div>
             <div class="row">
-               <div class="col-md-4 col-sm-6">
-                  <div class="gallery_img">
-                     <figure><img src="images/gallery1.png" alt="#"/></figure>
+               <?php
+               $sql = "SELECT product_naam FROM product";
+               $result = $pdo->query($sql);
+               $products = $result->fetchAll(PDO::FETCH_ASSOC);
+               ?>
+               <?php for ($j = 0; $j < count($products); $j++) { ?>
+                  <div class="products_img">
+                     <figure><img src="images/pro<?php echo ucfirst($products[$j]['product_naam']); ?>.png" alt="#"></figure>
                   </div>
-               </div>
-               <div class="col-md-4 col-sm-6">
-                  <div class="gallery_img">
-                     <figure><img src="images/gallery2.png" alt="#"/></figure>
-                  </div>
-               </div>
-               <div class="col-md-4 col-sm-6">
-                  <div class="gallery_img">
-                     <figure><img src="images/gallery3.png" alt="#"/></figure>
-                  </div>
-               </div>
-               <div class="col-md-4 col-sm-6">
-                  <div class="gallery_img">
-                     <figure><img src="images/gallery4.png" alt="#"/></figure>
-                  </div>
-               </div>
-               <div class="col-md-4 col-sm-6">
-                  <div class="gallery_img">
-                     <figure><img src="images/gallery5.png" alt="#"/></figure>
-                  </div>
-               </div>
-               <div class="col-md-4 col-sm-6">
-                  <div class="gallery_img">
-                     <figure><img src="images/gallery6.png" alt="#"/></figure>
-                  </div>
-               </div>
+               <?php }
+               $pdo = null; ?>
             </div>
          </div>
       </div>
-      <!-- end gallery -->
+      <!-- end products/gallery -->
       <!--  contact -->
       <div class="contact">
          <div class="container">

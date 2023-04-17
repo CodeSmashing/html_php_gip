@@ -586,17 +586,17 @@ div.using div.container-fluid div.row.d_flex div.col-md-5.offset-md-1.padding_ri
 }
 
 /** end using section **/
-/** begin products section **/
+/** begin order section **/
 
-div.products {
+div.order {
      padding: 60px 0px 30px 0px;
      margin-bottom: 90px;
      background-color: #f4f4f4;
 }
-div.products div.container div.row div.col-md-12 div.titlepage span {
+div.order div.container div.row div.col-md-12 div.titlepage span {
      text-align: center;
 }
-div.products div.container div.sub_form {
+div.order div.container div.sub_form {
      width: 100%;
      /* background-color: #f0f0f0; */
      /* background-color: hsla(455,75%,20%,0.05); */
@@ -604,52 +604,51 @@ div.products div.container div.sub_form {
      padding: 60px;
      display: table;
 }
-div.products div.container div.sub_form div.wrapper fieldset {
+div.order div.container div.sub_form div.wrapper fieldset {
      float: left;
      display: block;
      box-sizing: border-box;
 }
-div.products div.container div.sub_form div.wrapper fieldset.list {
+div.order div.container div.sub_form div.wrapper fieldset.list {
      padding-left: 3%;
      width: 33%;
 }
-div.products div.container div.sub_form div.wrapper fieldset.list legend {
+div.order div.container div.sub_form div.wrapper fieldset.list legend {
      border-radius: 5px;
      width: 100%;
      max-width: 85%;
      padding: 20px;
      background-color: hsla(94, 16%, 31%, 0.05);
 }
-div.products div.container div.sub_form div.wrapper fieldset.list hr {
+div.order div.container div.sub_form div.wrapper fieldset.list hr {
      width: 85%;
      margin: 15px 0px 30px 0px;
 }
-div.products div.container div.sub_form div.wrapper fieldset.orderField {
+div.order div.container div.sub_form div.wrapper fieldset.orderField {
      width: 67%;
      padding-left: 5%;
      padding-right: 5%;
 }
-div.products div.container div.sub_form div.wrapper fieldset.orderField div.row div#ho_bo.our_products {
+div.order div.container div.sub_form div.wrapper fieldset.orderField div.row div#ho_bo.our_products {
      padding: 0px 15px 0px 15px;
      padding-bottom: 10px;
-     margin-bottom: 0;
      transition: ease-in all 0.3s;
      margin-bottom: 30px;
      width: 25%;
      height: 5%;
 }
-div.products div.container div.sub_form div.wrapper fieldset.orderField div.row div#ho_bo:hover.our_products {
+div.order div.container div.sub_form div.wrapper fieldset.orderField div.row div#ho_bo:hover.our_products {
      box-shadow: 0px 0px 9px rgba(255, 53, 86, 0.33);
      transition: ease-in all 0.3s;
      margin-top: -5px;
      background-color: #fff;
 }
 /*
-div.products div.container div.sub_form div.wrapper fieldset.orderField div.row div#ho_bo.our_products div.our_products {
+div.order div.container div.sub_form div.wrapper fieldset.orderField div.row div#ho_bo.our_products div.our_products {
 
 }
 */
-div.products div.container div.sub_form div.wrapper fieldset.orderField div.row div#ho_bo.our_products div.our_products h3 {
+div.order div.container div.sub_form div.wrapper fieldset.orderField div.row div#ho_bo.our_products div.our_products h3 {
      overflow-wrap: break-word;
      margin-top: 15px;
      font-size: 22px;
@@ -661,7 +660,7 @@ div.products div.container div.sub_form div.wrapper fieldset.orderField div.row 
      bottom: -5%;
      width: fit-content;
 }
-div.products div.container div.sub_form div.wrapper fieldset.orderField div.row div#ho_bo.our_products div.our_products span {
+div.order div.container div.sub_form div.wrapper fieldset.orderField div.row div#ho_bo.our_products div.our_products span {
      font-size: 17px;
      line-height: 20px;
      font-weight: 500;
@@ -669,7 +668,7 @@ div.products div.container div.sub_form div.wrapper fieldset.orderField div.row 
      position: relative;
      bottom: -5%;
 }
-div.products div.container div.sub_form div.wrapper fieldset.orderField div.row div#ho_bo.our_products div.our_products p {
+div.order div.container div.sub_form div.wrapper fieldset.orderField div.row div#ho_bo.our_products div.our_products p {
      font-size: 15px;
      line-height: 21px;
      font-weight: 400;
@@ -677,22 +676,38 @@ div.products div.container div.sub_form div.wrapper fieldset.orderField div.row 
      position: relative;
      bottom: -5%;
 }
-div.products div.container div.sub_form div.wrapper fieldset.orderField div.row div#ho_bo.our_products div.our_products div.product {
-     background-color: #fff;
-     text-align: center;
-     width: 100%;
+div.order div.container div.sub_form div.wrapper fieldset.orderField div.row div#ho_bo.our_products div.our_products div.product {
+     overflow: hidden;
      margin: 10px 0px 0px 0px;
+     background-color: #ffffff;
+     width: 100%;
      height: 150px;
+     display: flex;
+     justify-content: center; /* center horizontally */
+     align-items: center; /* center vertically */
 }
-div.products div.container div.sub_form div.wrapper fieldset.orderField div.row div#ho_bo.our_products div.our_products div.product figure {
+div.order div.container div.sub_form div.wrapper fieldset.orderField div.row div#ho_bo.our_products div.our_products div.product figure {
      margin: 0;
 }
-div.products div.container div.sub_form div.wrapper fieldset.orderField div.row div#ho_bo.our_products div.our_products div.product img {
-     width: 70%;
-     height: 70%;
+div.order div.container div.sub_form div.wrapper fieldset.orderField div.row div#ho_bo.our_products div.our_products div.product img {
+     max-width: 100%; /* make the image responsive */
+     max-height: 100%; /* make the image responsive */
+     object-fit: contain; /* make the image fit the container while preserving aspect ratio */
 }
-div.products div.container div.sub_form div.wrapper fieldset.orderField div.row div#ho_bo.our_products form[method="post"]
-button.send_btn {
+div.order div.container div.sub_form div.wrapper fieldset.orderField div.row div#ho_bo.our_products form[method="post"] input {
+     border: #fff solid 1px;
+     padding: 0px 20px;
+     margin-bottom: 5px;
+     width: 100%;
+     height: 44px;
+     background: #fff;
+     color: #dadada;
+     font-size: 17px;
+     font-weight: normal;
+     box-shadow: 0px 0px 18px rgba(22, 22, 23, 0.11);
+     margin-top: 25px;
+}
+div.order div.container div.sub_form div.wrapper fieldset.orderField div.row div#ho_bo.our_products form[method="post"] button.send_btn {
      font-size: 13px;
      transition: ease-in all 0.5s;
      background-color: #000000;
@@ -700,10 +715,9 @@ button.send_btn {
      color: #fff;
      padding: 8px 0px;
      width: 100%;
-     margin-top: 25px !important;
      font-weight: 500;
 }
-div.products div.container div.sub_form div.wrapper fieldset.orderField div.row div#ho_bo.our_products form[method="post"] button.send_btn:hover {
+div.order div.container div.sub_form div.wrapper fieldset.orderField div.row div#ho_bo.our_products form[method="post"] button.send_btn:hover {
      background-color: #ff3556;
      transition: ease-in all 0.2s;
 }
@@ -713,61 +727,83 @@ div.products div.container div.sub_form div.wrapper fieldset.orderField div.row 
 }
 **/
 
-/** begin products carousel **/
+/** begin order carousel **/
 
-div.products div.container div.sub_form div.wrapper fieldset.orderField div#productCarousel.carousel.slide ol.carousel-indicators li {
+div.order div.container div.sub_form div.wrapper fieldset.orderField div#productCarousel.carousel.slide ol.carousel-indicators li {
      top: 28px;
      padding-top: 5px;
      background-color: #ffa5b4e3;
 }
-div.products div.container div.sub_form div.wrapper fieldset.orderField div#productCarousel.carousel.slide ol.carousel-indicators li.active {
+div.order div.container div.sub_form div.wrapper fieldset.orderField div#productCarousel.carousel.slide ol.carousel-indicators li.active {
      background-color: #6d3841e3;
 }
-div.products div.container div.sub_form div.wrapper fieldset.orderField div#productCarousel.carousel.slide a.carousel-control-prev {
+div.order div.container div.sub_form div.wrapper fieldset.orderField div#productCarousel.carousel.slide a.carousel-control-prev {
      left: -90px;
      width: 4%;
      height: 70px;
      top: 50%;
      background-color: #ff3556e3;
 }
-div.products div.container div.sub_form div.wrapper fieldset.orderField div#productCarousel.carousel.slide a.carousel-control-next {
+div.order div.container div.sub_form div.wrapper fieldset.orderField div#productCarousel.carousel.slide a.carousel-control-next {
      right: -90px;
      width: 4%;
      height: 70px;
      top: 50%;
      background-color: #ff3556e3;
 }
+div.order div.container div.sub_form div.wrapper fieldset.orderField div#productCarousel.carousel.slide {
+     margin-left: -20px;
+     margin-right: -20px;
+}
+div.order div.container div.sub_form div.wrapper fieldset.orderField div#productCarousel.carousel.slide div.carousel-inner {
+     padding-left: 20px;
+     padding-right: 20px;
+     padding-top: 20px;
+}
 
-/** end products carousel **/
-/** end products section **/
-/** begin gallery section **/
+/** end order carousel **/
+/** end order section **/
+/** begin products section **/
 
-div.gallery {
+div.products {
      padding: 60px 0px 30px 0px;
      margin-top: 90px;
      background-color: #f4f4f4;
 }
-div.gallery div.container div.row div.col-md-12 div.titlepage span {
+div.products div.container div.row div.col-md-12 div.titlepage span {
      text-align: center;
 }
-div.gallery div.container div.row div.col-md-4.col-sm-6 div.gallery_img {
+div.products div.container {
+     margin: revert;
+     padding: revert;
+     margin-left: 10px;
+}
+div.products div.container div.row div.products_img {
      overflow: hidden;
      margin-bottom: 30px;
+     margin-left: 10px;
      background-color: #ffffff;
+     width: 32%;
+     height: 300px;
+     display: flex;
+     justify-content: center; /* center horizontally */
+     align-items: center; /* center vertically */
 }
-div.gallery div.container div.row div.col-md-4.col-sm-6 div.gallery_img figure {
+div.products div.container div.row div.products_img figure {
      margin: 0;
 }
-div.gallery div.container div.row div.col-md-4.col-sm-6 div.gallery_img figure img {
-     width: 100%;
+div.products div.container div.row div.products_img figure img {
+     max-width: 100%; /* make the image responsive */
+     max-height: 100%; /* make the image responsive */
+     object-fit: contain; /* make the image fit the container while preserving aspect ratio */
      transition: all .5s;
 }
-div.gallery div.container div.row div.col-md-4.col-sm-6 div.gallery_img figure img:hover {
+div.products div.container div.row div.products_img figure img:hover {
      transform: scale(1.2);
      cursor: pointer;
 }
 
-/** end gallery section **/
+/** end products section **/
 /** begin contact section **/
 
 div.contact {
@@ -899,10 +935,12 @@ div.contact div.container div.row div.col-md-6.padding_left0 form.main_form#requ
      color: #636363;;
      opacity: 1;
 }
+/*
 .order form  { display: table;      }
 .order p     { display: table-row;  }
 .order label { display: table-cell; }
 .order input { display: table-cell; }
+*/
 
 /** end order section **/
 /** begin stock section **/
