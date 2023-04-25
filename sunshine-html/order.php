@@ -222,12 +222,28 @@ if (isset($_POST["logout"])) {
                      $sql = "SELECT * FROM product p, stock s WHERE p.id_stock = s.id_stock";
                      $result = $pdo->query($sql);
                      $products = $result->fetchAll(PDO::FETCH_ASSOC);
+                     $num_products = count($products);
+
+                     // Calculate the number of slides needed
+                     $num_slides = ceil($num_products / 8);
+                     
+                     // Check if we need to add dummy products
+                     $num_dummy_products = $num_slides * 8 - $num_products;
+                     if ($num_dummy_products > 0) {
+                        for ($i = 0; $i < $num_dummy_products; $i++) {
+                           $products[] = array(
+                              'product_naam' => 'dummy' . $i,
+                              'product_prijs' => '0.00',
+                              'stock' => '0'
+                           );
+                        }
+                        $num_products += $num_dummy_products;
+                     }
                      ?>
                      <div id="productCarousel" class="carousel slide" data-ride="carousel">
                         <!-- Indicators -->
                         <ol class="carousel-indicators">
                            <?php
-                           $num_slides = ceil(count($products) / (ceil(count($products)) / 2));
                            for ($i = 0; $i < $num_slides; $i++) { 
                            ?>
                            <li data-target="#productCarousel" data-slide-to="<?php echo $i; ?>" <?php if ($i == 0) { ?>class="active"<?php } ?>></li>
@@ -236,17 +252,14 @@ if (isset($_POST["logout"])) {
 
                         <!-- Wrapper for slides -->
                         <div class="carousel-inner">
-                           <?php 
-                           $last_index = -1;
+                           <?php
                            for ($i = 0; $i < $num_slides; $i++) {
                            ?>
                            <div class="carousel-item <?php if ($i == 0) { ?>active<?php } ?>">
                               <div class="row">
                                  <?php 
-                                 for ($j = $i * 4; $j < ($i + 1) * 8 && $j < count($products); $j++) { 
-                                    if ($j <= $last_index) {
-                                       continue;
-                                    } ?>
+                                 for ($j = $i * 8; $j < ($i + 1) * 8 && $j < $num_products; $j++) {
+                                    ?>
                                     <div id="ho_bo" class="our_products">
                                        <div class="our_products">
                                           <div class="product">
@@ -257,15 +270,15 @@ if (isset($_POST["logout"])) {
                                           <p>Prijs per: € <?php echo $products[$j]['product_prijs']; ?></p>
                                           <p>In stock: <?php echo $products[$j]['stock']; ?></p>
                                           <form method="post">
-                                             <input type="hidden" name="product_price" value="<?php echo $products[$j]["product_prijs"]; ?>"></input>
-                                             <input type="hidden" name="product_name" value="<?php echo $products[$j]["product_naam"]; ?>"></input>
-                                             <input type="number" name="product_quantity" placeholder="Hoeveelheid" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" ></input>
-                                             <button type="submit" name="add_to_cart" class="send_btn">Toevoegen</input>
+                                             <input type="hidden" name="product_price" value="<?php echo $products[$j]["product_prijs"]; ?>" <?php if ($products[$j]["product_prijs"] == 0.00) { ?>disabled<?php } ?>></input>
+                                             <input type="hidden" name="product_name" value="<?php echo $products[$j]["product_naam"]; ?>" <?php if ($products[$j]["product_prijs"] == 0.00) { ?>disabled<?php } ?>></input>
+                                             <input type="number" name="product_quantity" placeholder="Hoeveelheid" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" <?php if ($products[$j]["product_prijs"] == 0.00) { ?>disabled<?php } ?>></input>
+                                             <button type="submit" name="add_to_cart" class="send_btn" <?php if ($products[$j]["product_prijs"] == 0.00) { ?>disabled<?php } ?>>Toevoegen</input>
                                           </form>
                                        </div>
                                     </div>
                                  <?php 
-                                 $last_index = $j; } ?>
+                                 } ?>
                               </div>
                            </div>
                            <?php }

@@ -285,9 +285,7 @@ session_start();
                // De gebruiker zijn session word aangeduid als ingelogged
                $_SESSION["loggedIn"] = true;
                ?>
-               <div>
-                  <a class='read_more' href='index.php' role='button'>Home</a>
-               </div>
+               <div><a class='read_more' href='index.php' role='button'>Home</a></div>
                <?php
             } else {
                echo "Sorry, maar iets ging fout bij de paswoord verificatie.<br>
@@ -341,22 +339,176 @@ session_start();
          }
       } // Als de laatste pagina /product.php is
       else if ($_SESSION['lastpage'] == "/html_php_gip/sunshine-html/order.php") {
-         echo "Uw bestelling zal worden doorgevoerd.<br>";
+         ?>
+         <div class="process">
+            <div class="container">
+               <div class="row">
+                  <div class="col-md-6 offset-md-3">
+                     <div class="titlepage">
+                        <h2>Onze Producten</h2>
+                        <span>
+                           U heeft een bestelling aangegeven, maar om deze te kunnen versturen hebben wij een adres nodig.<br><hr>
+                           De velden met een * zijn noodzakelijk.
+                        </span>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <form method="post">
+               <input type="text" name="firstname" placeholder="Voornaam*" required></input><br>
+               <input type="text" name="lastname" placeholder="Familienaam*" required></input><br><br>
 
-         // Subtract items in cart from stock
-         foreach ($_SESSION["cart"] as $product_name => $product) {
-            $product_quantity = $product["quantity"];
-            $sql = "UPDATE product a, stock s SET stock = stock - :quantity WHERE product_naam = :productName AND a.id_stock = s.id_stock";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute(['quantity' => $product_quantity, 'productName' => $product_name]);
+               <input type="text" name="streetname" placeholder="Straatnaam*" required></input><br>
+               <input type="number" name="housenum" placeholder="Huisnummer*" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" required></input><br>
+               <input type="number" name="areacode" placeholder="Postcode*" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" required></input><br><br>
+
+               <button type="submit" name="customerInfo" class="send_btn" formtarget="_self">Bestelling plaatsen</button>
+            </form>
+         </div>
+         <?php
+         if (isset($_POST["customerInfo"])) {
+            ?>
+            <span>De opgeschreven informatie is compleet, uw bestelling zal worden doorgevoerd.</span><br>
+            <?php
+            $sql = "SELECT voornaam, achternaam FROM klant WHERE voornaam = ? AND achternaam = ?";
+            if ($stmt = $pdo->prepare($sql)) {
+               // Variabelen binden aan de voorbereidde select als parameters
+               $stmt->bindParam(1, $param_firstname);
+               $stmt->bindParam(2, $param_lastname);
+
+               // Parameters bepalen
+               $param_firstname = $_POST["firstname"];
+               $param_lastname = $_POST["lastname"];
+
+               // Proberen de voorbereidde statement uit te voeren
+               if ($stmt->execute()) {
+                  // Het resultaat pakken
+                  $results = $stmt->fetch(PDO::FETCH_ASSOC);
+                  // Deze vergelijken met de ingevulde gegevens
+                  if ((empty($results)) || (in_array($param_firstname, $results) || in_array($param_lastname, $results))) {
+                     /* Als de ingevulde gegevens niet voorkomen in de database of 
+                     als de ingevulde gegevens deels voorkomen in de database */
+
+                     // INSERT klant adres
+                     $sqlInsertAddress = "INSERT INTO adres (straat, nummer) VALUES (?, ?)";
+                     $stmt = $pdo->prepare($sqlInsertAddress);
+                     $stmt->execute([$_POST["streetname"], $_POST["housenum"]]);
+                     
+                     // INSERT klant
+                     $sqlInsertCustomer = "INSERT INTO klant (voornaam, achternaam) VALUES (?, ?)";
+                     $stmt = $pdo->prepare($sqlInsertCustomer);
+                     $stmt->execute([$_POST["firstname"], $_POST["lastname"]]);
+
+                     // SELECT klant ID
+                     $sqlSelectIdCustomer = "SELECT id_klant FROM klant k WHERE voornaam = ? AND achternaam = ?";
+                     $stmt = $pdo->prepare($sqlSelectIdCustomer);
+                     $stmt->execute([$_POST["firstname"], $_POST["lastname"]]);
+                     $IdCustomer = $stmt->fetchColumn();
+
+                     // INSERT bestelling
+                     $sqlInsertOrder = "INSERT INTO bestelling (producten, id_klant) VALUES (?, ?)";
+                     $products = array();
+                     foreach ($_SESSION["cart"] as $product_name => $product) {
+                        array_push($products, $product_name . "x" . $product["quantity"]);
+                     }
+                     $newproducts = implode(", ", $products);
+                     $stmt = $pdo->prepare($sqlInsertOrder);
+                     $stmt->execute([$newproducts, $IdCustomer]);
+
+                     // SELECT relevante adres- en bestelling ID's (relevant voor nieuw klant)
+                     $sqlSelectIdAddress = "SELECT id_adres FROM adres a WHERE straat = ? AND nummer = ?";
+                     $stmt = $pdo->prepare($sqlSelectIdAddress);
+                     $stmt->execute([$_POST["streetname"], $_POST["housenum"]]);
+                     $IdAddress = $stmt->fetchColumn();
+
+                     $sqlSelectIdOrder = "SELECT id_bestelling FROM bestelling b WHERE b.id_klant = ?";
+                     $stmt = $pdo->prepare($sqlSelectIdOrder);
+                     $stmt->execute([$IdCustomer]);
+                     $IdOrder = $stmt->fetchColumn();
+                     
+                     // UPDATE klant met adres- en bestelling ID's
+                     $sqlUpdateCustomer = "UPDATE klant k SET k.id_adres = ?, k.id_bestelling = ? WHERE k.id_klant = ?";
+                     $stmt = $pdo->prepare($sqlUpdateCustomer);
+                     $stmt->execute([$IdAddress, $IdOrder, $IdCustomer]);
+                  } else if (in_array($param_firstname, $results) && in_array($param_lastname, $results)) {
+                     // Als de ingevulde gegevens exact voorkomen in de database
+
+                     // SELECT klant ID
+                     $sqlSelectIdCustomer = "SELECT id_klant FROM klant WHERE voornaam = ? AND achternaam = ?";
+                     $stmt = $pdo->prepare($sqlSelectIdCustomer);
+                     $stmt->execute([$_POST["firstname"], $_POST["lastname"]]);
+                     $IdCustomer = $stmt->fetchColumn();
+
+                     // SELECT klant bestelling
+                     $sqlSelectOrder = "SELECT producten FROM bestelling b WHERE b.id_klant = ?";
+                     $stmt = $pdo->prepare($sqlSelectOrder);
+                     $stmt->execute([$IdCustomer]);
+                     $CustomerOrder = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                     // Explode de bestelling tweemaal om nieuwe producten/aantallen toe te voegen
+                     $CustomerOrderOld = explode(", ", $CustomerOrder["producten"]);
+                     $CustomerOrderNew = array();
+
+                     foreach ($CustomerOrderOld as $product) {
+                        $parts = explode("x", $product);
+                        $product_name = $parts[0];
+                        $product_quantity = $parts[1];
+                        $CustomerOrderNew[$product_name] = $product_quantity;
+                     }
+                     
+                     // Nieuwe producten/aantallen toevoegen
+                     foreach ($_SESSION["cart"] as $product_name => $product) {
+                        if (array_key_exists($product_name, $CustomerOrderNew)) {
+                           $CustomerOrderNew[$product_name] += $product["quantity"];
+                        } else {
+                           $CustomerOrderNew[$product_name] = $product["quantity"];
+                        }
+                     }
+                     
+                     // UPDATE bestelling
+                     $sqlUpdateOrder = "UPDATE bestelling b SET b.producten = ? WHERE b.id_klant = ?";
+                     $products = array();
+                     foreach ($CustomerOrderNew as $product_name => $product_quantity) {
+                        array_push($products, $product_name . "x" . $product_quantity);
+                     }
+                     $newproducts = implode(", ", $products);
+                     $stmt = $pdo->prepare($sqlUpdateOrder);
+                     $stmt->execute([$newproducts, $IdCustomer]);
+                  } else {
+                     echo "I'm a test.<br>";
+                  }
+               } else {
+                  echo "Oops! Iets ging mis met het uitvoeren van het programma, u word terug gestuurd.";
+                  header("Refresh: 4; url=".$_SESSION['lastpage']."", true, 0);
+                  exit();
+               }
+            }
+
+            // Subtract items in cart from stock
+            /*
+            foreach ($_SESSION["cart"] as $product_name => $product) {
+               $product_quantity = $product["quantity"];
+               $sql = "UPDATE product a, stock s SET stock = stock - :quantity WHERE product_naam = :productName AND a.id_stock = s.id_stock";
+               $stmt = $pdo->prepare($sql);
+               $stmt->execute(['quantity' => $product_quantity, 'productName' => $product_name]);
+            } ?>
+            */
+            ?>
+
+            <span>Bedankt om een bestelling te plaatsen.</span><br>
+            <span>Deze zal na enige tijd verwerkt en doorgestuurd worden naar het opgegeven adres.</span>
+
+            <?php
+            // Clear cart and redirect to home page
+            /*
+            unset($_SESSION["cart"]);
+            echo "U zal worden herleidt naar de home pagina";
+            header("Refresh: 4; url=index.php", true, 0);
+            exit();
+            */
          }
-
-         // Clear cart and redirect to home page
-         unset($_SESSION["cart"]);
-         echo "Bedankt om een bestelling te plaatsen.<br>
-         U zal worden herleidt naar de home pagina";
-         header("Refresh: 4; url=index.php", true, 0);
-         exit();
+         // Connectie beëindigen
+         $pdo = null;
       } else if ($_SESSION['lastpage'] == "/html_php_gip/sunshine-html/stock.php") {
          foreach ($_POST['product'] as $productId => $values) {
             echo "Product id: ". $productId ." | New price: ".$values['price']." | New stock: ". $values['stock'] ."<br>";

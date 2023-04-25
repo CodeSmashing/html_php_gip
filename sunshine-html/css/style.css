@@ -350,6 +350,7 @@ section.banner_main div.container div.banner_po div.row div.col-md-7 div.text_bo
      color: #0a0a0a;
      padding-top: 20px;
      display: block;
+     text-align: center;
 }
 .d_flex {
      display: flex;
@@ -514,9 +515,6 @@ div#about.about {
      background-color: #fff;
      padding: 50px 0;
 }
-div#about.about div.container div.row div.col-md-6.offset-md-3 div.titlepage {
-     text-align: center;
-}
 div#about.about div.container div.row div.col-md-6.offset-md-3 div.titlepage span {
      font-family: 'Open Sans', sans-serif;
 }
@@ -592,9 +590,6 @@ div.order {
      padding: 60px 0px 30px 0px;
      margin-bottom: 90px;
      background-color: #f4f4f4;
-}
-div.order div.container div.row div.col-md-12 div.titlepage span {
-     text-align: center;
 }
 div.order div.container div.sub_form {
      width: 100%;
@@ -760,6 +755,19 @@ div.order div.container div.sub_form div.wrapper fieldset.orderField div#product
      padding-right: 20px;
      padding-top: 20px;
 }
+div.order div.container div.sub_form div.wrapper fieldset.orderField div#productCarousel.carousel.slide div.carousel-inner div.carousel-item {
+     visibility: hidden;
+     opacity: 0;
+     transition: opacity 0.5s ease-in-out;
+}
+div.order div.container div.sub_form div.wrapper fieldset.orderField div#productCarousel.carousel.slide div.carousel-inner div.carousel-item.active {
+     visibility: visible;
+     opacity: 1;
+}
+#request *::placeholder {
+     color: #636363;;
+     opacity: 1;
+}
 
 /** end order carousel **/
 /** end order section **/
@@ -769,9 +777,6 @@ div.products {
      padding: 60px 0px 30px 0px;
      margin-top: 90px;
      background-color: #f4f4f4;
-}
-div.products div.container div.row div.col-md-12 div.titlepage span {
-     text-align: center;
 }
 div.products div.container {
      margin: revert;
@@ -878,71 +883,6 @@ div.contact div.container div.row div.col-md-6.padding_left0 form.main_form#requ
 }
 
 /** end contact section **/
-/** begin order section **/
-
-/* Keeping this because I don't know how many forms get affected
-.sub_form {
-     padding: 15px 50px;
-}
-*/
-/*
-.sub_form .orderUs {
-     border: #fff solid 1px;
-     padding: 0px 20px;
-     margin-bottom: 13px;
-     width: 80%;
-     height: 40px;
-     background: #fff;
-     color: #636363;
-     font-size: 17px;
-     font-weight: normal;
-     box-shadow: 0px 0px 18px rgba(22, 22, 23, 0.11);
-}
-.sub_form .textarea {
-     border: #fff solid 1px;
-     margin-bottom: 25px;
-     width: 80%;
-     background: #fff;
-     color: #dadada;
-     font-size: 17px;
-     font-weight: normal;
-     padding: 25px 20px 0 20px;
-     box-shadow: 0px 0px 18px rgba(22, 22, 23, 0.11);
-     height: 86px;
-}
-.sub_form .send_btn {
-     font-size: 13px;
-     position: relative;
-     bottom: -100%;
-     transition: ease-in all 0.5s;
-     background-color: #000000;
-     text-transform: uppercase;
-     color: #fff;
-     padding: 8px 0px;
-     max-width: 144px;
-     width: 100%;
-     display: block;
-     margin-top: 10px !important;
-     font-weight: 500;
-}
-.sub_form .send_btn:hover {
-     background-color: #ff3556;
-     transition: ease-in all 0.2s;
-     color: #fff;
-}
-*/
-#request *::placeholder {
-     color: #636363;;
-     opacity: 1;
-}
-/*
-.order form  { display: table;      }
-.order p     { display: table-row;  }
-.order label { display: table-cell; }
-.order input { display: table-cell; }
-*/
-
-/** end order section **/
 /** begin stock section **/
 
 div.stock {
@@ -952,9 +892,6 @@ div.stock {
 }
 div.stock div.container {
      max-width: 1300px;
-}
-div.stock div.container div.row div.col-md-12 div.titlepage span {
-     text-align: center;
 }
 div.stock div.container form[method="post"] div.row.sum div.gallery_img {
      overflow: hidden;
@@ -1116,6 +1053,47 @@ div.login form[method="post"] button[type=submit] {
 }
 
 /** end login section **/
+/** begin process section **/
+
+div.process {
+     padding: 60px 0px 30px 0px;
+     margin-top: 90px;
+     margin: 0px 10% 0px 10%;
+}
+div.process .send_btn {
+     font-size: 13px;
+     transition: ease-in all 0.5s;
+     background-color: #000000;
+     text-transform: uppercase;
+     color: #fff;
+     padding: 8px 0px;
+     width: 100%;
+     margin-top: 25px;
+     font-weight: 500;
+}
+div.process .send_btn:hover {
+     background-color: #ff3556;
+     transition: ease-in all 0.2s;
+}
+div.process input {
+     border: #fff solid 1px;
+     padding: 0px 20px;
+     margin-bottom: 5px;
+     width: 100%;
+     height: 44px;
+     background: #fff;
+     color: #dadada;
+     font-size: 17px;
+     font-weight: normal;
+     box-shadow: 0px 0px 18px rgba(22, 22, 23, 0.11);
+     margin-top: 25px;
+}
+div.process form {
+     width: 40%;
+     margin: 0 auto; /** centers the form **/
+}
+
+/** end process section **/
 /** begin footer section **/
 
 footer div.footer {
