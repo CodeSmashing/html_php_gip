@@ -140,7 +140,7 @@ session_start();
          echo $_REQUEST["Message"], "<br><br>";
          $pdo = null;
       } // Als de laatste pagina /login_page.php is; als er nog niet ingelogd is; als er aangeduid werd dat er word geregistreerd :
-      else if (($_SESSION['lastpage'] == "/html_php_gip/sunshine-html/login.php") && (empty($_SESSION["loggedIn"]) == true || $_SESSION["loggedIn"] != true)) {
+      else if (($_SESSION['lastpage'] == "/html_php_gip/sunshine-html/login.php") && (!isset($_SESSION["loggedIn"]) == true)) {
          // Hulp van : https://www.tutorialrepublic.com/php-tutorial/php-mysql-login-system.php
          // En : https://www.geeksforgeeks.org/how-to-insert-form-data-into-database-using-php/
          
@@ -181,13 +181,8 @@ session_start();
                   // Het resultaat pakken
                   $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-                  $i = 0;
-                  foreach ($results as $row) {
-                     $i++;
-                  }
-
                   // Als het resultaat al één of meerdere keren voorkomt
-                  if ($i > 1) {
+                  if (!empty($results)) {
                      echo "Deze gebruikersnaam is al in gebruik.<br>
                      U zal worden herleidt naar de vorige pagina.<br>";
                      header("Refresh: 4; url=".$_SESSION['lastpage']."", true, 0);
@@ -226,9 +221,12 @@ session_start();
                
                   // Proberen de voorbereidde statement uit te voeren
                   if ($stmt->execute()) {
+                     $_SESSION["loggedIn"] = array(
+                        "loggedIn" => true,
+                        "user" => $_SESSION["gbr"]
+                     );
                      echo "Bedankt om te registreren.<br>
                      U zal worden herleidt naar de home pagina.<br>";
-                     $_SESSION["loggedIn"] = true;
                      header("Refresh: 4; url=index.php", true, 0);
                      exit();
                      
@@ -249,26 +247,24 @@ session_start();
             }  
             // Connectie beëindigen
             $pdo = null;
-         } // Als de gebruiker heeft aangeduid dat die niet wilt registreren
-         else if ($_REQUEST["registreren"] == "0") {
-            // Een insert statement declareren
-            $sql = "SELECT gebruiker_pass FROM gebruikers WHERE gebruiker_naam = ?";
+
+            // Als de gebruiker heeft aangeduid dat die niet wilt registreren
+         } else if ($_REQUEST["registreren"] == "2") {
+            // Een SELECT statement declareren
+            $sql = "SELECT gebruiker_pass FROM gebruikers WHERE gebruiker_naam = ?;";
             
-            // Een insert statement voorbereiden
+            // De SELECT statement voorbereiden
             if ($stmt = $pdo->prepare($sql)) {
-               // Variabelen binden aan de voorbereidde insert als 'parameters'
+               // Variabelen binden aan de voorbereidde SELECT als 'parameters'
                $stmt->bindParam(1, $param_username);
 
                // Parameters bepalen
-               $param_username = trim($_REQUEST["eName"]);
+               $param_username = $_SESSION["gbr"];
 
                // Proberen de voorbereidde statement uit te voeren
                if ($stmt->execute()) {
-
                   // Als de 'fetch' lukt, bepalen we de te vergelijken met hash
-                  if ($stmt->fetch()){
-                     $hash = $stmt->fetch(PDO::FETCH_ASSOC);
-                  }
+                  $result = $stmt->fetch(PDO::FETCH_ASSOC);
                } else {
                    echo "Oops! Iets ging mis met het controleren van het passwoord, u word terug gestuurd.";
                    header("Refresh: 4; url=login_page.php", true, 0);
@@ -279,11 +275,13 @@ session_start();
             $stmt->closeCursor();
 
             // De $_REQUEST["pass"] vergelijken we nu met onze hash
-            if (password_verify($_REQUEST["pass"], $hash["gebruiker_pass"]) == true) {
+            if (password_verify($_SESSION["pwd"], $result["gebruiker_pass"]) == true) {
+               // De gebruiker zijn session word aangeduid als ingelogged en we behouden de naam om hem te herkennen
+               $_SESSION["loggedIn"] = array(
+                  "loggedIn" => true,
+                  "user" => $_SESSION["gbr"]
+               );
                echo "Bedankt om in te loggen.<br>";
-               echo 'Last page: '.$_SESSION['lastpage'];
-               // De gebruiker zijn session word aangeduid als ingelogged
-               $_SESSION["loggedIn"] = true;
                ?>
                <div><a class='read_more' href='index.php' role='button'>Home</a></div>
                <?php
@@ -295,13 +293,14 @@ session_start();
             }
             // Connectie beëindigen
             $pdo = null;
-         } // Als de gebruiker heeft aangeduid dat die wilt inloggen als beheerder
-         else if ($_REQUEST["registreren"] == "3") {
-            // Een select statement declareren
+            
+            // Als de gebruiker heeft aangeduid dat die wilt inloggen als beheerder
+         } else if ($_REQUEST["registreren"] == "3") {
+            // Een SELECT statement declareren
             $sql = "SELECT * FROM gebruikers WHERE gebruiker_naam = ? AND gebruiker_level = 1";
             // De select statement voorbereiden
             if ($stmt = $pdo->prepare($sql)) {
-               // Variabelen binden aan de voorbereidde select als parameters
+               // Variabelen binden aan de voorbereidde SELECT als parameters
                $stmt->bindParam(1, $param_username);
 
                // Parameters bepalen
@@ -315,9 +314,12 @@ session_start();
                   $hash = $results["gebruiker_pass"];
                   // Deze vergelijken met de ingevulde passwoord
                   if (password_verify($_REQUEST["pass"], $hash)) {
+                     $_SESSION["beheerderLoggedIn"] = array(
+                       "loggedIn" => true,
+                       "user" => $_SESSION["gbr"]
+                     );
                      echo "Alles klopt, u zult worden aangemeld als beheerder.<br>
                      U zal worden herleidt naar de home pagina.<br>";
-                     $_SESSION["beheerderLoggedIn"] = true;
                      header("Refresh: 4; url=index.php", true, 0);
                      exit();
                   } else {
@@ -355,10 +357,11 @@ session_start();
                </div>
             </div>
             <form method="post">
-               <input type="text" name="firstname" placeholder="Voornaam*" required></input><br>
-               <input type="text" name="lastname" placeholder="Familienaam*" required></input><br><br>
+               <input type="text" name="firstname" placeholder="Voornaam*" pattern="[a-zA-Z]+(?:\s+[a-zA-Z]+)*" required></input><br>
+               <input type="text" name="lastname" placeholder="Familienaam*" pattern="[a-zA-Z]+(?:\s+[a-zA-Z]+)*" required></input><br><br>
 
-               <input type="text" name="streetname" placeholder="Straatnaam*" required></input><br>
+               <input type="email" name="email" placeholder="Email" pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"></input><br>
+               <input type="text" name="streetname" placeholder="Straatnaam*" pattern="[a-zA-Z0-9\s]+" required></input><br>
                <input type="number" name="housenum" placeholder="Huisnummer*" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" required></input><br>
                <input type="number" name="areacode" placeholder="Postcode*" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" required></input><br><br>
 
@@ -366,13 +369,13 @@ session_start();
             </form>
          </div>
          <?php
-         if (isset($_POST["customerInfo"])) {
+         if (isset($_POST["customerInfo"]) && (isset($_SESSION["loggedIn"]) || isset($_SESSION["beheerderLoggedIn"]))) {
             ?>
             <span>De opgeschreven informatie is compleet, uw bestelling zal worden doorgevoerd.</span><br>
             <?php
             $sql = "SELECT voornaam, achternaam FROM klant WHERE voornaam = ? AND achternaam = ?";
             if ($stmt = $pdo->prepare($sql)) {
-               // Variabelen binden aan de voorbereidde select als parameters
+               // Variabelen binden aan de voorbereidde SELECT als parameters
                $stmt->bindParam(1, $param_firstname);
                $stmt->bindParam(2, $param_lastname);
 
@@ -389,15 +392,22 @@ session_start();
                      /* Als de ingevulde gegevens niet voorkomen in de database of 
                      als de ingevulde gegevens deels voorkomen in de database */
 
+                     // SELECT logged in user ID
+                     $userName = isset($_SESSION["loggedIn"]) ? $_SESSION["loggedIn"]["user"] : (isset($_SESSION["beheerderLoggedIn"]) ? $_SESSION["beheerderLoggedIn"]["user"] : null);
+                     $sqlSelectIdUser = "SELECT id_gebruiker FROM gebruikers WHERE gebruiker_naam = ?";
+                     $stmt = $pdo->prepare($sqlSelectIdUser);
+                     $stmt->execute([$userName]);
+                     $IdUser = $stmt->fetchColumn();
+
                      // INSERT klant adres
                      $sqlInsertAddress = "INSERT INTO adres (straat, nummer) VALUES (?, ?)";
                      $stmt = $pdo->prepare($sqlInsertAddress);
                      $stmt->execute([$_POST["streetname"], $_POST["housenum"]]);
                      
                      // INSERT klant
-                     $sqlInsertCustomer = "INSERT INTO klant (voornaam, achternaam) VALUES (?, ?)";
+                     $sqlInsertCustomer = "INSERT INTO klant (id_gebruiker, voornaam, achternaam, email) VALUES (?, ?, ?, ?)";
                      $stmt = $pdo->prepare($sqlInsertCustomer);
-                     $stmt->execute([$_POST["firstname"], $_POST["lastname"]]);
+                     $stmt->execute([$IdUser, $_POST["firstname"], $_POST["lastname"], $_POST["email"]]);
 
                      // SELECT klant ID
                      $sqlSelectIdCustomer = "SELECT id_klant FROM klant k WHERE voornaam = ? AND achternaam = ?";
@@ -421,15 +431,20 @@ session_start();
                      $stmt->execute([$_POST["streetname"], $_POST["housenum"]]);
                      $IdAddress = $stmt->fetchColumn();
 
-                     $sqlSelectIdOrder = "SELECT id_bestelling FROM bestelling b WHERE b.id_klant = ?";
+                     $sqlSelectIdOrder = "SELECT id_bestelling FROM bestelling WHERE id_klant = ?";
                      $stmt = $pdo->prepare($sqlSelectIdOrder);
                      $stmt->execute([$IdCustomer]);
                      $IdOrder = $stmt->fetchColumn();
                      
                      // UPDATE klant met adres- en bestelling ID's
-                     $sqlUpdateCustomer = "UPDATE klant k SET k.id_adres = ?, k.id_bestelling = ? WHERE k.id_klant = ?";
+                     $sqlUpdateCustomer = "UPDATE klant SET id_adres = ?, id_bestelling = ? WHERE id_klant = ?";
                      $stmt = $pdo->prepare($sqlUpdateCustomer);
                      $stmt->execute([$IdAddress, $IdOrder, $IdCustomer]);
+
+                     // UPDATE gebruiker met klant ID
+                     $sqlUpdateUser = "UPDATE gebruikers SET id_klant = ? WHERE id_gebruiker = ?";
+                     $stmt = $pdo->prepare($sqlUpdateUser);
+                     $stmt->execute([$IdCustomer, $IdUser]);
                   } else if (in_array($param_firstname, $results) && in_array($param_lastname, $results)) {
                      // Als de ingevulde gegevens exact voorkomen in de database
 
@@ -440,7 +455,7 @@ session_start();
                      $IdCustomer = $stmt->fetchColumn();
 
                      // SELECT klant bestelling
-                     $sqlSelectOrder = "SELECT producten FROM bestelling b WHERE b.id_klant = ?";
+                     $sqlSelectOrder = "SELECT producten FROM bestelling WHERE id_klant = ?";
                      $stmt = $pdo->prepare($sqlSelectOrder);
                      $stmt->execute([$IdCustomer]);
                      $CustomerOrder = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -466,7 +481,7 @@ session_start();
                      }
                      
                      // UPDATE bestelling
-                     $sqlUpdateOrder = "UPDATE bestelling b SET b.producten = ? WHERE b.id_klant = ?";
+                     $sqlUpdateOrder = "UPDATE bestelling SET producten = ? WHERE id_klant = ?";
                      $products = array();
                      foreach ($CustomerOrderNew as $product_name => $product_quantity) {
                         array_push($products, $product_name . "x" . $product_quantity);

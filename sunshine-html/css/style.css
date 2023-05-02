@@ -214,11 +214,11 @@ body.main-layout div.loader_bg div.loader img {
 /*-----------------------------------------begin top banner area-----------------------------------------*/
 /*-----------------------------------------begin heading section-----------------------------------------*/
 
-header.full_bg div.header div.container-fluid div.row div.col-xl-3.col-lg-3.col-md-3.col-sm-3.col.logo_section div.full div.center-desk div.logo a img {
+header.full_bg div.center-desk div.logo a img {
      position: relative;
      z-index: 9999;
 }
-header.full_bg div.header div.container-fluid div.row div.col-xl-3.col-lg-3.col-md-3.col-sm-3.col.logo_section div.full div.center-desk div.logo::before {
+header.full_bg div.center-desk div.logo::before {
      position: absolute;
      content: "";
      top: -35px;
@@ -231,12 +231,14 @@ header.full_bg div.header div.container-fluid div.row div.col-xl-3.col-lg-3.col-
 
 /** begin navigation section **/
 
-header.full_bg div.header div.container-fluid div.row div.col-xl-9.col-lg-9.col-md-9.col-sm-9 nav.navigation.navbar {
+header.full_bg nav.navigation.navbar {
      float: right;
      padding-top: 0px !important;
      padding: 0;
 }
-header.full_bg div.header div.container-fluid div.row div.col-xl-9.col-lg-9.col-md-9.col-sm-9 nav.navigation.navbar-dark div.collapse.navbar-collapse#navbarsExample04 ul.navbar-nav li.nav-item a.nav-link {
+header.full_bg nav.navigation.navbar-dark ul.navbar-nav li.nav-item a.nav-link,
+header.full_bg nav.navigation.navbar-dark ul.navbar-nav li.nav-item button.nav-link {
+     background-color: transparent;
      padding: 11px 17px 11px 17px;
      box-shadow: 5px 2px 6px rgba(25, 53, 86, 0.11);
      color: #fff;
@@ -245,33 +247,27 @@ header.full_bg div.header div.container-fluid div.row div.col-xl-9.col-lg-9.col-
      font-weight: 500;
      text-transform: uppercase;
      margin: 0px 2px 0px 0px;
-}
-header.full_bg div.header div.container-fluid div.row div.col-xl-9.col-lg-9.col-md-9.col-sm-9 nav.navigation.navbar-dark div.collapse.navbar-collapse#navbarsExample04 ul.navbar-nav li.nav-item a.nav-link:focus,
-header.full_bg div.header div.container-fluid div.row div.col-xl-9.col-lg-9.col-md-9.col-sm-9 nav.navigation.navbar-dark div.collapse.navbar-collapse#navbarsExample04 ul.navbar-nav li.nav-item a.nav-link:hover {
-     color: #000;
-     background-color: #ea425ee3;
-}
-header.full_bg div.header div.container-fluid div.row div.col-xl-9.col-lg-9.col-md-9.col-sm-9 nav.navigation.navbar-dark div.collapse.navbar-collapse#navbarsExample04 ul.navbar-nav li.nav-item.active>a.nav-link,
-header.full_bg div.header div.container-fluid div.row div.col-xl-9.col-lg-9.col-md-9.col-sm-9 nav.navigation.navbar-dark div.collapse.navbar-collapse#navbarsExample04 ul.navbar-nav li.nav-item a.nav-link.active
-/** Leftover code that isn't used
-.nav-link.show,
-.navbar-nav .show>.nav-link **/
-{
-     color: #000;
-}
-header.full_bg div.header div.container-fluid div.row div.col-xl-9.col-lg-9.col-md-9.col-sm-9 nav.navigation.navbar-dark div.collapse.navbar-collapse#navbarsExample04 ul.navbar-nav li.nav-item form[method="post"] button.nav-link {
-     background-color: #ff0909;
-     color: #1f1f1f;
-     text-decoration: none !important;
-     outline: none !important;
      -webkit-transition: all .3s ease-in-out;
      -moz-transition: all .3s ease-in-out;
      -ms-transition: all .3s ease-in-out;
      -o-transition: all .3s ease-in-out;
      transition: all .3s ease-in-out;
-     background-color: transparent;
 }
-header.full_bg div.header div.container-fluid div.row div.col-xl-9.col-lg-9.col-md-9.col-sm-9 nav.navbar-expand-md div.collapse.navbar-collapse#navbarsExample04 ul.navbar-nav {
+header.full_bg nav.navigation.navbar-dark ul.navbar-nav li.nav-item a.nav-link:focus,
+header.full_bg nav.navigation.navbar-dark ul.navbar-nav li.nav-item a.nav-link:hover,
+header.full_bg nav.navigation.navbar-dark ul.navbar-nav li.nav-item button.nav-link:focus,
+header.full_bg nav.navigation.navbar-dark ul.navbar-nav li.nav-item button.nav-link:hover {
+     color: #000;
+     background-color: #ea425ee3;
+}
+header.full_bg nav.navigation.navbar-dark ul.navbar-nav li.nav-item.active a.nav-link,
+header.full_bg nav.navigation.navbar-dark ul.navbar-nav li.nav-item a.nav-link.active,
+header.full_bg nav.navigation.navbar-dark ul.navbar-nav li.nav-item.active button.nav-link,
+header.full_bg nav.navigation.navbar-dark ul.navbar-nav li.nav-item button.nav-link.active
+{
+     color: #000;
+}
+header.full_bg div.col-xl-9.col-lg-9.col-md-9.col-sm-9 nav.navbar-expand-md div.collapse.navbar-collapse#navbarsExample04 ul.navbar-nav {
      padding-right: 10px;
 }
 .header {
@@ -1053,6 +1049,65 @@ div.login form[method="post"] button[type=submit] {
 }
 
 /** end login section **/
+/** begin profile section **/
+
+div.profile {
+     
+}
+div.profile .send_btn {
+     font-size: 13px;
+     transition: ease-in all 0.5s;
+     background-color: #000000;
+     text-transform: uppercase;
+     color: #fff;
+     padding: 8px 0px;
+     width: 100%;
+     margin-top: 25px;
+     font-weight: 500;
+}
+div.profile .send_btn:hover {
+     background-color: #ff3556;
+     transition: ease-in all 0.2s;
+}
+div.profile div.fieldset-container {
+     all: revert;
+     position: relative;
+     width: 100%;
+}
+div.profile fieldset {
+     padding-top: 30px;
+     width: 33%;
+     float: left;
+     display: block;
+     /* box-sizing: border-box; */
+}
+div.profile fieldset.userOrder {
+     padding-left: 3%;
+}
+div.profile fieldset.userSkel {
+     padding-left: 5%;
+     padding-right: 5%;
+}
+div.profile fieldset.userInfo {
+     padding-left: 5%;
+     padding-right: 5%;
+}
+div.profile fieldset.userOrder legend {
+     position: absolute;
+     left: 33%;
+     top: 0;
+     border-radius: 5px;
+     width: 100%;
+     height: 10%;
+     padding: 20px;
+     background-color: hsla(94, 16%, 31%, 0.05);
+}
+div.profile div.seperator {
+     width: 100%;
+     margin: 0px 0px 80px 0px;
+}
+
+/** end profile section **/
 /** begin process section **/
 
 div.process {

@@ -95,7 +95,7 @@ if (isset($_POST["logout"])) {
                         </button>
                         <div class="collapse navbar-collapse" id="navbarsExample04">
                            <ul class="navbar-nav mr-auto">
-                              <li class="nav-item ">
+                              <li class="nav-item">
                                  <a class="nav-link" href="index.php">Thuis</a>
                               </li>
                               <li class="nav-item">
@@ -115,16 +115,15 @@ if (isset($_POST["logout"])) {
                               <li class="nav-item">
                                  <a class="nav-link" href="contact.php">Contact</a>
                               </li>
-                              <li class="nav-item">
-                                 <?php
-                                 $item = ((empty($_SESSION["loggedIn"]) == true || $_SESSION["loggedIn"] != true) && (empty($_SESSION["beheerderLoggedIn"]) == true)) ? '<a class="nav-link" href="login.php">Login</a>' : '
-                                 <form method="post">
-                                 <button class="nav-link" name="logout" type="submit" value="1"
-                                 formtarget="_self">Logout</button>
-                                 </form>' ;
-                                 echo $item;
-                                 ?>
-                              </li>
+                              <?php
+                              $item = ((empty($_SESSION["loggedIn"]) == true || $_SESSION["loggedIn"] != true) && (empty($_SESSION["beheerderLoggedIn"]) == true)) ?
+                              '<li class="nav-item"><a class="nav-link" href="login.php">Login</a></li>' :
+                              '<li class="nav-item"><a class="nav-link" href="profile.php">Profiel</a></li>
+                              <li class="nav-item"><form method="post">
+                              <button class="nav-link" name="logout" type="submit" value="1" formtarget="_self">Logout</button>
+                              </form></li>';
+                              echo $item;
+                              ?>
                            </ul>
                         </div>
                      </nav>
@@ -170,6 +169,7 @@ if (isset($_POST["logout"])) {
                      <legend>Uw Order</legend>
                      <hr>
                      <?php
+                     if (isset($_SESSION["loggedIn"]) || isset($_SESSION["beheerderLoggedIn"])) {
                         // initialize cart if it doesn't exist
                         if (!isset($_SESSION["cart"])) {
                            $_SESSION["cart"] = array();
@@ -215,6 +215,10 @@ if (isset($_POST["logout"])) {
                            </form>
                         <?php
                         }
+                     } else { ?>
+                        <span>U zult moeten inloggen om een bestelling te mogen plaatsen.</span><br>
+                        <a class="send_btn" href="login.php">Login pagina</a>
+                     <?php }
                      ?>
                   </fieldset>
                   <fieldset class="orderField">
@@ -295,7 +299,6 @@ if (isset($_POST["logout"])) {
                         </a>
                      </div>
                   </fieldset>
-                  <div id="breaker"></div>
                </div>
             </div>
          </div>

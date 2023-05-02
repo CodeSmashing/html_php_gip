@@ -69,7 +69,7 @@ if (isset($_POST["logout"])) {
                      </button>
                      <div class="collapse navbar-collapse" id="navbarsExample04">
                         <ul class="navbar-nav mr-auto">
-                           <li class="nav-item ">
+                           <li class="nav-item">
                               <a class="nav-link" href="index.php">Thuis</a>
                            </li>
                            <li class="nav-item">
@@ -89,15 +89,15 @@ if (isset($_POST["logout"])) {
                            <li class="nav-item">
                               <a class="nav-link" href="contact.php">Contact</a>
                            </li>
-                           <li class="nav-item active">
-                              <?php
-                              $item = ((empty($_SESSION["loggedIn"]) == true || $_SESSION["loggedIn"] != true) && (empty($_SESSION["beheerderLoggedIn"]) == true)) ? '<a class="nav-link" href="login.php">Login</a>' : '
-                              <form method="post">
-                              <button class="nav-link" name="logout" type="submit" value="1"
-                              formtarget="_self">Logout</button>
-                              </form>' ;
-                              echo $item; ?>
-                           </li>
+                           <?php
+                           $item = ((empty($_SESSION["loggedIn"]) == true || $_SESSION["loggedIn"] != true) && (empty($_SESSION["beheerderLoggedIn"]) == true)) ?
+                           '<li class="nav-item active"><a class="nav-link" href="login.php">Login</a></li>' :
+                           '<li class="nav-item"><a class="nav-link" href="profile.php">Profiel</a></li>
+                           <li class="nav-item active"><form method="post">
+                           <button class="nav-link" name="logout" type="submit" value="1" formtarget="_self">Logout</button>
+                           </form></li>';
+                           echo $item;
+                           ?>
                         </ul>
                      </div>
                   </nav>
@@ -139,19 +139,17 @@ if (isset($_POST["logout"])) {
       </div>
       <?php
       $optieInlog = isset($_POST["optieInlog"]) ? htmlspecialchars($_POST["optieInlog"]) : "2";
-      $formAction = ($optieInlog == "2") ? "Registreren" : (($optieInlog == "3") ? "Login als beheerder" : "Inloggen");
-      $buttonValue = ($optieInlog == "2") ? "1" : (($optieInlog == "3") ? "3" : "0");
+      $formAction = ($optieInlog == "2") ? "Nieuw registreren" : (($optieInlog == "3") ? "Login als beheerder" : "Login als klant");
+      $buttonValue = ($optieInlog == "2") ? "1" : (($optieInlog == "3") ? "3" : "2");
       ?>
 
       <form action="process.php" method="post">
          <div class="inputInlog">
             <hr><b>Gebruikersnaam :</b><br>
-            <input type="text" name="eName" pattern="[A-z0-9À-ž\s]{2,}" title="Drie of meer characters"
-            required><br><br>
+            <input type="text" name="eName" pattern="[A-z0-9À-ž\s]{2,}" title="Drie of meer characters" required><br><br>
             
             <b>Paswoord :</b><br>
-            <input type="password" name="pass" pattern=".{8,}" title="Acht of meer characters"
-            required><br><br>
+            <input type="password" name="pass" pattern=".{8,}" title="Acht of meer characters" required><br><br>
          </div>
 
          <button class="sub_btn" name="registreren" type="submit" value="<?php echo htmlspecialchars($buttonValue); ?>">
@@ -167,7 +165,7 @@ if (isset($_POST["logout"])) {
 
          <?php if ($optieInlog != "3") { ?>
             <button class="sub_btn" name="optieInlog" type="submit" value="3">
-               Beheerder Inlog
+               Inlog Beheerder
             </button>
          <?php } ?>
       </form>
