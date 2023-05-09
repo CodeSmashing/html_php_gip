@@ -10,267 +10,269 @@ if (isset($_POST["logout"])) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
-   <head>
-      <!-- basic -->
-      <meta charset="utf-8">
-      <meta http-equiv="X-UA-Compatible" content="IE=edge">
-      <!-- mobile metas -->
-      <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="viewport" content="initial-scale=1, maximum-scale=1">
-      <!-- site metas -->
-      <title>Product</title>
-      <meta name="keywords" content="">
-      <meta name="description" content="">
-      <meta name="author" content="">
-      <!-- bootstrap css -->
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-      <!-- style css -->
-      <link rel="stylesheet" href="css/style.css">
-      <!-- Responsive-->
-      <link rel="stylesheet" href="css/responsive.css">
-      <!-- fevicon -->
-      <link rel="icon" href="images/fevicon.png" type="image/gif" />
-      <!-- Scrollbar Custom CSS -->
-      <link rel="stylesheet" href="css/jquery.mCustomScrollbar.min.css">
-      <!-- Tweaks for older IEs-->
-      <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" media="screen">
-      <!--[if lt IE 9]>
+
+<head>
+   <!-- basic -->
+   <meta charset="utf-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <!-- mobile metas -->
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+   <!-- site metas -->
+   <title>Product</title>
+   <meta name="keywords" content="">
+   <meta name="description" content="">
+   <meta name="author" content="">
+   <!-- bootstrap css -->
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+   <!-- style css -->
+   <link rel="stylesheet" href="css/style.css">
+   <!-- Responsive-->
+   <link rel="stylesheet" href="css/responsive.css">
+   <!-- fevicon -->
+   <link rel="icon" href="images/fevicon.png" type="image/gif" />
+   <!-- Scrollbar Custom CSS -->
+   <link rel="stylesheet" href="css/jquery.mCustomScrollbar.min.css">
+   <!-- Tweaks for older IEs-->
+   <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" media="screen">
+   <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
       <![endif]-->
-      
-      <?php
-      $db_host = 'localhost';
-      $db_user = 'root';
-      $db_pass = '';
-      $db_name = 'gip';
 
-      require_once('config.php');
+   <?php
+   $db_host = 'localhost';
+   $db_user = 'root';
+   $db_pass = '';
+   $db_name = 'gip';
 
-      try {
-         // create a PDO object and set connection parameters
-         $dsn = "mysql:host=$db_host;dbname=$db_name;charset=utf8mb4";
-         $options = array(
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_EMULATE_PREPARES => false,
-         );
-         $pdo = new PDO($dsn, $db_user, $db_pass, $options);
-      } catch(PDOException $e) {
-         // handle any errors that may occur during connection
-         echo "Connection failed: " . $e->getMessage();
-         exit();
-      }
-      $pID = 1;
-      ?>
-   </head>
-   <!-- body -->
-   <body class="main-layout inner_page">
-      <!-- loader  -->
-      <!--
+   require_once('config.php');
+
+   try {
+      // create a PDO object and set connection parameters
+      $dsn = "mysql:host=$db_host;dbname=$db_name;charset=utf8mb4";
+      $options = array(
+         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+         PDO::ATTR_EMULATE_PREPARES => false,
+      );
+      $pdo = new PDO($dsn, $db_user, $db_pass, $options);
+   } catch (PDOException $e) {
+      // handle any errors that may occur during connection
+      echo "Connection failed: " . $e->getMessage();
+      exit();
+   }
+   $pID = 1;
+   ?>
+</head>
+<!-- body -->
+
+<body class="main-layout inner_page">
+   <!-- loader  -->
+   <!--
       <div class="loader_bg">
          <div class="loader"><img src="images/loading.gif" alt="#"/></div>
       </div>
       -->
-      <!-- end loader -->
-      <!-- header -->
-      <header class="full_bg">
-         <!-- header inner -->
-         <div class="header">
-            <div class="container-fluid">
-               <div class="row">
-                  <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col logo_section">
-                     <div class="full">
-                        <div class="center-desk">
-                           <div class="logo">
-                              <a href="index.php"><img src="images/logo.png" alt="#" /></a>
-                           </div>
+   <!-- end loader -->
+   <!-- header -->
+   <header class="full_bg">
+      <!-- header inner -->
+      <div class="header">
+         <div class="container-fluid">
+            <div class="row">
+               <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col logo_section">
+                  <div class="full">
+                     <div class="center-desk">
+                        <div class="logo">
+                           <a href="index.php"><img src="images/logo.png" alt="#" /></a>
                         </div>
                      </div>
                   </div>
-                  <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9">
-                     <nav class="navigation navbar navbar-expand-md navbar-dark ">
-                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample04" aria-controls="navbarsExample04" aria-expanded="false" aria-label="Toggle navigation">
+               </div>
+               <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9">
+                  <nav class="navigation navbar navbar-expand-md navbar-dark ">
+                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample04" aria-controls="navbarsExample04" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
-                        </button>
-                        <div class="collapse navbar-collapse" id="navbarsExample04">
-                           <ul class="navbar-nav mr-auto">
+                     </button>
+                     <div class="collapse navbar-collapse" id="navbarsExample04">
+                        <ul class="navbar-nav mr-auto">
+                           <li class="nav-item">
+                              <a class="nav-link" href="index.php">Thuis</a>
+                           </li>
+                           <li class="nav-item">
+                              <a class="nav-link" href="about.php">Over Ons</a>
+                           </li>
+                           <li class="nav-item active">
+                              <a class="nav-link" href="order.php">Bestel</a>
+                           </li>
+                           <li class="nav-item">
+                              <a class="nav-link" href="products.php">Producten</a>
+                           </li>
+                           <?php if (!empty($_SESSION["beheerderLoggedIn"])) { ?>
                               <li class="nav-item">
-                                 <a class="nav-link" href="index.php">Thuis</a>
+                                 <a class="nav-link" href="stock.php">Stock</a>
                               </li>
-                              <li class="nav-item">
-                                 <a class="nav-link" href="about.php">Over Ons</a>
-                              </li>
-                              <li class="nav-item active">
-                                 <a class="nav-link" href="order.php">Bestel</a>
-                              </li>
-                              <li class="nav-item">
-                                 <a class="nav-link" href="products.php">Producten</a>
-                              </li>
-                              <?php if (!empty($_SESSION["beheerderLoggedIn"])) { ?>
-                                 <li class="nav-item">
-                                    <a class="nav-link" href="stock.php">Stock</a>
-                                 </li>
-                              <?php } ?>
-                              <li class="nav-item">
-                                 <a class="nav-link" href="contact.php">Contact</a>
-                              </li>
-                              <?php
-                              $item = ((empty($_SESSION["loggedIn"]) == true || $_SESSION["loggedIn"] != true) && (empty($_SESSION["beheerderLoggedIn"]) == true)) ?
+                           <?php } ?>
+                           <li class="nav-item">
+                              <a class="nav-link" href="contact.php">Contact</a>
+                           </li>
+                           <?php
+                           $item = ((empty($_SESSION["loggedIn"]) == true || $_SESSION["loggedIn"] != true) && (empty($_SESSION["beheerderLoggedIn"]) == true)) ?
                               '<li class="nav-item"><a class="nav-link" href="login.php">Login</a></li>' :
                               '<li class="nav-item"><a class="nav-link" href="profile.php">Profiel</a></li>
                               <li class="nav-item"><form method="post">
                               <button class="nav-link" name="logout" type="submit" value="1" formtarget="_self">Logout</button>
                               </form></li>';
-                              echo $item;
-                              ?>
-                           </ul>
-                        </div>
-                     </nav>
-                  </div>
-               </div>
-            </div>
-         </div>
-         <!-- end header inner -->
-      </header>
-      <!-- end header -->
-      <!-- banner -->
-      <div class="back_re">
-         <div class="container">
-            <div class="row">
-               <div class="col-md-12">
-                  <div class="title">
-                     <h2>Uw Bestelling Plaatsen</h2>
-                  </div>
+                           echo $item;
+                           ?>
+                        </ul>
+                     </div>
+                  </nav>
                </div>
             </div>
          </div>
       </div>
-      <!-- end banner -->
-      <!-- our products -->
-      <div class="products">
-         <div class="container">
-            <div class="row">
-               <div class="col-md-12">
-                  <div class="titlepage">
-                     <span>
-                        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptu
-                     </span>
-                  </div>
+      <!-- end header inner -->
+   </header>
+   <!-- end header -->
+   <!-- banner -->
+   <div class="back_re">
+      <div class="container">
+         <div class="row">
+            <div class="col-md-12">
+               <div class="title">
+                  <h2>Uw Bestelling Plaatsen</h2>
                </div>
             </div>
          </div>
       </div>
-      <div class="order">
-         <div class="container">
-            <div class="sub_form">
-               <div class="wrapper">
-                  <fieldset class="list">
-                     <legend>Uw Order</legend>
-                     <hr>
-                     <?php
-                     if (isset($_SESSION["loggedIn"]) || isset($_SESSION["beheerderLoggedIn"])) {
-                        // initialize cart if it doesn't exist
-                        if (!isset($_SESSION["cart"])) {
-                           $_SESSION["cart"] = array();
-                        }
-                        
-                        // add product to cart if submitted
-                        if (isset($_POST["add_to_cart"])) {
-                           $product_name = $_POST["product_name"];
-                           ((int)$_POST["product_quantity"] == 0) ? $product_quantity = 1 : $product_quantity = (int)$_POST["product_quantity"];
-                           $product_price = (float)$_POST["product_price"];
-                           
-                           if (isset($_SESSION["cart"][$product_name])) {
-                              $_SESSION["cart"][$product_name]["quantity"] += $product_quantity;
-                           } else {
-                              $_SESSION["cart"][$product_name] = array("quantity" => $product_quantity, "price" => $product_price);
-                           }
-                        }
-                        
-                        // remove product from cart if submitted
-                        if (isset($_POST["remove_from_cart"])) {
-                           $product_name = $_POST["product_name"];
-                           unset($_SESSION["cart"][$product_name]);
-                        }
-
-                        // display cart
-                        if (empty($_SESSION["cart"])) {
-                           echo "<p>Uw winkelmandje is leeg</p>";
-                        } else {
-                           echo "<ul>";
-                           $total_price = 0;
-                           foreach ($_SESSION["cart"] as $product_name => $product) {
-                              $product_price = $product["price"];
-                              $product_quantity = $product["quantity"];
-                              $product_total_price = $product_price * $product_quantity;
-                              $total_price += $product_total_price;
-
-                              echo "<li>" . $product_name . " x " . $product_quantity . " = €" . $product_total_price . " <form method='post'><input type='hidden' name='product_name' value='$product_name'><button class='remove_btn' name='remove_from_cart' type='submit'>Remove</button></form></li>";
-                           }
-                           echo "</ul>"; ?>
-                           <br><span>Uw totaal komt uit tot: €<?php echo $total_price; ?></span>
-                           <form action="process.php">
-                              <button class="send_btn" name="optieSend" type="submit">Finaliseren</button>
-                           </form>
-                        <?php
-                        }
-                     } else { ?>
-                        <span>U zult moeten inloggen om een bestelling te mogen plaatsen.</span><br>
-                        <a class="send_btn" href="login.php">Login pagina</a>
-                     <?php }
-                     ?>
-                  </fieldset>
-                  <fieldset class="orderField">
-                     <?php
-                     $sql = "SELECT * FROM product p, stock s WHERE p.id_stock = s.id_stock";
-                     $result = $pdo->query($sql);
-                     $products = $result->fetchAll(PDO::FETCH_ASSOC);
-                     $num_products = count($products);
-
-                     // Calculate the number of slides needed
-                     $num_slides = ceil($num_products / 8);
-                     
-                     // Check if we need to add dummy products
-                     $num_dummy_products = $num_slides * 8 - $num_products;
-                     if ($num_dummy_products > 0) {
-                        for ($i = 0; $i < $num_dummy_products; $i++) {
-                           $products[] = array(
-                              'product_naam' => 'dummy' . $i,
-                              'product_prijs' => '0.00',
-                              'stock' => '0'
-                           );
-                        }
-                        $num_products += $num_dummy_products;
+   </div>
+   <!-- end banner -->
+   <!-- our products -->
+   <div class="products">
+      <div class="container">
+         <div class="row">
+            <div class="col-md-12">
+               <div class="titlepage">
+                  <span>
+                     Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptu
+                  </span>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+   <div class="order">
+      <div class="container">
+         <div class="sub_form">
+            <div class="wrapper">
+               <fieldset class="list">
+                  <legend>Uw Order</legend>
+                  <hr>
+                  <?php
+                  if (isset($_SESSION["loggedIn"]) || isset($_SESSION["beheerderLoggedIn"])) {
+                     // initialize cart if it doesn't exist
+                     if (!isset($_SESSION["cart"])) {
+                        $_SESSION["cart"] = array();
                      }
-                     ?>
-                     <div id="productCarousel" class="carousel slide" data-ride="carousel">
-                        <!-- Indicators -->
-                        <ol class="carousel-indicators">
-                           <?php
-                           for ($i = 0; $i < $num_slides; $i++) { 
-                           ?>
-                           <li data-target="#productCarousel" data-slide-to="<?php echo $i; ?>" <?php if ($i == 0) { ?>class="active"<?php } ?>></li>
-                           <?php } ?>
-                        </ol>
 
-                        <!-- Wrapper for slides -->
-                        <div class="carousel-inner">
-                           <?php
-                           for ($i = 0; $i < $num_slides; $i++) {
-                           ?>
+                     // add product to cart if submitted
+                     if (isset($_POST["add_to_cart"])) {
+                        $product_name = $_POST["product_name"];
+                        ((int)$_POST["product_quantity"] == 0) ? $product_quantity = 1 : $product_quantity = (int)$_POST["product_quantity"];
+                        $product_price = (float)$_POST["product_price"];
+
+                        if (isset($_SESSION["cart"][$product_name])) {
+                           $_SESSION["cart"][$product_name]["quantity"] += $product_quantity;
+                        } else {
+                           $_SESSION["cart"][$product_name] = array("quantity" => $product_quantity, "price" => $product_price);
+                        }
+                     }
+
+                     // remove product from cart if submitted
+                     if (isset($_POST["remove_from_cart"])) {
+                        $product_name = $_POST["product_name"];
+                        unset($_SESSION["cart"][$product_name]);
+                     }
+
+                     // display cart
+                     if (empty($_SESSION["cart"])) {
+                        echo "<p>Uw winkelmandje is leeg</p>";
+                     } else {
+                        echo "<ul>";
+                        $total_price = 0;
+                        foreach ($_SESSION["cart"] as $product_name => $product) {
+                           $product_price = $product["price"];
+                           $product_quantity = $product["quantity"];
+                           $product_total_price = $product_price * $product_quantity;
+                           $total_price += $product_total_price;
+
+                           echo "<li>" . $product_name . " x " . $product_quantity . " = €" . $product_total_price . " <form method='post'><input type='hidden' name='product_name' value='$product_name'><button class='remove_btn' name='remove_from_cart' type='submit'>Remove</button></form></li>";
+                        }
+                        echo "</ul>"; ?>
+                        <br><span>Uw totaal komt uit tot: €<?php echo $total_price; ?></span>
+                        <form action="process.php">
+                           <button class="send_btn" name="optieSend" type="submit">Finaliseren</button>
+                        </form>
+                     <?php
+                     }
+                  } else { ?>
+                     <span>U zult moeten inloggen om een bestelling te mogen plaatsen.</span><br>
+                     <a class="send_btn" href="login.php">Login pagina</a>
+                  <?php }
+                  ?>
+               </fieldset>
+               <fieldset class="orderField">
+                  <?php
+                  $sql = "SELECT * FROM product p, stock s WHERE p.id_stock = s.id_stock";
+                  $result = $pdo->query($sql);
+                  $products = $result->fetchAll(PDO::FETCH_ASSOC);
+                  $num_products = count($products);
+
+                  // Calculate the number of slides needed
+                  $num_slides = ceil($num_products / 8);
+
+                  // Check if we need to add dummy products
+                  $num_dummy_products = $num_slides * 8 - $num_products;
+                  if ($num_dummy_products > 0) {
+                     for ($i = 0; $i < $num_dummy_products; $i++) {
+                        $products[] = array(
+                           'product_naam' => 'dummy' . $i,
+                           'product_prijs' => '0.00',
+                           'stock' => '0'
+                        );
+                     }
+                     $num_products += $num_dummy_products;
+                  }
+                  ?>
+                  <div id="productCarousel" class="carousel slide" data-ride="carousel">
+                     <!-- Indicators -->
+                     <ol class="carousel-indicators">
+                        <?php
+                        for ($i = 0; $i < $num_slides; $i++) {
+                        ?>
+                           <li data-target="#productCarousel" data-slide-to="<?php echo $i; ?>" <?php if ($i == 0) { ?>class="active" <?php } ?>></li>
+                        <?php } ?>
+                     </ol>
+
+                     <!-- Wrapper for slides -->
+                     <div class="carousel-inner">
+                        <?php
+                        for ($i = 0; $i < $num_slides; $i++) {
+                        ?>
                            <div class="carousel-item <?php if ($i == 0) { ?>active<?php } ?>">
                               <div class="row">
-                                 <?php 
+                                 <?php
                                  for ($j = $i * 8; $j < ($i + 1) * 8 && $j < $num_products; $j++) {
-                                    ?>
+                                 ?>
                                     <div id="ho_bo" class="our_products">
                                        <div class="our_products">
                                           <div class="product">
                                              <figure><img src="images/pro<?php echo $products[$j]['product_naam']; ?>.png" alt="#"></figure>
                                           </div>
                                           <h3><?php echo ucfirst($products[$j]['product_naam']); ?></h3>
-                                          <span>Product info</span><br/>
+                                          <span>Product info</span><br />
                                           <p>Prijs per: € <?php echo $products[$j]['product_prijs']; ?></p>
                                           <p>In stock: <?php echo $products[$j]['stock']; ?></p>
                                           <form method="post">
@@ -281,92 +283,93 @@ if (isset($_POST["logout"])) {
                                           </form>
                                        </div>
                                     </div>
-                                 <?php 
+                                 <?php
                                  } ?>
                               </div>
                            </div>
-                           <?php }
-                           $pdo = null; ?>
-                        </div>
-                        <!-- Controls -->
-                        <a class="carousel-control-prev" href="#productCarousel" role="button" data-slide="prev">
-                           <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                           <span class="sr-only">Previous</span>
-                        </a>
-                        <a class="carousel-control-next" href="#productCarousel" role="button" data-slide="next">
-                           <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                           <span class="sr-only">Next</span>
-                        </a>
+                        <?php }
+                        $pdo = null; ?>
                      </div>
-                  </fieldset>
+                     <!-- Controls -->
+                     <a class="carousel-control-prev" href="#productCarousel" role="button" data-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Previous</span>
+                     </a>
+                     <a class="carousel-control-next" href="#productCarousel" role="button" data-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Next</span>
+                     </a>
+                  </div>
+               </fieldset>
+            </div>
+         </div>
+      </div>
+   </div>
+   <!-- end our products -->
+   <!--  footer -->
+   <footer>
+      <div class="footer">
+         <div class="container">
+            <div class="row">
+               <div class="col-md-8 offset-md-2">
+                  <div class="newslatter">
+                     <h4>Abboneer Aan Onze Nieuwsbrief</h4>
+                     <form class="bottom_form">
+                        <input class="enter" placeholder="Typ uw email" type="text" name="Typ uw email">
+                        <button class="sub_btn">Abboneer</button>
+                     </form>
+                  </div>
+               </div>
+               <div class="col-sm-12">
+                  <div class="border_top1"></div>
+               </div>
+            </div>
+            <div class="row">
+               <div class="col-md-4">
+                  <h3>menu LINKS</h3>
+                  <ul class="link_menu">
+                     <li><a href="#">Thuis Pagina</a></li>
+                     <li><a href="about.php">Over ons</a></li>
+                     <li><a href="order.php">Bestel</a></li>
+                     <li><a href="products.php">Producten</a></li>
+                     <li><a href="contact.php">Contacteer Ons</a></li>
+                  </ul>
+               </div>
+               <div class="col-md-3">
+                  <h3>TOP voedsel</h3>
+                  <p class="many">
+                     There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected
+                  </p>
+               </div>
+               <div class="col-lg-3 offset-mdlg-2 col-md-4 offset-md-1">
+                  <h3>Contact</h3>
+                  <ul class="conta">
+                     <li><i class="fa fa-map-marker" aria-hidden="true"></i>Locatie</li>
+                     <li><i class="fa fa-envelope" aria-hidden="true"></i><a href="#">demo@gmail.com</a></li>
+                     <li><i class="fa fa-mobile" aria-hidden="true"></i>Tell : +01 1234567890</li>
+                  </ul>
+               </div>
+            </div>
+         </div>
+         <div class="copyright">
+            <div class="container">
+               <div class="row">
+                  <div class="col-md-10 offset-md-1">
+                     <p>© 2019 All Rights Reserved. Design by <a href="https://html.design/"> Free Html Templates</a></p>
+                  </div>
                </div>
             </div>
          </div>
       </div>
-      <!-- end our products -->
-      <!--  footer -->
-      <footer>
-         <div class="footer">
-            <div class="container">
-               <div class="row">
-                  <div class="col-md-8 offset-md-2">
-                     <div class="newslatter">
-                        <h4>Abboneer Aan Onze Nieuwsbrief</h4>
-                        <form class="bottom_form">
-                           <input class="enter" placeholder="Typ uw email" type="text" name="Typ uw email">
-                           <button class="sub_btn">Abboneer</button>
-                        </form>
-                     </div>
-                  </div>
-                  <div class="col-sm-12">
-                     <div class="border_top1"></div>
-                  </div>
-               </div>
-               <div class="row">
-                  <div class="col-md-4">
-                     <h3>menu LINKS</h3>
-                     <ul class="link_menu">
-                        <li><a href="#">Thuis Pagina</a></li>
-                        <li><a href="about.php">Over ons</a></li>
-                        <li><a href="order.php">Bestel</a></li>
-                        <li><a href="products.php">Producten</a></li>
-                        <li><a href="contact.php">Contacteer Ons</a></li>
-                     </ul>
-                  </div>
-                  <div class="col-md-3">
-                     <h3>TOP voedsel</h3>
-                     <p class="many">
-                        There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected
-                     </p>
-                  </div>
-                  <div class="col-lg-3 offset-mdlg-2 col-md-4 offset-md-1">
-                     <h3>Contact</h3>
-                     <ul class="conta">
-                        <li><i class="fa fa-map-marker" aria-hidden="true"></i>Locatie</li>
-                        <li><i class="fa fa-envelope" aria-hidden="true"></i><a href="#">demo@gmail.com</a></li>
-                        <li><i class="fa fa-mobile" aria-hidden="true"></i>Tell : +01 1234567890</li>
-                     </ul>
-                  </div>
-               </div>
-            </div>
-            <div class="copyright">
-               <div class="container">
-                  <div class="row">
-                     <div class="col-md-10 offset-md-1">
-                        <p>© 2019 All Rights Reserved. Design by <a href="https://html.design/"> Free Html Templates</a></p>
-                     </div>
-                  </div>
-               </div>
-            </div>
-         </div>
-      </footer>
-      <!-- end footer -->
-      <!-- Javascript files-->
-      <script src="js/jquery.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-      <!-- sidebar -->
-      <script src="js/jquery.mCustomScrollbar.concat.min.js"></script>
-      <script src="js/custom.js"></script>
-   </body>
+   </footer>
+   <!-- end footer -->
+   <!-- Javascript files-->
+   <script src="js/jquery.min.js"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+   <!-- sidebar -->
+   <script src="js/jquery.mCustomScrollbar.concat.min.js"></script>
+   <script src="js/custom.js"></script>
+</body>
+
 </html>

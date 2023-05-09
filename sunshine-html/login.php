@@ -9,6 +9,7 @@ if (isset($_POST["logout"])) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
    <!-- basic -->
    <meta charset="utf-8">
@@ -41,6 +42,7 @@ if (isset($_POST["logout"])) {
    <![endif]-->
 </head>
 <!-- body -->
+
 <body class="main-layout inner_page">
    <!-- loader  -->
    <!-- <div class="loader_bg">
@@ -65,7 +67,7 @@ if (isset($_POST["logout"])) {
                <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9">
                   <nav class="navigation navbar navbar-expand-md navbar-dark">
                      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample04" aria-controls="navbarsExample04" aria-expanded="false" aria-label="Toggle navigation">
-                     <span class="navbar-toggler-icon"></span>
+                        <span class="navbar-toggler-icon"></span>
                      </button>
                      <div class="collapse navbar-collapse" id="navbarsExample04">
                         <ul class="navbar-nav mr-auto">
@@ -91,8 +93,8 @@ if (isset($_POST["logout"])) {
                            </li>
                            <?php
                            $item = ((empty($_SESSION["loggedIn"]) == true || $_SESSION["loggedIn"] != true) && (empty($_SESSION["beheerderLoggedIn"]) == true)) ?
-                           '<li class="nav-item active"><a class="nav-link" href="login.php">Login</a></li>' :
-                           '<li class="nav-item"><a class="nav-link" href="profile.php">Profiel</a></li>
+                              '<li class="nav-item active"><a class="nav-link" href="login.php">Login</a></li>' :
+                              '<li class="nav-item"><a class="nav-link" href="profile.php">Profiel</a></li>
                            <li class="nav-item active"><form method="post">
                            <button class="nav-link" name="logout" type="submit" value="1" formtarget="_self">Logout</button>
                            </form></li>';
@@ -115,7 +117,7 @@ if (isset($_POST["logout"])) {
             <div class="col-md-12">
                <div class="title">
                   <?php
-                  $item = (empty($_POST["optieInlog"]) == true || $_POST["optieInlog"] == "2") ? '<h2>Registratie</h2>' : '<h2>Login</h2>' ;
+                  $item = (empty($_POST["optieInlog"]) == true || $_POST["optieInlog"] == "2") ? '<h2>Registratie</h2>' : '<h2>Login</h2>';
                   echo $item;
                   ?>
                </div>
@@ -131,7 +133,7 @@ if (isset($_POST["logout"])) {
             <div class="titlepage">
                <?php
                $item = (empty($_POST["optieInlog"]) == true || $_POST["optieInlog"] == "2") ? '<span>Welkom tot de registratie pagina, hier kunt u zich een account registreren.</span>' : '
-               <span>Welkom tot de inlog pagina, hier kunt u zich inloggen.</span>' ;
+               <span>Welkom tot de inlog pagina, hier kunt u zich inloggen.</span>';
                echo $item;
                ?>
             </div>
@@ -147,7 +149,7 @@ if (isset($_POST["logout"])) {
          <div class="inputInlog">
             <hr><b>Gebruikersnaam :</b><br>
             <input type="text" name="eName" pattern="[A-z0-9À-ž\s]{2,}" title="Drie of meer characters" required><br><br>
-            
+
             <b>Paswoord :</b><br>
             <input type="password" name="pass" pattern=".{8,}" title="Acht of meer characters" required><br><br>
          </div>
@@ -237,4 +239,5 @@ if (isset($_POST["logout"])) {
    <script src="js/jquery.mCustomScrollbar.concat.min.js"></script>
    <script src="js/custom.js"></script>
 </body>
+
 </html>

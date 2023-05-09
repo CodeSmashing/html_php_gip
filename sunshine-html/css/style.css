@@ -1051,9 +1051,11 @@ div.login form[method="post"] button[type=submit] {
 /** end login section **/
 /** begin profile section **/
 
+/*
 div.profile {
      
 }
+*/
 div.profile .send_btn {
      font-size: 13px;
      transition: ease-in all 0.5s;
