@@ -116,10 +116,10 @@ if (isset($_POST["logout"])) {
                               <a class="nav-link" href="contact.php">Contact</a>
                            </li>
                            <?php
-                           $item = ((empty($_SESSION["loggedIn"]) == true || $_SESSION["loggedIn"] != true) && (empty($_SESSION["beheerderLoggedIn"]) == true)) ?
+                           $item = ((empty($_SESSION['loggedIn']) == true || $_SESSION['loggedIn'] != true) && (empty($_SESSION['beheerderLoggedIn']) == true)) ?
                               '<li class="nav-item"><a class="nav-link" href="login.php">Login</a></li>' :
                               '<li class="nav-item"><a class="nav-link" href="profile.php">Profiel</a></li>
-                              <li class="nav-item"><form method="post">
+                              <li class="nav-item"><form method="post" action="index.php">
                               <button class="nav-link" name="logout" type="submit" value="1" formtarget="_self">Logout</button>
                               </form></li>';
                            echo $item;

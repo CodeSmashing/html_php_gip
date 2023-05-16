@@ -117,10 +117,10 @@ if (isset($_POST["logout"])) {
                               <a class="nav-link" href="contact.php">Contact</a>
                            </li>
                            <?php
-                           $item = ((empty($_SESSION["loggedIn"]) == true || $_SESSION["loggedIn"] != true) && (empty($_SESSION["beheerderLoggedIn"]) == true)) ?
+                           $item = ((empty($_SESSION['loggedIn']) == true || $_SESSION['loggedIn'] != true) && (empty($_SESSION['beheerderLoggedIn']) == true)) ?
                               '<li class="nav-item"><a class="nav-link" href="login.php">Login</a></li>' :
                               '<li class="nav-item"><a class="nav-link" href="profile.php">Profiel</a></li>
-                              <li class="nav-item"><form method="post">
+                              <li class="nav-item"><form method="post" action="index.php">
                               <button class="nav-link" name="logout" type="submit" value="1" formtarget="_self">Logout</button>
                               </form></li>';
                            echo $item;
@@ -270,13 +270,17 @@ if (isset($_POST["logout"])) {
          </div>
          <div class="row">
             <?php
+            // SELECT logged in user name
+            $logged_user_name = isset($_SESSION['loggedIn']['user']) ? $_SESSION['loggedIn']['user'] : (isset($_SESSION['beheerderLoggedIn']['user']) ? $_SESSION['beheerderLoggedIn']['user'] : null);
+            
+            // SELECT al de product namen om dan via een loop al de relevante fotos te tonen
             $sql = "SELECT product_naam FROM product";
             $result = $pdo->query($sql);
             $products = $result->fetchAll(PDO::FETCH_ASSOC);
             ?>
             <?php for ($j = 0; $j < count($products); $j++) { ?>
                <div class="products_img">
-                  <figure><img src="images/pro<?php echo ucfirst($products[$j]['product_naam']); ?>.png" alt="#"></figure>
+                  <figure><?php if (isset($logged_user_name)) { echo '<a href="order.php">'; } ?><img src='images/pro<?php echo ucfirst($products[$j]['product_naam']); ?>.png' alt='#'><?php if (isset($logged_user_name)) { echo '</a>'; } ?></figure>
                </div>
             <?php }
             $pdo = null; ?>

@@ -118,10 +118,10 @@ if (isset($_POST["logout"])) {
                               <a class="nav-link" href="contact.php">Contact</a>
                            </li>
                            <?php
-                           $item = ((empty($_SESSION["loggedIn"]) == true || $_SESSION["loggedIn"] != true) && (empty($_SESSION["beheerderLoggedIn"]) == true)) ?
+                           $item = ((empty($_SESSION['loggedIn']) == true || $_SESSION['loggedIn'] != true) && (empty($_SESSION['beheerderLoggedIn']) == true)) ?
                               '<li class="nav-item"><a class="nav-link" href="login.php">Login</a></li>' :
                               '<li class="nav-item"><a class="nav-link" href="profile.php">Profiel</a></li>
-                              <li class="nav-item"><form method="post">
+                              <li class="nav-item"><form method="post" action="index.php">
                               <button class="nav-link" name="logout" type="submit" value="1" formtarget="_self">Logout</button>
                               </form></li>';
                            echo $item;
@@ -184,7 +184,8 @@ if (isset($_POST["logout"])) {
                         $product_price = (float)$_POST["product_price"];
 
                         if (isset($_SESSION["cart"][$product_name])) {
-                           $_SESSION["cart"][$product_name]["quantity"] += $product_quantity;
+                           $_SESSION["cart"][$product_name]['quantity'] += $product_quantity;
+                           $_SESSION["cart"][$product_name]['price'] = $product_price;
                         } else {
                            $_SESSION["cart"][$product_name] = array("quantity" => $product_quantity, "price" => $product_price);
                         }
@@ -211,7 +212,7 @@ if (isset($_POST["logout"])) {
                            echo "<li>" . $product_name . " x " . $product_quantity . " = €" . $product_total_price . " <form method='post'><input type='hidden' name='product_name' value='$product_name'><button class='remove_btn' name='remove_from_cart' type='submit'>Remove</button></form></li>";
                         }
                         echo "</ul>"; ?>
-                        <br><span>Uw totaal komt uit tot: €<?php echo $total_price; ?></span>
+                        <br><span>Uw totaal komt uit tot: € <?php echo $total_price; ?></span>
                         <form action="process.php">
                            <button class="send_btn" name="optieSend" type="submit">Finaliseren</button>
                         </form>
