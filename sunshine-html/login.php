@@ -1,10 +1,11 @@
 <?php
 session_start();
-$_SESSION["lastpage"] = $_SERVER["REQUEST_URI"];
-if (isset($_POST["logout"])) {
-   unset($_SESSION["loggedIn"]);
-   unset($_SESSION["beheerderLoggedIn"]);
-   $_POST["logout"] = "";
+$_SESSION['lastpage'] = $_SERVER['REQUEST_URI'];
+
+if (isset($_POST['logout'])) {
+   unset($_SESSION['logged_in']);
+   unset($_SESSION['admin_logged_in']);
+   $_POST['logout'] = '';
 }
 ?>
 <!DOCTYPE html>
@@ -18,8 +19,7 @@ if (isset($_POST["logout"])) {
    <meta name="viewport" content="width=device-width, initial-scale=1">
    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
    <!-- site metas -->
-   <?php $title = (empty($_POST["optieInlog"]) || $_POST["optieInlog"] == "2") ? "Registratie" : "Login"; ?>
-   <title><?php echo $title; ?></title>
+   <title><?php echo (empty($_POST["optie_inlog"]) || $_POST["optie_inlog"] == "2") ? "Registratie" : "Login"; ?></title>
    <meta name="keywords" content="">
    <meta name="description" content="">
    <meta name="author" content="">
@@ -45,9 +45,9 @@ if (isset($_POST["logout"])) {
 
 <body class="main-layout inner_page">
    <!-- loader  -->
-   <!-- <div class="loader_bg">
-      <div class="loader"><img src="images/loading.gif" alt="#"/></div>
-   </div> -->
+   <div class="loader_bg">
+      <div class="loader"><img src="images/loading.gif" alt="#" /></div>
+   </div>
    <!-- end loader -->
    <!-- header -->
    <header class="full_bg">
@@ -83,7 +83,9 @@ if (isset($_POST["logout"])) {
                            <li class="nav-item">
                               <a class="nav-link" href="products.php">Producten</a>
                            </li>
-                           <?php if (!empty($_SESSION["beheerderLoggedIn"])) { ?>
+                           <?php
+                           // Only show the link to the stock page to admin's who're logged in
+                           if (!empty($_SESSION["admin_logged_in"])) { ?>
                               <li class="nav-item">
                                  <a class="nav-link" href="stock.php">Stock</a>
                               </li>
@@ -92,7 +94,8 @@ if (isset($_POST["logout"])) {
                               <a class="nav-link" href="contact.php">Contact</a>
                            </li>
                            <?php
-                           $item = ((empty($_SESSION['loggedIn']) == true || $_SESSION['loggedIn'] != true) && (empty($_SESSION['beheerderLoggedIn']) == true)) ?
+                           // Depending on whether or not the user is logged in, either show a login button or a logout button along with a button to the profile page
+                           $item = ((empty($_SESSION['logged_in']) == true || $_SESSION['logged_in'] != true) && (empty($_SESSION['admin_logged_in']) == true)) ?
                               '<li class="nav-item active"><a class="nav-link" href="login.php">Login</a></li>' :
                               '<li class="nav-item"><a class="nav-link" href="profile.php">Profiel</a></li>
                               <li class="nav-item"><form method="post" action="index.php">
@@ -108,31 +111,31 @@ if (isset($_POST["logout"])) {
          </div>
       </div>
       <!-- end header inner -->
-   </header>
-   <!-- end header -->
-   <!-- banner -->
-   <div class="back_re">
-      <div class="container">
-         <div class="row">
-            <div class="col-md-12">
-               <div class="title">
-                  <?php
-                  $item = (empty($_POST["optieInlog"]) == true || $_POST["optieInlog"] == "2") ? '<h2>Registratie</h2>' : '<h2>Login</h2>';
-                  echo $item;
-                  ?>
+      <!-- banner -->
+      <div class="back_re">
+         <div class="container">
+            <div class="row">
+               <div class="col-md-12">
+                  <div class="title">
+                     <?php
+                     echo (empty($_POST['optie_inlog']) == true || $_POST['optie_inlog'] == '2') ? '<h2>Registratie</h2>' : '<h2>Login</h2>';
+                     ?>
+                  </div>
                </div>
             </div>
          </div>
       </div>
-   </div>
-   <!-- end banner -->
+      <!-- end banner -->
+   </header>
+   <!-- end header -->
    <!-- login -->
    <div class="login">
       <div class="row">
          <div class="col-md-6 offset-md-3">
             <div class="titlepage">
                <?php
-               $item = (empty($_POST["optieInlog"]) == true || $_POST["optieInlog"] == "2") ? '<span>Welkom tot de registratie pagina, hier kunt u zich een account registreren.</span>' : '
+               // Depending on whether or not the user selected they wanted to log in or register, we'll give them a different welkomming message
+               $item = (empty($_POST['optie_inlog']) == true || $_POST['optie_inlog'] == '2') ? '<span>Welkom tot de registratie pagina, hier kunt u zich een account registreren.</span>' : '
                <span>Welkom tot de inlog pagina, hier kunt u zich inloggen.</span>';
                echo $item;
                ?>
@@ -140,19 +143,18 @@ if (isset($_POST["logout"])) {
          </div>
       </div>
       <?php
-      $optieInlog = isset($_POST["optieInlog"]) ? htmlspecialchars($_POST["optieInlog"]) : "2";
-      $formAction = ($optieInlog == "2") ? "Nieuw registreren" : (($optieInlog == "3") ? "Login als beheerder" : "Login als klant");
-      $buttonValue = ($optieInlog == "2") ? "1" : (($optieInlog == "3") ? "3" : "2");
+      // Variables we'll set to different values depending on what the user wants to do
+      $optie_inlog = isset($_POST['optie_inlog']) ? htmlspecialchars($_POST['optie_inlog']) : '2';
+      $formAction = ($optie_inlog == '2') ? 'Nieuw registreren' : (($optie_inlog == '3') ? 'Login als beheerder' : 'Login als klant');
+      $buttonValue = ($optie_inlog == '2') ? '1' : (($optie_inlog == '3') ? '3' : '2');
       ?>
 
       <form action="process.php" method="post">
-         <div class="inputInlog">
-            <hr><b>Gebruikersnaam :</b><br>
-            <input type="text" name="eName" pattern="[A-z0-9À-ž\s]{2,}" title="Drie of meer characters" required><br><br>
+         <hr><b>Gebruikersnaam :</b><br>
+         <input type="text" name="username" pattern="[A-z0-9À-ž\s]{2,}" title="Drie of meer characters" required><br><br>
 
-            <b>Paswoord :</b><br>
-            <input type="password" name="pass" pattern=".{8,}" title="Acht of meer characters" required><br><br>
-         </div>
+         <b>Paswoord :</b><br>
+         <input type="password" name="password" pattern=".{8,}" title="Acht of meer characters" required><br><br>
 
          <button class="sub_btn" name="registreren" type="submit" value="<?php echo htmlspecialchars($buttonValue); ?>">
             <?php echo htmlspecialchars($formAction); ?>
@@ -161,12 +163,12 @@ if (isset($_POST["logout"])) {
       </form>
 
       <form method="post">
-         <button class="sub_btn" name="optieInlog" type="submit" value="<?php echo htmlspecialchars(($optieInlog == "2") ? "1" : "2"); ?>">
-            <?php echo htmlspecialchars(($optieInlog == "2") ? "Inloggen" : "Registreren"); ?>
+         <button class="sub_btn" name="optie_inlog" type="submit" value="<?php echo htmlspecialchars(($optie_inlog == "2") ? "1" : "2"); ?>">
+            <?php echo htmlspecialchars(($optie_inlog == "2") ? "Al een klant?" : "Nog geen klant?"); ?>
          </button><br>
 
-         <?php if ($optieInlog != "3") { ?>
-            <button class="sub_btn" name="optieInlog" type="submit" value="3">
+         <?php if ($optie_inlog != "3") { ?>
+            <button class="sub_btn" name="optie_inlog" type="submit" value="3">
                Inlog Beheerder
             </button>
          <?php } ?>
@@ -181,10 +183,10 @@ if (isset($_POST["logout"])) {
             <div class="row">
                <div class="col-md-8 offset-md-2">
                   <div class="newslatter">
-                     <h4>Abboneer Aan Onze Nieuwsbrief</h4>
+                     <h4>Aboneer Aan Onze Nieuwsbrief</h4>
                      <form class="bottom_form">
                         <input class="enter" placeholder="Typ uw email" type="text" name="Typ uw email">
-                        <button class="sub_btn">Abboneer</button>
+                        <button class="sub_btn">Aboneer</button>
                      </form>
                   </div>
                </div>

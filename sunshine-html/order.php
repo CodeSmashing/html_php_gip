@@ -1,11 +1,11 @@
 <?php
 session_start();
-$_SESSION["lastpage"] = $_SERVER["REQUEST_URI"];
+$_SESSION['lastpage'] = $_SERVER['REQUEST_URI'];
 
-if (isset($_POST["logout"])) {
-   unset($_SESSION["loggedIn"]);
-   unset($_SESSION["beheerderLoggedIn"]);
-   $_POST["logout"] = "";
+if (isset($_POST['logout'])) {
+   unset($_SESSION['logged_in']);
+   unset($_SESSION['admin_logged_in']);
+   $_POST['logout'] = '';
 }
 ?>
 <!DOCTYPE html>
@@ -37,43 +37,23 @@ if (isset($_POST["logout"])) {
    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" media="screen">
    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-      <![endif]-->
+   <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+   <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+   <![endif]-->
 
    <?php
-   $db_host = 'localhost';
-   $db_user = 'root';
-   $db_pass = '';
-   $db_name = 'gip';
-
    require_once('config.php');
-
-   try {
-      // create a PDO object and set connection parameters
-      $dsn = "mysql:host=$db_host;dbname=$db_name;charset=utf8mb4";
-      $options = array(
-         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-         PDO::ATTR_EMULATE_PREPARES => false,
-      );
-      $pdo = new PDO($dsn, $db_user, $db_pass, $options);
-   } catch (PDOException $e) {
-      // handle any errors that may occur during connection
-      echo "Connection failed: " . $e->getMessage();
-      exit();
-   }
-   $pID = 1;
+   require_once('sqlquerys.php');
    ?>
+
 </head>
 <!-- body -->
 
 <body class="main-layout inner_page">
    <!-- loader  -->
-   <!--
-      <div class="loader_bg">
-         <div class="loader"><img src="images/loading.gif" alt="#"/></div>
-      </div>
-      -->
+   <div class="loader_bg">
+      <div class="loader"><img src="images/loading.gif" alt="#" /></div>
+   </div>
    <!-- end loader -->
    <!-- header -->
    <header class="full_bg">
@@ -109,7 +89,9 @@ if (isset($_POST["logout"])) {
                            <li class="nav-item">
                               <a class="nav-link" href="products.php">Producten</a>
                            </li>
-                           <?php if (!empty($_SESSION["beheerderLoggedIn"])) { ?>
+                           <?php
+                           // Only show the link to the stock page to admin's who're logged in
+                           if (!empty($_SESSION["admin_logged_in"])) { ?>
                               <li class="nav-item">
                                  <a class="nav-link" href="stock.php">Stock</a>
                               </li>
@@ -118,7 +100,8 @@ if (isset($_POST["logout"])) {
                               <a class="nav-link" href="contact.php">Contact</a>
                            </li>
                            <?php
-                           $item = ((empty($_SESSION['loggedIn']) == true || $_SESSION['loggedIn'] != true) && (empty($_SESSION['beheerderLoggedIn']) == true)) ?
+                           // Depending on whether or not the user is logged in, either show a login button or a logout button along with a button to the profile page
+                           $item = ((empty($_SESSION['logged_in']) == true || $_SESSION['logged_in'] != true) && (empty($_SESSION['admin_logged_in']) == true)) ?
                               '<li class="nav-item"><a class="nav-link" href="login.php">Login</a></li>' :
                               '<li class="nav-item"><a class="nav-link" href="profile.php">Profiel</a></li>
                               <li class="nav-item"><form method="post" action="index.php">
@@ -134,21 +117,21 @@ if (isset($_POST["logout"])) {
          </div>
       </div>
       <!-- end header inner -->
-   </header>
-   <!-- end header -->
-   <!-- banner -->
-   <div class="back_re">
-      <div class="container">
-         <div class="row">
-            <div class="col-md-12">
-               <div class="title">
-                  <h2>Uw Bestelling Plaatsen</h2>
+      <!-- banner -->
+      <div class="back_re">
+         <div class="container">
+            <div class="row">
+               <div class="col-md-12">
+                  <div class="title">
+                     <h2>Uw Bestelling Plaatsen</h2>
+                  </div>
                </div>
             </div>
          </div>
       </div>
-   </div>
-   <!-- end banner -->
+      <!-- end banner -->
+   </header>
+   <!-- end header -->
    <!-- our products -->
    <div class="products">
       <div class="container">
@@ -156,7 +139,7 @@ if (isset($_POST["logout"])) {
             <div class="col-md-12">
                <div class="titlepage">
                   <span>
-                     Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptu
+                     Hier krijgt u de mogelijkheid om een bestelling te plaatsen via onze website. 
                   </span>
                </div>
             </div>
@@ -167,68 +150,71 @@ if (isset($_POST["logout"])) {
       <div class="container">
          <div class="sub_form">
             <div class="wrapper">
+               <!-- A fieldset to display all the products in the user's current order -->
                <fieldset class="list">
                   <legend>Uw Order</legend>
                   <hr>
                   <?php
-                  if (isset($_SESSION["loggedIn"]) || isset($_SESSION["beheerderLoggedIn"])) {
-                     // initialize cart if it doesn't exist
-                     if (!isset($_SESSION["cart"])) {
-                        $_SESSION["cart"] = array();
+                  // If the user is logged in
+                  if (isset($_SESSION['logged_in']) || isset($_SESSION['admin_logged_in'])) {
+                     // Initialize cart if it doesn't exist
+                     if (!isset($_SESSION['cart'])) {
+                        $_SESSION['cart'] = array();
                      }
 
-                     // add product to cart if submitted
-                     if (isset($_POST["add_to_cart"])) {
-                        $product_name = $_POST["product_name"];
-                        ((int)$_POST["product_quantity"] == 0) ? $product_quantity = 1 : $product_quantity = (int)$_POST["product_quantity"];
+                     // Add product to cart if submitted
+                     if (isset($_POST['add_to_cart'])) {
+                        $product_name = $_POST['product_name'];
+                        ((int)$_POST['product_quantity'] == 0) ? $product_quantity = 1 : $product_quantity = (int)$_POST['product_quantity'];
                         $product_price = (float)$_POST["product_price"];
 
-                        if (isset($_SESSION["cart"][$product_name])) {
-                           $_SESSION["cart"][$product_name]['quantity'] += $product_quantity;
-                           $_SESSION["cart"][$product_name]['price'] = $product_price;
+                        if (isset($_SESSION['cart'][$product_name])) {
+                           $_SESSION['cart'][$product_name]['quantity'] += $product_quantity;
+                           $_SESSION['cart'][$product_name]['price'] = $product_price;
                         } else {
-                           $_SESSION["cart"][$product_name] = array("quantity" => $product_quantity, "price" => $product_price);
+                           $_SESSION['cart'][$product_name] = array('quantity' => $product_quantity, 'price' => $product_price);
                         }
                      }
 
-                     // remove product from cart if submitted
-                     if (isset($_POST["remove_from_cart"])) {
-                        $product_name = $_POST["product_name"];
-                        unset($_SESSION["cart"][$product_name]);
+                     // Remove product from cart if submitted
+                     if (isset($_POST['remove_from_cart'])) {
+                        $product_name = $_POST['product_name'];
+                        unset($_SESSION['cart'][$product_name]);
                      }
 
-                     // display cart
-                     if (empty($_SESSION["cart"])) {
-                        echo "<p>Uw winkelmandje is leeg</p>";
+                     // Display cart if not empty
+                     if (empty($_SESSION['cart'])) {
+                        echo '<p>Uw winkelmandje is leeg</p>';
                      } else {
-                        echo "<ul>";
+                        echo '<ul>';
                         $total_price = 0;
-                        foreach ($_SESSION["cart"] as $product_name => $product) {
-                           $product_price = $product["price"];
-                           $product_quantity = $product["quantity"];
+                        foreach ($_SESSION['cart'] as $product_name => $product) {
+                           $product_price = $product['price'];
+                           $product_quantity = $product['quantity'];
                            $product_total_price = $product_price * $product_quantity;
                            $total_price += $product_total_price;
 
-                           echo "<li>" . $product_name . " x " . $product_quantity . " = €" . $product_total_price . " <form method='post'><input type='hidden' name='product_name' value='$product_name'><button class='remove_btn' name='remove_from_cart' type='submit'>Remove</button></form></li>";
+                           echo '<li><span>' . $product_name . ' x ' . $product_quantity . ' = €' . $product_total_price . '</span><form method="post"><input type="hidden" name="product_name" value="' . $product_name . '"><div id="button"><button class="remove_btn" name="remove_from_cart" type="submit">Verwijder</button></div></form></li>';
                         }
-                        echo "</ul>"; ?>
+                        echo '</ul>'; ?>
                         <br><span>Uw totaal komt uit tot: € <?php echo $total_price; ?></span>
                         <form action="process.php">
-                           <button class="send_btn" name="optieSend" type="submit">Finaliseren</button>
+                           <button class="send_btn" type="submit">Finaliseren</button>
                         </form>
                      <?php
                      }
-                  } else { ?>
+                  } else {
+                     // If the user isn't logged in we ask them to log in
+                     ?>
                      <span>U zult moeten inloggen om een bestelling te mogen plaatsen.</span><br>
-                     <a class="send_btn" href="login.php">Login pagina</a>
+                     <div class='center'><a class="send_btn" href="login.php">Login pagina</a></div>
                   <?php }
                   ?>
                </fieldset>
-               <fieldset class="orderField">
+               <!-- A fieldset to display all the products in our database along with relevant information -->
+               <fieldset class="order_field">
                   <?php
-                  $sql = "SELECT * FROM product p, stock s WHERE p.id_stock = s.id_stock";
-                  $result = $pdo->query($sql);
-                  $products = $result->fetchAll(PDO::FETCH_ASSOC);
+                  $products = sql_select_product_and_stock($pdo);
                   $num_products = count($products);
 
                   // Calculate the number of slides needed
@@ -239,34 +225,28 @@ if (isset($_POST["logout"])) {
                   if ($num_dummy_products > 0) {
                      for ($i = 0; $i < $num_dummy_products; $i++) {
                         $products[] = array(
-                           'product_naam' => 'dummy' . $i,
-                           'product_prijs' => '0.00',
-                           'stock' => '0'
+                           'product_naam' => 'N/A',
+                           'product_prijs' => ' ',
+                           'stock' => ' '
                         );
                      }
                      $num_products += $num_dummy_products;
                   }
                   ?>
-                  <div id="productCarousel" class="carousel slide" data-ride="carousel">
+                  <div id="product_carousel" class="carousel slide" data-ride="carousel">
                      <!-- Indicators -->
                      <ol class="carousel-indicators">
-                        <?php
-                        for ($i = 0; $i < $num_slides; $i++) {
-                        ?>
-                           <li data-target="#productCarousel" data-slide-to="<?php echo $i; ?>" <?php if ($i == 0) { ?>class="active" <?php } ?>></li>
+                        <?php for ($i = 0; $i < $num_slides; $i++) { ?>
+                           <li data-target="#product_carousel" data-slide-to="<?php echo $i; ?>" <?php if ($i == 0) { ?>class="active" <?php } ?>></li>
                         <?php } ?>
                      </ol>
 
                      <!-- Wrapper for slides -->
                      <div class="carousel-inner">
-                        <?php
-                        for ($i = 0; $i < $num_slides; $i++) {
-                        ?>
+                        <?php for ($i = 0; $i < $num_slides; $i++) { ?>
                            <div class="carousel-item <?php if ($i == 0) { ?>active<?php } ?>">
                               <div class="row">
-                                 <?php
-                                 for ($j = $i * 8; $j < ($i + 1) * 8 && $j < $num_products; $j++) {
-                                 ?>
+                                 <?php for ($j = $i * 8; $j < ($i + 1) * 8 && $j < $num_products; $j++) { ?>
                                     <div id="ho_bo" class="our_products">
                                        <div class="our_products">
                                           <div class="product">
@@ -277,26 +257,26 @@ if (isset($_POST["logout"])) {
                                           <p>Prijs per: € <?php echo $products[$j]['product_prijs']; ?></p>
                                           <p>In stock: <?php echo $products[$j]['stock']; ?></p>
                                           <form method="post">
-                                             <input type="hidden" name="product_price" value="<?php echo $products[$j]["product_prijs"]; ?>" <?php if ($products[$j]["product_prijs"] == 0.00) { ?>disabled<?php } ?>></input>
-                                             <input type="hidden" name="product_name" value="<?php echo $products[$j]["product_naam"]; ?>" <?php if ($products[$j]["product_prijs"] == 0.00) { ?>disabled<?php } ?>></input>
-                                             <input type="number" name="product_quantity" placeholder="Hoeveelheid" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" <?php if ($products[$j]["product_prijs"] == 0.00) { ?>disabled<?php } ?>></input>
-                                             <button type="submit" name="add_to_cart" class="send_btn" <?php if ($products[$j]["product_prijs"] == 0.00) { ?>disabled<?php } ?>>Toevoegen</input>
+                                             <input type="hidden" name="product_price" value="<?php echo $products[$j]["product_prijs"]; ?>" <?php if ($products[$j]["product_prijs"] == ' ') { ?>disabled<?php } ?>></input>
+                                             <input type="hidden" name="product_name" value="<?php echo $products[$j]["product_naam"]; ?>" <?php if ($products[$j]["product_prijs"] == ' ') { ?>disabled<?php } ?>></input>
+                                             <input type="number" name="product_quantity" placeholder="Hoeveelheid" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" <?php if ($products[$j]["product_prijs"] == ' ') { ?>disabled<?php } ?>></input>
+                                             <button type="submit" name="add_to_cart" class="send_btn" <?php if ($products[$j]["product_prijs"] == ' ') { ?>disabled<?php } ?>>Toevoegen</input>
                                           </form>
                                        </div>
                                     </div>
-                                 <?php
-                                 } ?>
+                                 <?php } ?>
                               </div>
                            </div>
                         <?php }
+                        // End PDO connection
                         $pdo = null; ?>
                      </div>
                      <!-- Controls -->
-                     <a class="carousel-control-prev" href="#productCarousel" role="button" data-slide="prev">
+                     <a class="carousel-control-prev" href="#product_carousel" role="button" data-slide="prev">
                         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                         <span class="sr-only">Previous</span>
                      </a>
-                     <a class="carousel-control-next" href="#productCarousel" role="button" data-slide="next">
+                     <a class="carousel-control-next" href="#product_carousel" role="button" data-slide="next">
                         <span class="carousel-control-next-icon" aria-hidden="true"></span>
                         <span class="sr-only">Next</span>
                      </a>
@@ -314,10 +294,10 @@ if (isset($_POST["logout"])) {
             <div class="row">
                <div class="col-md-8 offset-md-2">
                   <div class="newslatter">
-                     <h4>Abboneer Aan Onze Nieuwsbrief</h4>
+                     <h4>Aboneer Aan Onze Nieuwsbrief</h4>
                      <form class="bottom_form">
                         <input class="enter" placeholder="Typ uw email" type="text" name="Typ uw email">
-                        <button class="sub_btn">Abboneer</button>
+                        <button class="sub_btn">Aboneer</button>
                      </form>
                   </div>
                </div>

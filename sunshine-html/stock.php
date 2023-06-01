@@ -1,10 +1,11 @@
 <?php
 session_start();
-$_SESSION["lastpage"] = $_SERVER["REQUEST_URI"];
-if (isset($_POST["logout"])) {
-   unset($_SESSION["loggedIn"]);
-   unset($_SESSION["beheerderLoggedIn"]);
-   $_POST["logout"] = "";
+$_SESSION['lastpage'] = $_SERVER['REQUEST_URI'];
+
+if (isset($_POST['logout'])) {
+   unset($_SESSION['logged_in']);
+   unset($_SESSION['admin_logged_in']);
+   $_POST['logout'] = '';
 }
 ?>
 <!DOCTYPE html>
@@ -36,42 +37,22 @@ if (isset($_POST["logout"])) {
    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" media="screen">
    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-      <![endif]-->
+   <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+   <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+   <![endif]-->
 
    <?php
-   $db_host = 'localhost';
-   $db_user = 'root';
-   $db_pass = '';
-   $db_name = 'gip';
-
    require_once('config.php');
-
-   try {
-      // create a PDO object and set connection parameters
-      $dsn = "mysql:host=$db_host;dbname=$db_name;charset=utf8mb4";
-      $options = array(
-         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-         PDO::ATTR_EMULATE_PREPARES => false,
-      );
-      $pdo = new PDO($dsn, $db_user, $db_pass, $options);
-   } catch (PDOException $e) {
-      // handle any errors that may occur during connection
-      echo "Connection failed: " . $e->getMessage();
-      exit();
-   }
+   require_once('sqlquerys.php');
    ?>
 </head>
 <!-- body -->
 
 <body class="main-layout inner_page">
    <!-- loader  -->
-   <!--
-      <div class="loader_bg">
-         <div class="loader"><img src="images/loading.gif" alt="#"/></div>
-      </div>
-      -->
+   <div class="loader_bg">
+      <div class="loader"><img src="images/loading.gif" alt="#" /></div>
+   </div>
    <!-- end loader -->
    <!-- header -->
    <header class="full_bg">
@@ -107,7 +88,9 @@ if (isset($_POST["logout"])) {
                            <li class="nav-item">
                               <a class="nav-link" href="products.php">Producten</a>
                            </li>
-                           <?php if (!empty($_SESSION["beheerderLoggedIn"])) { ?>
+                           <?php
+                           // Only show the link to the stock page to admin's who're logged in
+                           if (!empty($_SESSION["admin_logged_in"])) { ?>
                               <li class="nav-item active">
                                  <a class="nav-link" href="stock.php">Stock</a>
                               </li>
@@ -116,7 +99,8 @@ if (isset($_POST["logout"])) {
                               <a class="nav-link" href="contact.php">Contact</a>
                            </li>
                            <?php
-                           $item = ((empty($_SESSION['loggedIn']) == true || $_SESSION['loggedIn'] != true) && (empty($_SESSION['beheerderLoggedIn']) == true)) ?
+                           // Depending on whether or not the user is logged in, either show a login button or a logout button along with a button to the profile page
+                           $item = ((empty($_SESSION['logged_in']) == true || $_SESSION['logged_in'] != true) && (empty($_SESSION['admin_logged_in']) == true)) ?
                               '<li class="nav-item"><a class="nav-link" href="login.php">Login</a></li>' :
                               '<li class="nav-item"><a class="nav-link" href="profile.php">Profiel</a></li>
                               <li class="nav-item"><form method="post" action="index.php">
@@ -132,22 +116,22 @@ if (isset($_POST["logout"])) {
          </div>
       </div>
       <!-- end header inner -->
-   </header>
-   <!-- end header -->
-   <!-- banner -->
-   <div class="back_re">
-      <div class="container">
-         <div class="row">
-            <div class="col-md-12">
-               <div class="title">
-                  <h2>Onze stock</h2>
+      <!-- banner -->
+      <div class="back_re">
+         <div class="container">
+            <div class="row">
+               <div class="col-md-12">
+                  <div class="title">
+                     <h2>Onze stock</h2>
+                  </div>
                </div>
             </div>
          </div>
       </div>
-   </div>
-   <!-- end banner -->
-   <!-- start main page -->
+      <!-- end banner -->
+   </header>
+   <!-- end header -->
+   <!-- start stock -->
    <div class="stock">
       <div class="container">
          <div class="row">
@@ -159,40 +143,50 @@ if (isset($_POST["logout"])) {
          </div>
          <form id="form stock" action="process.php" method="post">
             <?php
-            $sql = "SELECT * FROM product p, stock s WHERE p.id_stock = s.id_stock";
-            $result = $pdo->query($sql);
-            while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-            ?>
+            // SELECT logged in username
+            $logged_user_name = isset($_SESSION['logged_in']['user']) ? $_SESSION['logged_in']['user'] : (isset($_SESSION['admin_logged_in']['user']) ? $_SESSION['admin_logged_in']['user'] : null);
+            // If there isn't a set username this should mean there isn't logged in yet, if that's the case we send the user to the home page
+            if ($logged_user_name == null) {
+               echo 'Dit zou niet mogen gebeuren.<br>
+               U zal worden herleidt naar de thuis pagina';
+
+               // Meta from: https://stackoverflow.com/questions/27123470/redirect-in-php-without-use-of-header-method
+               echo '<meta http-equiv="refresh" content="0; URL=http://localhost/html_php_gip/sunshine-html/index.php">';
+            }
+
+            // SELECT all the product and stock information so we can display said information neatly in a list
+            $results = sql_select_product_and_stock($pdo);
+            foreach ($results as $info) { ?>
                <div class="row sum">
                   <div class="gallery_img">
-                     <figure><img src="images/pro<?php echo $row["product_naam"]; ?>.png" alt="#" /></figure>
+                     <figure><img src="images/pro<?php echo $info['product_naam']; ?>.png" alt="#" /></figure>
                   </div>
-                  <span class="list" id="id">Product Id <?php echo $row["id_product"]; ?></span>
-                  <span class="list" id="id">Stock Id: <?php echo $row["id_stock"]; ?></span>
-                  <span class="list" id="name">Naam: <?php echo $row["product_naam"]; ?></span>
-                  <span class="list" id="num">Huidige Prijs: <?php echo $row["product_prijs"]; ?></span>
-                  <span class="list" id="num">Huidige Stock: <?php echo $row["stock"]; ?></span>
-                  <input type="text" name="product[<?php echo $row['id_product']; ?>][price]" placeholder="Input Prijs"></input>
-                  <input type="text" name="product[<?php echo $row['id_stock']; ?>][stock]" placeholder="Input Stock"></input>
+                  <span class="list" id="id">Product Id: <?php echo $info['id_product']; ?></span>
+                  <span class="list" id="id">Stock Id: <?php echo $info['id_stock']; ?></span>
+                  <span class="list" id="name">Naam: <?php echo $info['product_naam']; ?></span>
+                  <span class="list" id="num">Huidige Prijs: <?php echo $info['product_prijs']; ?></span>
+                  <span class="list" id="num">Huidige Stock: <?php echo $info['stock']; ?></span>
+                  <input type="text" name="product[<?php echo $info['id_product']; ?>][price]" placeholder="Input Prijs"></input>
+                  <input type="text" name="product[<?php echo $info['id_stock']; ?>][stock]" placeholder="Input Stock"></input>
                   <button type="submit"><img class="vink" src="images/vink.png" alt="#"></button>
                </div>
             <?php }
-            $pdo = null;
-            ?>
+            // End PDO connection
+            $pdo = null; ?>
          </form>
       </div>
    </div>
-   <!-- end main page -->
+   <!-- end stock -->
    <footer>
       <div class="footer">
          <div class="container">
             <div class="row">
                <div class="col-md-8 offset-md-2">
                   <div class="newslatter">
-                     <h4>Abboneer Aan Onze Nieuwsbrief</h4>
+                     <h4>Aboneer Aan Onze Nieuwsbrief</h4>
                      <form class="bottom_form">
                         <input class="enter" placeholder="Typ uw email" type="text" name="Typ uw email">
-                        <button class="sub_btn">Abboneer</button>
+                        <button class="sub_btn">Aboneer</button>
                      </form>
                   </div>
                </div>

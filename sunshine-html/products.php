@@ -1,10 +1,11 @@
 <?php
 session_start();
-$_SESSION["lastpage"] = $_SERVER["REQUEST_URI"];
-if (isset($_POST["logout"])) {
-   unset($_SESSION["loggedIn"]);
-   unset($_SESSION["beheerderLoggedIn"]);
-   $_POST["logout"] = "";
+$_SESSION['lastpage'] = $_SERVER['REQUEST_URI'];
+
+if (isset($_POST['logout'])) {
+   unset($_SESSION['logged_in']);
+   unset($_SESSION['admin_logged_in']);
+   $_POST['logout'] = '';
 }
 ?>
 <!DOCTYPE html>
@@ -36,41 +37,21 @@ if (isset($_POST["logout"])) {
    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" media="screen">
    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-      <![endif]-->
+   <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+   <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+   <![endif]-->
    <?php
-   $db_host = 'localhost';
-   $db_user = 'root';
-   $db_pass = '';
-   $db_name = 'gip';
-
    require_once('config.php');
-
-   try {
-      // create a PDO object and set connection parameters
-      $dsn = "mysql:host=$db_host;dbname=$db_name;charset=utf8mb4";
-      $options = array(
-         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-         PDO::ATTR_EMULATE_PREPARES => false,
-      );
-      $pdo = new PDO($dsn, $db_user, $db_pass, $options);
-   } catch (PDOException $e) {
-      // handle any errors that may occur during connection
-      echo "Connection failed: " . $e->getMessage();
-      exit();
-   }
+   require_once('sqlquerys.php');
    ?>
 </head>
 <!-- body -->
 
 <body class="main-layout inner_page">
    <!-- loader  -->
-   <!--
-      <div class="loader_bg">
-         <div class="loader"><img src="images/loading.gif" alt="#"/></div>
-      </div>
-      -->
+   <div class="loader_bg">
+      <div class="loader"><img src="images/loading.gif" alt="#" /></div>
+   </div>
    <!-- end loader -->
    <!-- header -->
    <header class="full_bg">
@@ -106,7 +87,9 @@ if (isset($_POST["logout"])) {
                            <li class="nav-item active">
                               <a class="nav-link" href="products.php">Producten</a>
                            </li>
-                           <?php if (!empty($_SESSION["beheerderLoggedIn"])) { ?>
+                           <?php
+                           // Only show the link to the stock page to admin's who're logged in
+                           if (!empty($_SESSION["admin_logged_in"])) { ?>
                               <li class="nav-item">
                                  <a class="nav-link" href="stock.php">Stock</a>
                               </li>
@@ -115,7 +98,8 @@ if (isset($_POST["logout"])) {
                               <a class="nav-link" href="contact.php">Contact</a>
                            </li>
                            <?php
-                           $item = ((empty($_SESSION['loggedIn']) == true || $_SESSION['loggedIn'] != true) && (empty($_SESSION['beheerderLoggedIn']) == true)) ?
+                           // Depending on whether or not the user is logged in, either show a login button or a logout button along with a button to the profile page
+                           $item = ((empty($_SESSION['logged_in']) == true || $_SESSION['logged_in'] != true) && (empty($_SESSION['admin_logged_in']) == true)) ?
                               '<li class="nav-item"><a class="nav-link" href="login.php">Login</a></li>' :
                               '<li class="nav-item"><a class="nav-link" href="profile.php">Profiel</a></li>
                               <li class="nav-item"><form method="post" action="index.php">
@@ -131,60 +115,64 @@ if (isset($_POST["logout"])) {
          </div>
       </div>
       <!-- end header inner -->
-   </header>
-   <!-- end header -->
-   <!-- banner -->
-   <div class="back_re">
-      <div class="container">
-         <div class="row">
-            <div class="col-md-12">
-               <div class="title">
-                  <h2>Ons Aanbod</h2>
+      <!-- banner -->
+      <div class="back_re">
+         <div class="container">
+            <div class="row">
+               <div class="col-md-12">
+                  <div class="title">
+                     <h2>Ons Aanbod</h2>
+                  </div>
                </div>
             </div>
          </div>
       </div>
-   </div>
-   <!-- end banner -->
+      <!-- end banner -->
+   </header>
+   <!-- end header -->
    <!-- products/gallery -->
    <div class="products">
       <div class="container">
          <div class="row">
             <div class="col-md-12">
                <div class="titlepage">
-                  <span>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy </span>
+                  <span>
+                     Een wijde een gevarieerde selectie aan verse persproducten op display in onze online shop, kom en neem eens een kijkje.
+                  </span>
                </div>
             </div>
          </div>
          <div class="row">
             <?php
-            $sql = "SELECT product_naam FROM product";
-            $result = $pdo->query($sql);
-            $products = $result->fetchAll(PDO::FETCH_ASSOC);
-            // SELECT logged in user name
-            $logged_user_name = isset($_SESSION['loggedIn']['user']) ? $_SESSION['loggedIn']['user'] : (isset($_SESSION['beheerderLoggedIn']['user']) ? $_SESSION['beheerderLoggedIn']['user'] : null);
-            ?>
-            <?php for ($j = 0; $j < count($products); $j++) { ?>
+            // SELECT all the product names in our database and display every image we have for those products with a link to the ordering page
+            $products = sql_select_product_name($pdo);
+
+            for ($j = 0; $j < count($products); $j++) { ?>
                <div class="products_img">
-                  <figure><?php if (isset($logged_user_name)) { echo '<a href="order.php">'; } ?><img src='images/pro<?php echo ucfirst($products[$j]["product_naam"]); ?>.png' alt='#'><?php if (isset($logged_user_name)) { echo '</a>'; } ?></figure>
+                  <figure>
+                     <?php echo '<a href="order.php">'; ?>
+                     <img src='images/pro<?php echo ucfirst($products[$j]["product_naam"]); ?>.png' alt='#'>
+                     <?php echo '</a>'; ?>
+                  </figure>
                </div>
             <?php }
+            // End PDO connection
             $pdo = null; ?>
          </div>
       </div>
    </div>
    <!-- end products/gallery -->
-   <!--  footer -->
+   <!-- footer -->
    <footer>
       <div class="footer">
          <div class="container">
             <div class="row">
                <div class="col-md-8 offset-md-2">
                   <div class="newslatter">
-                     <h4>Abboneer Aan Onze Nieuwsbrief</h4>
+                     <h4>Aboneer Aan Onze Nieuwsbrief</h4>
                      <form class="bottom_form">
                         <input class="enter" placeholder="Typ uw email" type="text" name="Typ uw email">
-                        <button class="sub_btn">Abboneer</button>
+                        <button class="sub_btn">Aboneer</button>
                      </form>
                   </div>
                </div>

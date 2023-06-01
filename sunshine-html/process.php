@@ -31,43 +31,22 @@ session_start();
 	<link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" media="screen">
 	<!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-        <![endif]
-	-->
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
 
 	<?php
-	$db_host = 'localhost';
-	$db_user = 'root';
-	$db_pass = '';
-	$db_name = 'gip';
-
-	require_once 'config.php';
-
-	try {
-		// create a PDO object and set connection parameters
-		$dsn = "mysql:host=$db_host;dbname=$db_name;charset=utf8mb4";
-		$options = array(
-			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-			PDO::ATTR_EMULATE_PREPARES => false,
-		);
-		$pdo = new PDO($dsn, $db_user, $db_pass, $options);
-	} catch (PDOException $e) {
-		// handle any errors that may occur during connection
-		echo "Connection failed: " . $e->getMessage();
-		exit();
-	}
+	require_once('config.php');
+	require_once('sqlquerys.php');
 	?>
 </head>
 <!-- body -->
 
 <body class="main-layout inner_page">
 	<!-- loader  -->
-	<!--
-    <div class="loader_bg">
-        <div class="loader"><img src="images/loading.gif" alt="#"/></div>
-    </div>
-   -->
+	<div class="loader_bg">
+		<div class="loader"><img src="images/loading.gif" alt="#" /></div>
+	</div>
 	<!-- end loader -->
 	<!-- header -->
 	<header class="full_bg">
@@ -103,7 +82,9 @@ session_start();
 									<li class="nav-item">
 										<a class="nav-link" href="products.php">Producten</a>
 									</li>
-									<?php if (!empty($_SESSION["beheerderLoggedIn"])) { ?>
+									<?php
+									// Only show the link to the stock page to admin's who're logged in
+									if (!empty($_SESSION["admin_logged_in"])) { ?>
 										<li class="nav-item">
 											<a class="nav-link" href="stock.php">Stock</a>
 										</li>
@@ -112,9 +93,10 @@ session_start();
 										<a class="nav-link" href="contact.php">Contact</a>
 									</li>
 									<?php
-									$item = ((empty($_SESSION['loggedIn']) == true || $_SESSION['loggedIn'] != true) && (empty($_SESSION['beheerderLoggedIn']) == true)) ?
-									   '<li class="nav-item"><a class="nav-link" href="login.php">Login</a></li>' :
-									   '<li class="nav-item"><a class="nav-link" href="profile.php">Profiel</a></li>
+									// Depending on whether or not the user is logged in, either show a login button or a logout button along with a button to the profile page
+									$item = ((empty($_SESSION['logged_in']) == true || $_SESSION['logged_in'] != true) && (empty($_SESSION['admin_logged_in']) == true)) ?
+										'<li class="nav-item"><a class="nav-link" href="login.php">Login</a></li>' :
+										'<li class="nav-item"><a class="nav-link" href="profile.php">Profiel</a></li>
 									   <li class="nav-item"><form method="post" action="index.php">
 									   <button class="nav-link" name="logout" type="submit" value="1" formtarget="_self">Logout</button>
 									   </form></li>';
@@ -128,237 +110,251 @@ session_start();
 			</div>
 		</div>
 		<!-- end header inner -->
-	</header>
-	<!-- end header -->
-	<!-- banner -->
-	<div class="back_re">
-		<div class="container">
-			<div class="row">
-				<div class="col-md-12">
-					<div class="title">
-						<h2>Info</h2>
+		<!-- banner -->
+		<div class="back_re">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="title">
+							<h2>Info</h2>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-	</div>
-	<!-- end banner -->
+		<!-- end banner -->
+	</header>
+	<!-- end header -->
 	<?php
-	// Hulp van : https://stackoverflow.com/questions/36240145/how-to-use-serverhttp-referer-correctly-in-php
-	// Als de laatste pagina /contact.php is :
-	if ($_SESSION['lastpage'] == "/html_php_gip/sunshine-html/contact.php") {
-		echo $_REQUEST["Name"], "<br><br>";
-		echo $_REQUEST["Phone"], "<br><br>";
-		echo $_REQUEST["Email"], "<br><br>";
-		echo $_REQUEST["Message"], "<br><br>";
+	// Help from: https://stackoverflow.com/questions/36240145/how-to-use-serverhttp-referer-correctly-in-php
+	// If the last page is /contact.php :
+	if ($_SESSION['lastpage'] == '/html_php_gip/sunshine-html/contact.php') {
+		echo $_REQUEST['Name'], '<br><br>';
+		echo $_REQUEST['Phone'], '<br><br>';
+		echo $_REQUEST['Email'], '<br><br>';
+		echo $_REQUEST['Message'], '<br><br>';
+		// End PDO connection
 		$pdo = null;
-	} // Als de laatste pagina /login.php is; als er nog niet ingelogd is; als er aangeduid werd dat er word geregistreerd :
-	elseif (($_SESSION['lastpage'] == "/html_php_gip/sunshine-html/login.php") && (!isset($_SESSION["loggedIn"]) == true)) {
-		// Hulp van : https://www.tutorialrepublic.com/php-tutorial/php-mysql-login-system.php
-		// En : https://www.geeksforgeeks.org/how-to-insert-form-data-into-database-using-php/
+	} else if (($_SESSION['lastpage'] == '/html_php_gip/sunshine-html/login.php') && (!isset($_SESSION['logged_in']))) {
+		// If the last page is /login.php and the user isn't logged in
+		// Help from: https://www.tutorialrepublic.com/php-tutorial/php-mysql-login-system.php
+		// And: https://www.geeksforgeeks.org/how-to-insert-form-data-into-database-using-php/
 
-		// Gebruikersnaam word gedeclareerd voor verder gebruik
-		if (isset($_REQUEST["eName"]) === true) {
-			$_SESSION["gbr"] = trim($_REQUEST["eName"]);
+		// We initialise the username for later use
+		if (isset($_REQUEST['username']) === true) {
+			$username = $_REQUEST['username'];
+			$options = array(
+				'options' => array(
+					'regexp' => '/^[a-zA-Z0-9_]+$/'
+				)
+			);
+			$input_username = trim(filter_var($username, FILTER_VALIDATE_REGEXP, $options));
 		} else {
-			echo "Volgens ons is er geen gebruikersnaam ingegeven.<br>
-            U zal worden herleidt naar de login pagina.<br>";
-			header("Refresh: 4; url=login.php", true, 0);
+			echo 'Volgens ons is er geen gebruikersnaam ingegeven.<br>
+            U zal worden herleidt naar de login pagina.<br>';
+			header('Refresh: 4; url=login.php', true, 0);
 			exit();
 		}
 
-		// Paswoord word gedeclareerd voor verder gebruik
-		if (isset($_REQUEST["pass"]) === true) {
-			$_SESSION["pwd"] = trim($_REQUEST["pass"]);
+		// We initialise the password for later use
+		if (isset($_REQUEST['password']) === true) {
+			$password = $_REQUEST['password'];
+			$options = array(
+				'options' => array(
+					'regexp' => '/^[a-zA-Z0-9_]+$/'
+				)
+			);
+			$input_password = trim(filter_var($password, FILTER_VALIDATE_REGEXP, $options));
 		} else {
-			echo "Volgens ons is er geen paswoord ingegeven.<br>
-            U zal worden herleidt naar de login pagina.<br>";
-			header("Refresh: 4; url=login.php", true, 0);
+			echo 'Volgens ons is er geen paswoord ingegeven.<br>
+            U zal worden herleidt naar de login pagina.<br>';
+			header('Refresh: 4; url=login.php', true, 0);
 			exit();
 		}
 
-		// Als de gebruiker heeft aangeduid dat die wilt registreren (default optie)
-		if ($_REQUEST["registreren"] == "1") {
-			// Een select statement declareren
-			$sql = "SELECT id_gebruiker FROM gebruikers WHERE gebruiker_naam = ?";
-			// De select statement voorbereiden
-			if ($stmt = $pdo->prepare($sql)) {
-				// Variabelen binden aan de voorbereidde select als parameters
+		// If the user told us they'd like to register
+		if ($_REQUEST['registreren'] == '1') {
+			// SELECT user ID
+			$sql_select_id_user = 'SELECT id_gebruiker FROM gebruikers WHERE gebruiker_naam = ?';
+			if ($stmt = $pdo->prepare($sql_select_id_user)) {
+				// If preparing statement works
+				// Bind variable to prepared SELECT as parameters
 				$stmt->bindParam(1, $param_username);
 
-				// Parameters bepalen
-				$param_username = trim($_SESSION["gbr"]);
+				$param_username = $input_username;
 
-				// Proberen de voorbereidde statement uit te voeren
+				// Try to execute the statement
 				if ($stmt->execute()) {
-					// Het resultaat pakken
-					$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+					// If succesfull we fetch the result
+					$id_user = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-					// Als het resultaat al één of meerdere keren voorkomt
-					if (!empty($results)) {
-						echo "Deze gebruikersnaam is al in gebruik.<br>
-                     	U zal worden herleidt naar de login pagina.<br>";
-						header("Refresh: 4; url=login.php", true, 0);
+					// If the result isn't empty we send the user back to the login page so they can retry because their input username is already in use
+					if (!empty($id_user)) {
+						echo 'Deze gebruikersnaam is al in gebruik.<br>
+                     	U zal worden herleidt naar de login pagina.<br>';
+						header('Refresh: 4; url=login.php', true, 0);
 						exit();
 					}
 				} else {
-					echo "Oops! Iets ging mis met het uitvoeren van het programma.
-					U zal worden herleidt naar de login pagina.";
-					header("Refresh: 4; url=login.php", true, 0);
+					// If the statement couldn't execute
+					echo 'Oops! Iets ging mis met het uitvoeren van het programma.
+					U zal worden herleidt naar de login pagina.';
+					header('Refresh: 4; url=login.php', true, 0);
 					exit();
 				}
 			}
 			/**
-			// Statement sluiten
+			// Close the statement
 			$stmt->closeCursor();
 			 */
-			// Zien als het paswoord leeg is of niet
-			if (empty($_SESSION["pwd"])) {
-				echo "U heeft geen passwoord ingegeven.<br>
-               	U zal worden herleidt naar de login pagina.<br>";
-				header("Refresh: 4; url=login.php", true, 0);
+			// Check if the input password is empty or not
+			if (empty($input_password)) {
+				echo 'U heeft geen passwoord ingegeven.<br>
+               	U zal worden herleidt naar de login pagina.<br>';
+				header('Refresh: 4; url=login.php', true, 0);
 				exit();
 			}
 
-			// Zien als er input errors zijn voordat we iets in de database steken
-			if (!(empty($_SESSION["pwd"]) && empty($_SESSION["gbr"]))) {
-				// Een insert statement declareren
-				$sql = "INSERT INTO gebruikers (gebruiker_naam, gebruiker_pass) VALUES (?, ?)";
-				// Een insert statement voorbereiden
-				if ($stmt = $pdo->prepare($sql)) {
-					// Variabelen binden aan de voorbereidde insert als parameters
+			// Maybe we could put a more meaningfull check here but untill then it'll just be a repeat
+			if (!(empty($input_password) && empty($input_username))) {
+				// INSERT user
+				$sql_insert_user = 'INSERT INTO gebruikers (gebruiker_naam, gebruiker_pass) VALUES (?, ?)';
+				if ($stmt = $pdo->prepare($sql_insert_user)) {
+					// If preparing statement works
+					// Bind variable to prepared INSERT as parameters
 					$stmt->bindParam(1, $param_username);
 					$stmt->bindParam(2, $param_password);
 
-					// Parameters declareren
-					$param_username = $_SESSION["gbr"];
-					$param_password = password_hash($_SESSION["pwd"], PASSWORD_DEFAULT); // Creëert een paswoord hash
+					$param_username = $input_username;
+					$param_password = password_hash($input_password, PASSWORD_DEFAULT);
 
-					// Proberen de voorbereidde statement uit te voeren
+					// Try to execute the statement
 					if ($stmt->execute()) {
-						$_SESSION["loggedIn"] = array(
-							"loggedIn" => true,
-							"user" => $_SESSION["gbr"],
+						// If succesfull we set the user as logged in and keep a note of their username for future use
+						$_SESSION['logged_in'] = array(
+							'logged_in' => true,
+							'user' => $input_username,
 						);
-						echo "Bedankt om te registreren.<br>
-                     	U zal worden herleidt naar de thuis pagina.<br>";
-						header("Refresh: 4; url=index.php", true, 0);
+						echo 'Bedankt om te registreren.<br>
+                     	U zal worden herleidt naar de thuis pagina.<br>';
+						header('Refresh: 4; url=index.php', true, 0);
 						exit();
 					} else {
-						echo "Oops! Iets ging fout bij het registreren.<br>
-                     	U zal worden herleidt naar de login pagina.<br>";
-						header("Refresh: 4; url=login.php", true, 0);
+						// If the statement couldn't execute
+						echo 'Oops! Iets ging fout bij het registreren.<br>
+                     	U zal worden herleidt naar de login pagina.<br>';
+						header('Refresh: 4; url=login.php', true, 0);
 						exit();
 					}
 				}
 				/**
-				// Statement sluiten
+				// Close the statement
 				$stmt->closeCursor();
 				 */
 			} else {
-				echo "Oops! Ofwel is er geen paswoord, ofwel geen gebruikersnaam ingegeven.<br>
-               	U zal worden herleidt naar de login pagina.<br>";
-				header("Refresh: 4; url=login.php", true, 0);
+				// If the check fails we send the user back to the login page
+				echo 'Oops! Ofwel is er geen paswoord, ofwel geen gebruikersnaam ingegeven.<br>
+               	U zal worden herleidt naar de login pagina.<br>';
+				header('Refresh: 4; url=login.php', true, 0);
 				exit();
 			}
-			// Connectie beëindigen
+
+			// End PDO connection
 			$pdo = null;
+		} else if ($_REQUEST['registreren'] == '2') {
+			// If the user told us they'd not like to register
+			// SELECT user pass
+			$sql_select_user_pass = 'SELECT gebruiker_pass FROM gebruikers WHERE gebruiker_naam = ?';
 
-			// Als de gebruiker heeft aangeduid dat die niet wilt registreren
-		} elseif ($_REQUEST["registreren"] == "2") {
-			// Een SELECT statement declareren
-			$sql = "SELECT gebruiker_pass FROM gebruikers WHERE gebruiker_naam = ?;";
-
-			// De SELECT statement voorbereiden
-			if ($stmt = $pdo->prepare($sql)) {
-				// Variabelen binden aan de voorbereidde SELECT als 'parameters'
+			if ($stmt = $pdo->prepare($sql_select_user_pass)) {
+				// If preparing statement works
+				// Bind variable to prepared SELECT as parameters
 				$stmt->bindParam(1, $param_username);
 
-				// Parameters bepalen
-				$param_username = $_SESSION["gbr"];
+				$param_username = $input_username;
 
-				// Proberen de voorbereidde statement uit te voeren
+				// Try to execute the statement
 				if ($stmt->execute()) {
-					// Als de 'fetch' lukt, bepalen we de te vergelijken met hash
-					$result = $stmt->fetch(PDO::FETCH_ASSOC);
+					// If succesfull we fetch the result
+					$hash_result = $stmt->fetch(PDO::FETCH_ASSOC)['gebruiker_pass'];
 				} else {
-					echo "Oops! Iets ging mis met het controleren van het passwoord.<br>
-					U zal worden herleidt naar de login pagina.";
-					header("Refresh: 4; url=login.php", true, 0);
+					// If the statement couldn't execute
+					echo 'Oops! Iets ging mis met het controleren van het passwoord.<br>
+					U zal worden herleidt naar de login pagina.';
+					header('Refresh: 4; url=login.php', true, 0);
 					exit();
 				}
 			}
-			// Statement sluiten
+			// Close the statement
 			$stmt->closeCursor();
 
-			// De $_REQUEST["pass"] vergelijken we nu met onze hash
-			if (password_verify($_SESSION["pwd"], $result["gebruiker_pass"]) == true) {
-				// De gebruiker zijn session word aangeduid als ingelogged en we behouden de naam om hem te herkennen
-				$_SESSION["loggedIn"] = array(
-					"loggedIn" => true,
-					"user" => $_SESSION["gbr"],
+			// We compare the newly selected pass to the input user pass
+			if (password_verify($input_password, $hash_result) == true) {
+				// If succesfull we set the user as logged in and keep a note of their username for future use
+				$_SESSION['logged_in'] = array(
+					'logged_in' => true,
+					'user' => $input_username,
 				);
-				echo "Bedankt om in te loggen.<br>";
-				echo "<div><a class='read_more' href='index.php' role='button'>Home</a></div>";
+				/** echo "<div><a class='read_more' href='index.php' role='button'>Home</a></div>"; */
+				echo 'Bedankt om in te loggen.<br>';
+				header('Refresh: 4; url=index.php', true, 0);
+				exit();
 			} else {
-				echo "Sorry, maar iets ging fout bij de paswoord verificatie.<br>
-               	U zal worden herleidt naar de login pagina.<br>";
-				header("Refresh: 4; url=login.php", true, 0);
+				// If the verification isn't succesfull
+				echo 'Sorry, maar iets ging fout bij de paswoord verificatie.<br>
+               	U zal worden herleidt naar de login pagina.<br>';
+				header('Refresh: 4; url=login.php', true, 0);
 				exit();
 			}
-			// Connectie beëindigen
+			// End PDO connection
 			$pdo = null;
+		} else if ($_REQUEST['registreren'] == '3') {
+			// If the user told us they like to login as an admin
+			// SELECT user pass
+			$sql_select_user_pass = 'SELECT gebruiker_pass FROM gebruikers WHERE gebruiker_naam = :param_username AND gebruiker_level = 1';
 
-			// Als de gebruiker heeft aangeduid dat die wilt inloggen als beheerder
-		} elseif ($_REQUEST["registreren"] == "3") {
-			// Een SELECT statement declareren
-			$sql = "SELECT * FROM gebruikers WHERE gebruiker_naam = ? AND gebruiker_level = 1";
-			// De select statement voorbereiden
-			if ($stmt = $pdo->prepare($sql)) {
-				// Variabelen binden aan de voorbereidde SELECT als parameters
-				$stmt->bindParam(1, $param_username);
+			if ($stmt = $pdo->prepare($sql_select_user_pass)) {
+				// If preparing statement works
+				// Try to execute the statement
+				if ($stmt->execute(['param_username' => $input_username])) {
+					// If succesfull we fetch the result
+					$hash_result = $stmt->fetch(PDO::FETCH_ASSOC)['gebruiker_pass'];
 
-				// Parameters bepalen
-				$param_username = trim($_SESSION["gbr"]);
-
-				// Proberen de voorbereidde statement uit te voeren
-				if ($stmt->execute()) {
-					// Het resultaat pakken
-					$results = $stmt->fetch(PDO::FETCH_ASSOC);
-					// De gebruiker's paswoord hash pakken
-					$hash = $results["gebruiker_pass"];
-					// Deze vergelijken met de ingevulde passwoord
-					if (password_verify($_REQUEST["pass"], $hash)) {
-						$_SESSION["beheerderLoggedIn"] = array(
-							"loggedIn" => true,
-							"user" => $_SESSION["gbr"],
+					// We compare the newly selected pass to the input user pass
+					if (password_verify($_REQUEST['password'], $hash_result)) {
+						// If succesfull we set the user as logged in and keep a note of their username for future use
+						$_SESSION['admin_logged_in'] = array(
+							'logged_in' => true,
+							'user' => $input_username,
 						);
-						echo "Alles klopt, u zult worden aangemeld als beheerder.<br>
-                     	U zal worden herleidt naar de thuis pagina.<br>";
-						header("Refresh: 4; url=index.php", true, 0);
+						echo 'Alles klopt, u zult worden aangemeld als beheerder.<br>
+                     	U zal worden herleidt naar de thuis pagina.<br>';
+						header('Refresh: 4; url=index.php', true, 0);
 						exit();
 					} else {
-						echo "Sorry maar dit paswoord is verkeerd, u zal worden herleidt naat de login pagina.<br>";
-						header("Refresh: 4; url=login.php", true, 0);
+						// If the verification isn't succesfull
+						echo 'Sorry maar dit paswoord is verkeerd, u zal worden herleidt naat de login pagina.<br>';
+						header('Refresh: 4; url=login.php', true, 0);
 						exit();
 					}
 				} else {
-					echo "Oops! Iets ging mis met het uitvoeren van het programma.<br>
-					U zal worden herleidt naar de login pagina.";
-					header("Refresh: 4; url=login.php", true, 0);
+					// If the statement couldn't execute
+					echo 'Oops! Iets ging mis met het uitvoeren van het programma.<br>
+					U zal worden herleidt naar de login pagina.';
+					header('Refresh: 4; url=login.php', true, 0);
 					exit();
 				}
 			}
 			/**
-	        // Statement sluiten
+			// Close the statement
 	        $stmt->closeCursor();
 			 */
 
-			// Connectie beëindigen
+			// End PDO connection
 			$pdo = null;
 		}
-		// Als de laatste pagina /product.php is
-	} elseif ($_SESSION['lastpage'] == "/html_php_gip/sunshine-html/order.php") {
+	} else if ($_SESSION['lastpage'] == '/html_php_gip/sunshine-html/order.php') {
+		// If the last page is /order.php
 	?>
 		<div class="process">
 			<div class="container">
@@ -367,8 +363,7 @@ session_start();
 						<div class="titlepage">
 							<h2>Onze Producten</h2>
 							<span>
-								U heeft een bestelling aangegeven, maar om deze te kunnen versturen hebben wij een adres
-								nodig.<br>
+								U heeft een bestelling aangegeven, maar om deze te kunnen versturen hebben wij een adres en nog wat andere noodzakelijke info nodig.<br>
 								<hr>
 								De velden met een * zijn noodzakelijk.
 							</span>
@@ -377,247 +372,212 @@ session_start();
 				</div>
 			</div>
 			<?php
-			if (!isset($_POST["customerInfo"]) && (isset($_SESSION["loggedIn"]) || isset($_SESSION["beheerderLoggedIn"]))) {
-				// SELECT logged in user name
-				$logged_user_name = isset($_SESSION["loggedIn"]["user"]) ? $_SESSION["loggedIn"]["user"] : (isset($_SESSION["beheerderLoggedIn"]["user"]) ? $_SESSION["beheerderLoggedIn"]["user"] : null);
+			$customer_info = array();
 
-				// SELECT gebruiker en klant ID's
-				$sqlSelectIdsUser = "SELECT id_gebruiker, id_klant FROM gebruikers WHERE gebruiker_naam = ?";
-				$stmt = $pdo->prepare($sqlSelectIdsUser);
+			if (isset($_POST['customer_info'])) {
+				foreach ($_POST as $key => $value) {
+					$customer_info[$key] = $value;
+				}
+			}
 
-				// Proberen de voorbereidde statement uit te voeren
-				if ($stmt->execute([$logged_user_name])) {
-					// Het resultaat pakken
-					$IdsUser = $stmt->fetch(PDO::FETCH_ASSOC);
+			// If the POST 'customer_info' is empty and the user is logged in
+			if (empty($customer_info) && (isset($_SESSION['logged_in']) || isset($_SESSION['admin_logged_in']))) {
+				// SELECT logged in username
+				$logged_user_name = isset($_SESSION['logged_in']['user']) ? $_SESSION['logged_in']['user'] : (isset($_SESSION['admin_logged_in']['user']) ? $_SESSION['admin_logged_in']['user'] : null);
 
-					// We gaan proberen all de huidige informatie van de gebruiker te selecteren uit de database op basis van de ingelogde gebruiker naam
-					$infoUser = null;
-					for ($i = 1; $i <= 4; $i++) {
-						switch ($i) {
-							case 1:
-								$sql = "SELECT * FROM gebruikers g, klant k, adres a, bestelling b WHERE g.gebruiker_naam = ? AND k.id_gebruiker = g.id_gebruiker AND k.id_adres = a.id_adres AND k.id_bestelling = b.id_bestelling";
-								break;
-							case 2:
-								$sql = "SELECT * FROM gebruikers g, klant k, adres a WHERE g.gebruiker_naam = ? AND k.id_gebruiker = g.id_gebruiker AND k.id_adres = a.id_adres";
-								break;
-							case 3:
-								$sql = "SELECT * FROM gebruikers g, klant k WHERE g.gebruiker_naam = ? AND k.id_gebruiker = g.id_gebruiker";
-								break;
-							case 4:
-								$sql = "SELECT * FROM gebruikers WHERE gebruiker_naam = ?";
-								break;
-						}
-						$stmt = $pdo->prepare($sql);
+				// We loop through 4 possible scenario's in order to select the user's information
+				$info_user = null;
+				$list_sql_select = array(
+					$sql_select = 'SELECT * FROM gebruikers g, klant k, adres a, bestelling b WHERE g.gebruiker_naam = ? AND k.id_gebruiker = g.id_gebruiker AND k.id_adres = a.id_adres AND k.id_bestelling = b.id_bestelling',
+					$sql_select = 'SELECT * FROM gebruikers g, klant k, adres a WHERE g.gebruiker_naam = ? AND k.id_gebruiker = g.id_gebruiker AND k.id_adres = a.id_adres',
+					$sql_select = 'SELECT * FROM gebruikers g, klant k WHERE g.gebruiker_naam = ? AND k.id_gebruiker = g.id_gebruiker',
+					$sql_select = 'SELECT * FROM gebruikers WHERE gebruiker_naam = ?'
+				);
+				foreach ($list_sql_select as $sql_select) {
+					$stmt = $pdo->prepare($sql_select);
 
-						// We loopen door de statements en proberen te zien als we een resultaat krijgen
-						if ($stmt->execute([$logged_user_name])) {
-							$infoUser = $stmt->fetch(PDO::FETCH_ASSOC);
-							if ($infoUser) {
-								break;
-							}
+					// We try each query to get a result
+					if ($stmt->execute([$logged_user_name])) {
+						$info_user = $stmt->fetch(PDO::FETCH_ASSOC);
+						if ($info_user) {
+							break;
 						}
 					}
-
-					/* Er zijn vijf mogelijke resultaten en we baseren wat we doen op ons resultaat. */
-			?>
-					<form method="post">
-						<input type="text" name="voornaam" placeholder="<?php echo isset($infoUser['voornaam']) ? $infoUser['voornaam'] : 'Voornaam*'; ?>" pattern="[a-zA-Z]+(?:\s+[a-zA-Z]+)*" required <?php if (isset($infoUser["voornaam"])) { ?> disabled <?php } ?>></input><br>
-
-						<input type="text" name="achternaam" placeholder="<?php echo isset($infoUser['achternaam']) ? $infoUser['achternaam'] : 'Achternaam*' ?>" pattern="[a-zA-Z]+(?:\s+[a-zA-Z]+)*" required <?php if (isset($infoUser['achternaam'])) { ?> disabled <?php } ?>></input><br><br>
-
-						<input type="email" name="email" placeholder="<?php echo isset($infoUser['email']) ? $infoUser['email'] : 'Email' ?>" pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$" <?php if (isset($infoUser['email'])) { ?> disabled <?php } ?>></input><br>
-
-						<input type="text" name="straat" placeholder="<?php echo isset($infoUser['straat']) ? $infoUser['straat'] : 'Straatnaam*' ?>" pattern="[a-zA-Z0-9\s]+" required <?php if (isset($infoUser['straat'])) { ?> disabled <?php } ?>></input><br>
-
-						<input type="number" name="nummer" placeholder="<?php echo isset($infoUser['nummer']) ? $infoUser['nummer'] : 'Huisnummer*' ?>" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" required <?php if (isset($infoUser['nummer'])) { ?> disabled <?php } ?>></input><br>
-
-						<input type="number" name="postcode" placeholder="<?php echo isset($infoUser['postcode']) ? $infoUser['postcode'] : 'Postcode*' ?>" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" required <?php if (isset($infoUser['postcode'])) { ?> disabled <?php } ?>></input><br><br>
-
-						<button type="submit" name="customerInfo" class="send_btn" formtarget="_self">
-							Bestelling plaatsen
-						</button>
-					</form>
-				<?php
-				} else {
-					echo "Oops! Iets ging mis met het uitvoeren van de statement.<br>
-					U zal worden herleidt naar de vorige pagina.";
-					header("Refresh: 4; url=" . $_SESSION['lastpage'] . "", true, 0);
-					exit();
 				}
-				// Als de gebruiker het formulier heeft ingevuld:
-			} else {
-				?>
+
+				// Remember to use preg_match() sometimes
+				// We display any relevant information from the result and leave the rest to be filled in by the user
+			?>
+				<form method="post">
+					<input type="text" name="voornaam" value="<?php echo isset($info_user['voornaam']) ? $info_user['voornaam'] : null ?>" placeholder="<?php echo isset($info_user['voornaam']) ? $info_user['voornaam'] : 'Voornaam*' ?>" pattern="[a-zA-Z]+(?:\s+[a-zA-Z]+)*" required <?php if (isset($info_user['voornaam'])) { ?> readonly <?php } ?>></input><br><br>
+
+					<input type="text" name="achternaam" value="<?php echo isset($info_user['achternaam']) ? $info_user['achternaam'] : null ?>" placeholder="<?php echo isset($info_user['achternaam']) ? $info_user['achternaam'] : 'Achternaam*' ?>" pattern="[a-zA-Z]+(?:\s+[a-zA-Z]+)*" required <?php if (isset($info_user['achternaam'])) { ?> readonly <?php } ?>></input><br><br>
+
+					<input type="email" name="email" value="<?php echo isset($info_user['email']) ? $info_user['email'] : null ?>" placeholder="<?php echo isset($info_user['email']) ? $info_user['email'] : 'Email' ?>" pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$" <?php if (isset($info_user['email'])) { ?> readonly <?php } ?>></input><br>
+
+					<input type="text" name="straat" value="<?php echo isset($info_user['straat']) ? $info_user['straat'] : null ?>" placeholder="<?php echo isset($info_user['straat']) ? $info_user['straat'] : 'Straatnaam*' ?>" pattern="[a-zA-Z0-9\s]+" required <?php if (isset($info_user['straat'])) { ?> readonly <?php } ?>></input><br>
+
+					<input type="number" name="nummer" value="<?php echo isset($info_user['nummer']) ? $info_user['nummer'] : null ?>" placeholder="<?php echo isset($info_user['nummer']) ? $info_user['nummer'] : 'Huisnummer*' ?>" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" required <?php if (isset($info_user['nummer'])) { ?> readonly <?php } ?>></input><br>
+
+					<input type="number" name="postcode" value="<?php echo isset($info_user['postcode']) ? $info_user['postcode'] : null ?>" placeholder="<?php echo isset($info_user['postcode']) ? $info_user['postcode'] : 'Postcode*' ?>" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" required <?php if (isset($info_user['postcode'])) { ?> readonly <?php } ?>></input><br><br>
+
+					<button type="submit" name="customer_info" class="send_btn" formtarget="_self">
+						Bestelling plaatsen
+					</button>
+				</form>
+			<?php
+			} else if (!empty($customer_info) && (isset($_SESSION['logged_in']) || isset($_SESSION['admin_logged_in']))) {
+				// If the POST 'customer_info' isn't empty and the user is logged in
+			?>
 				<span>De opgeschreven informatie is compleet, uw bestelling zal worden doorgevoerd.</span><br>
 				<?php
-				// SELECT logged in user name
-				$logged_user_name = isset($_SESSION["loggedIn"]["user"]) ? $_SESSION["loggedIn"]["user"] : (isset($_SESSION["beheerderLoggedIn"]["user"]) ? $_SESSION["beheerderLoggedIn"]["user"] : null);
+				// SELECT logged in username
+				$logged_user_name = isset($_SESSION['logged_in']['user']) ? $_SESSION['logged_in']['user'] : (isset($_SESSION['admin_logged_in']['user']) ? $_SESSION['admin_logged_in']['user'] : null);
 
-				// SELECT gebruiker en klant ID's
-				$sqlSelectIdsUser = "SELECT id_gebruiker, id_klant FROM gebruikers WHERE gebruiker_naam = ?";
-				$stmt = $pdo->prepare($sqlSelectIdsUser);
-				$stmt->execute([$logged_user_name]);
-				$IdsUser = $stmt->fetch(PDO::FETCH_ASSOC);
+				// SELECT user and customer ID's
+				$ids_user = sql_select_ids_user($pdo, $logged_user_name);
 
-				// INSERT klant als deze al dan niet bestond + SELECT nieuwe ID
-				if ((!isset($IdsUser['id_klant'])) || ($IdsUser['id_klant'] == 0)) {
-					$sqlInsertCustomer = "INSERT INTO klant (id_gebruiker, voornaam, achternaam, email) VALUES (?, ?, ?, ?)";
-					$stmt = $pdo->prepare($sqlInsertCustomer);
-					$stmt->execute([$IdsUser['id_gebruiker'], $_POST['voornaam'], $_POST['achternaam'], $_POST['email']]);
+				// INSERT customer if there isn't a customer ID or it's equal to 0
+				if ((!isset($ids_user['id_klant'])) || ($ids_user['id_klant'] == 0)) {
+					// INSERT customer
+					sql_insert_customer($pdo, $id_user, $customer_info);
 
-					// SELECT klant ID
-					$sqlSelectIdCustomer = "SELECT id_klant FROM klant WHERE id_gebruiker = ?";
-					$stmt = $pdo->prepare($sqlSelectIdCustomer);
-					$stmt->execute([$IdsUser['id_gebruiker']]);
-					$IdsUser['id_klant'] = $stmt->fetchColumn();
+					// SELECT new customer ID
+					$ids_user['id_klant'] = sql_select_customer_id($pdo, $ids_user);
 
-					// UPDATE gebruiker met klant ID
-					$sqlUpdateUser = 'UPDATE gebruikers SET id_klant = ? WHERE id_gebruiker = ?';
-					$stmt = $pdo->prepare($sqlUpdateUser);
-					$stmt->execute([$IdsUser['id_klant'], $IdsUser['id_gebruiker']]);
+					// UPDATE user with new customer ID
+					sql_update_user($pdo, $ids_user);
 				}
 
-				// SELECT klant adres
-				$sqlSelectAddress = 'SELECT * FROM adres WHERE id_klant = ?';
-				$stmt = $pdo->prepare($sqlSelectAddress);
-				$stmt->execute([$IdsUser['id_klant']]);
-				$infoAddress = $stmt->fetchAll(PDO::FETCH_ASSOC);
+				// SELECT customer address
+				$info_address = sql_select_address_info($pdo, $ids_user);
 
-				// INSERT klant adres als deze al dan niet bestond
-				if (empty($infoAddress)) {
-					$sqlInsertAddress = 'INSERT INTO adres (id_klant, postcode, straat, nummer) VALUES (?, ?, ?, ?)';
-					$stmt = $pdo->prepare($sqlInsertAddress);
-					$stmt->execute([$IdsUser['id_klant'], $_POST['postcode'], $_POST['straat'], $_POST['nummer']]);
+				// INSERT customer address if it doesn't exist
+				if (empty($info_address)) {
+					sql_insert_address_info_2($pdo, $ids_user, $customer_info);
 				}
 
-				// SELECT bestelling
-				$sqlSelectOrder = 'SELECT * FROM bestelling WHERE id_klant = ?';
-				$stmt = $pdo->prepare($sqlSelectOrder);
-				$stmt->execute([$IdsUser['id_klant']]);
-				$CustomerOrder = $stmt->fetch(PDO::FETCH_ASSOC);
+				// SELECT order
+				$customer_order = sql_select_order($pdo, $ids_user);
 
-				// UPDATE bestelling als deze al bestond maar gewoon leeg stond
-				if (isset($CustomerOrder['id_bestelling']) && empty($CustomerOrder['producten'])) {
-					$sqlOrder = 'UPDATE bestelling SET producten = ? WHERE id_klant = ?';
+				// UPDATE order if it exist's but is empty
+				if (isset($customer_order['id_bestelling']) && empty($customer_order['producten'])) {
+					$sql_order = 'UPDATE bestelling SET producten = ? WHERE id_klant = ?';
 					$products = array();
 					foreach ($_SESSION['cart'] as $product_name => $product) {
 						array_push($products, $product_name . 'x' . $product['quantity'] . 'x' . $product['price']);
 					}
-					$newproducts = implode(', ', $products);
-					$stmt = $pdo->prepare($sqlOrder);
-					$stmt->execute([$newproducts, $IdsUser['id_klant']]);
+					$new_products = implode(', ', $products);
+					$stmt = $pdo->prepare($sql_order);
+					$stmt->execute([$new_products, $ids_user['id_klant']]);
+				} else if (isset($customer_order['id_bestelling']) && isset($customer_order['producten'])) {
+					// UPDATE order if it exist's and isn't empty
 
-					// UPDATE bestelling als deze al bestond
-				} else if (isset($CustomerOrder['id_bestelling']) && isset($CustomerOrder['producten'])) {
-					// Explode de bestelling tweemaal om nieuwe producten/aantallen toe te voegen
-					$CustomerOrderOld = explode(', ', $CustomerOrder['producten']);
-					$CustomerOrderNew = array();
-					foreach ($CustomerOrderOld as $product) {
+					// Explode each product for the individual name, quantity and price
+					$customer_order_old = explode(', ', $customer_order['producten']);
+					$customer_order_new = array();
+
+					foreach ($customer_order_old as $product) {
 						$parts = explode('x', $product);
 						$product_name = $parts[0];
 						$product_quantity = $parts[1];
 						$product_price = $parts[2];
-						$CustomerOrderNew[$product_name]['quantity'] = $product_quantity;
-						$CustomerOrderNew[$product_name]['price'] = $product_price;
+						$customer_order_new[$product_name]['quantity'] = $product_quantity;
+						$customer_order_new[$product_name]['price'] = $product_price;
 					}
 
-					// Nieuwe producten/aantallen toevoegen
+					// Add new products or quantities
 					foreach ($_SESSION["cart"] as $product_name => $product) {
-						if (array_key_exists($product_name, $CustomerOrderNew)) {
-							$CustomerOrderNew[$product_name]['quantity'] += $product["quantity"];
+						if (array_key_exists($product_name, $customer_order_new)) {
+							$customer_order_new[$product_name]['quantity'] += $product['quantity'];
 						} else {
-							$CustomerOrderNew[$product_name]['quantity'] = $product["quantity"];
-							$CustomerOrderNew[$product_name]['price'] = $product["price"];
+							$customer_order_new[$product_name]['quantity'] = $product['quantity'];
+							$customer_order_new[$product_name]['price'] = $product['price'];
 						}
 					}
 
-					// UPDATE bestelling
-					$sqlUpdateOrder = "UPDATE bestelling SET producten = ? WHERE id_klant = ?";
+					// UPDATE order
+					$sql_update_order = 'UPDATE bestelling SET producten = ? WHERE id_klant = ?';
 					$products = array();
-					foreach ($CustomerOrderNew as $product_name => $product) {
+					foreach ($customer_order_new as $product_name => $product) {
 						array_push($products, $product_name . 'x' . $product['quantity'] . 'x' . $product['price']);
 					}
-					$newproducts = implode(', ', $products);
-					$stmt = $pdo->prepare($sqlUpdateOrder);
-					$stmt->execute([$newproducts, $IdsUser['id_klant']]);
-
-					// INSERT bestelling als deze niet bestond
-				} else if (!isset($CustomerOrder['id_bestelling']) && !isset($CustomerOrder['producten'])) {
-					$sqlOrder = "INSERT INTO bestelling (producten, id_klant) VALUES (?, ?)";
+					$new_products = implode(', ', $products);
+					$stmt = $pdo->prepare($sql_update_order);
+					$stmt->execute([$new_products, $ids_user['id_klant']]);
+				} else if (!isset($customer_order['id_bestelling']) && !isset($customer_order['producten'])) {
+					// INSERT order if there isn't one set
+					$sql_insert_order = 'INSERT INTO bestelling (producten, id_klant) VALUES (?, ?)';
 					$products = array();
-					foreach ($_SESSION["cart"] as $product_name => $product) {
+					foreach ($_SESSION['cart'] as $product_name => $product) {
 						array_push($products, $product_name . 'x' . $product['quantity'] . 'x' . $product['price']);
 					}
-					$newproducts = implode(', ', $products);
-					$stmt = $pdo->prepare($sqlOrder);
-					$stmt->execute([$newproducts, $IdsUser['id_klant']]);
+					$new_products = implode(', ', $products);
+					$stmt = $pdo->prepare($sql_insert_order);
+					$stmt->execute([$new_products, $ids_user['id_klant']]);
 				}
 
-				// SELECT relevante adres ID
-				$sqlSelectIdAddress = "SELECT id_adres FROM adres WHERE id_klant = ?";
-				$stmt = $pdo->prepare($sqlSelectIdAddress);
-				$stmt->execute([$IdsUser['id_klant']]);
-				$IdAddress = $stmt->fetchColumn();
+				// SELECT relevant address ID
+				$id_address = sql_select_address_id($pdo, $ids_user);
 
-				// SELECT relevante bestelling ID
-				$sqlSelectIdOrder = "SELECT id_bestelling FROM bestelling WHERE id_klant = ?";
-				$stmt = $pdo->prepare($sqlSelectIdOrder);
-				$stmt->execute([$IdsUser['id_klant']]);
-				$IdOrder = $stmt->fetchColumn();
+				// SELECT relevant order ID
+				$id_order = sql_select_order_id($pdo, $ids_user);
 
-				// UPDATE klant met adres- en bestelling ID's
-				$sqlUpdateCustomer = "UPDATE klant SET id_adres = ?, id_bestelling = ? WHERE id_klant = ?";
-				$stmt = $pdo->prepare($sqlUpdateCustomer);
-				$stmt->execute([$IdAddress, $IdOrder, $IdsUser['id_klant']]);
+				// UPDATE customer with address and order ID's
+				sql_update_customer($pdo, $id_address, $id_order, $ids_user);
 
 				// Subtract items in cart from stock
-				foreach ($_SESSION["cart"] as $product_name => $product) {
-					$product_quantity = $product["quantity"];
-					$sql = "UPDATE product p, stock s SET stock = stock - :quantity WHERE product_naam = :productName AND p.id_stock = s.id_stock";
-					$stmt = $pdo->prepare($sql);
-					$stmt->execute(['quantity' => $product_quantity, 'productName' => $product_name]);
+				foreach ($_SESSION['cart'] as $product_name => $product) {
+					$product_quantity = $product['quantity'];
+					sql_update_stock($pdo, $product_quantity, $product_name);
 				}
 				// Clear cart and redirect to home page
-				unset($_SESSION["cart"]);
+				unset($_SESSION['cart']);
 
-				echo "U zal worden herleidt naar de thuis pagina";
-				header("Refresh: 4; url=index.php", true, 0);
+				echo 'U zal worden herleidt naar de thuis pagina';
+				header('Refresh: 4; url=index.php', true, 0);
 				exit();
 				?>
 				<span>Bedankt om een bestelling te plaatsen.</span><br>
 				<span>Deze zal na enige tijd verwerkt en doorgestuurd worden naar het opgegeven adres.</span>
 			<?php
 			}
-			// Connectie beëindigen
+			// End PDO connection
 			$pdo = null;
 			?>
 		</div>
 	<?php
-	} elseif ($_SESSION['lastpage'] == "/html_php_gip/sunshine-html/stock.php") {
-		foreach ($_POST['product'] as $productId => $values) {
-			echo "Product id: " . $productId . " | New price: " . $values['price'] . " | New stock: " . $values['stock'] . "<br>";
+	} else if ($_SESSION['lastpage'] == '/html_php_gip/sunshine-html/stock.php') {
+		// If the last page is /stock.php
+
+		// For every sent product accordingly change the price and stock to what's given, if it's given
+		foreach ($_POST['product'] as $product_id => $values) {
+			echo 'Product id: ' . $product_id . ' | New price: ' . $values['price'] . ' | New stock: ' . $values['stock'] . '<br>';
 			if ($values['price'] != null) {
-				$sql = "UPDATE product SET product_prijs = " . $values['price'] . " WHERE id_product = $productId";
-				$result = $pdo->query($sql);
+				sql_update_product($pdo, $values, $product_id);
 			}
 			if ($values['stock'] != null) {
-				$sql = "UPDATE stock SET stock = " . $values['stock'] . " WHERE id_stock = $productId";
-				$result = $pdo->query($sql);
+				sql_update_stock_2($pdo, $values, $product_id);
 			}
 		}
 		unset($_POST['product']);
+
+		// End PDO connection
 		$pdo = null;
-	} // Als de laatste pagina niet /login.php is :
-	else {
-		// From https://stackoverflow.com/questions/768431/how-do-i-make-a-redirect-in-php?page=1&tab=scoredesc#tab-top
+	} else {
+		// If the last page is one we don't have:
+		// Help from: https://stackoverflow.com/questions/768431/how-do-i-make-a-redirect-in-php?page=1&tab=scoredesc#tab-top
 		// User Hammad Khan
-		// Learn output buffering dammit: https://stackoverflow.com/questions/2832010/what-is-output-buffering
+		// Note to self, learn output buffering dammit: https://stackoverflow.com/questions/2832010/what-is-output-buffering
 		// http://web.archive.org/web/20101216035343/http://dev-tips.com/featured/output-buffering-for-web-developers-a-beginners-guide
 
-		echo "Sorry, maar u komt van een pagina waarvoor we nog geen data kunnen processeren.<br>
-         U zal worden terug gestuur naar de vorige pagina.";
-		$pdo = null;
-		header("Refresh: 4; url=" . $_SESSION['lastpage'] . "", true, 0);
+		echo 'Sorry, maar u komt van een pagina waarvoor we nog geen data kunnen processeren.<br>
+        U zal worden terug gestuurd naar de vorige pagina.';
+		header('Refresh: 4; url=' . $_SESSION['lastpage'] . '', true, 0);
 		exit();
+
+		// End PDO connection
+		$pdo = null;
 	}
 	?>
 	<footer>
@@ -626,10 +586,10 @@ session_start();
 				<div class="row">
 					<div class="col-md-8 offset-md-2">
 						<div class="newslatter">
-							<h4>Abboneer Aan Onze Nieuwsbrief</h4>
+							<h4>Aboneer Aan Onze Nieuwsbrief</h4>
 							<form class="bottom_form">
 								<input class="enter" placeholder="Typ uw email" type="text" name="Typ uw email">
-								<button class="sub_btn">Abboneer</button>
+								<button class="sub_btn">Aboneer</button>
 							</form>
 						</div>
 					</div>

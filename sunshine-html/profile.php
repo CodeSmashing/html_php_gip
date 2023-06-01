@@ -1,10 +1,11 @@
 <?php
 session_start();
-$_SESSION["lastpage"] = $_SERVER["REQUEST_URI"];
-if (isset($_POST["logout"])) {
-   unset($_SESSION["loggedIn"]);
-   unset($_SESSION["beheerderLoggedIn"]);
-   $_POST["logout"] = "";
+$_SESSION['lastpage'] = $_SERVER['REQUEST_URI'];
+
+if (isset($_POST['logout'])) {
+   unset($_SESSION['logged_in']);
+   unset($_SESSION['admin_logged_in']);
+   $_POST['logout'] = '';
 }
 ?>
 <!DOCTYPE html>
@@ -35,45 +36,23 @@ if (isset($_POST["logout"])) {
    <!-- Tweaks for older IEs-->
    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" media="screen">
-   <!--
-      [if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-      <![endif]
-   -->
+   <!--[if lt IE 9]>
+   <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+   <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+   <![endif]-->
 
    <?php
-   $db_host = 'localhost';
-   $db_user = 'root';
-   $db_pass = '';
-   $db_name = 'gip';
-
    require_once('config.php');
-
-   try {
-      // create a PDO object and set connection parameters
-      $dsn = "mysql:host=$db_host;dbname=$db_name;charset=utf8mb4";
-      $options = array(
-         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-         PDO::ATTR_EMULATE_PREPARES => false,
-      );
-      $pdo = new PDO($dsn, $db_user, $db_pass, $options);
-   } catch (PDOException $e) {
-      // handle any errors that may occur during connection
-      echo "Connection failed: " . $e->getMessage();
-      exit();
-   }
+   require_once('sqlquerys.php');
    ?>
 </head>
 <!-- body -->
 
 <body class="main-layout inner_page">
    <!-- loader  -->
-   <!--
-      <div class="loader_bg">
-         <div class="loader"><img src="images/loading.gif" alt="#"/></div>
-      </div>
-      -->
+   <div class="loader_bg">
+      <div class="loader"><img src="images/loading.gif" alt="#" /></div>
+   </div>
    <!-- end loader -->
    <!-- header -->
    <header class="full_bg">
@@ -109,7 +88,9 @@ if (isset($_POST["logout"])) {
                            <li class="nav-item">
                               <a class="nav-link" href="products.php">Producten</a>
                            </li>
-                           <?php if (!empty($_SESSION["beheerderLoggedIn"])) { ?>
+                           <?php
+                           // Only show the link to the stock page to admin's who're logged in
+                           if (!empty($_SESSION["admin_logged_in"])) { ?>
                               <li class="nav-item">
                                  <a class="nav-link" href="stock.php">Stock</a>
                               </li>
@@ -118,7 +99,8 @@ if (isset($_POST["logout"])) {
                               <a class="nav-link" href="contact.php">Contact</a>
                            </li>
                            <?php
-                           $item = ((empty($_SESSION['loggedIn']) == true || $_SESSION['loggedIn'] != true) && (empty($_SESSION['beheerderLoggedIn']) == true)) ?
+                           // Depending on whether or not the user is logged in, either show a login button or a logout button along with a button to the profile page
+                           $item = ((empty($_SESSION['logged_in']) == true || $_SESSION['logged_in'] != true) && (empty($_SESSION['admin_logged_in']) == true)) ?
                               '<li class="nav-item"><a class="nav-link" href="login.php">Login</a></li>' :
                               '<li class="nav-item active"><a class="nav-link" href="profile.php">Profiel</a></li>
                               <li class="nav-item"><form method="post" action="index.php">
@@ -134,21 +116,21 @@ if (isset($_POST["logout"])) {
          </div>
       </div>
       <!-- end header inner -->
-   </header>
-   <!-- end header -->
-   <!-- banner -->
-   <div class="back_re">
-      <div class="container">
-         <div class="row">
-            <div class="col-md-12">
-               <div class="title">
-                  <h2>Uw profielpagina</h2>
+      <!-- banner -->
+      <div class="back_re">
+         <div class="container">
+            <div class="row">
+               <div class="col-md-12">
+                  <div class="title">
+                     <h2>Uw profielpagina</h2>
+                  </div>
                </div>
             </div>
          </div>
       </div>
-   </div>
-   <!-- end banner -->
+      <!-- end banner -->
+   </header>
+   <!-- end header -->
    <!-- profile -->
    <div class="profile">
       <div class="container">
@@ -156,313 +138,340 @@ if (isset($_POST["logout"])) {
             <div class="col-md-6 offset-md-3">
                <div class="titlepage">
                   <span>
-                     Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
-                     invidunt ut labore et dolore magna aliquyam erat, sed diam voluptu
+                     Hier kunt u uw gebruikers en klanten info zien zoals uw gebruikersnaam of uw opgegeven naam.
+                     U kunt hier ook uw lopende bestelling zien.
                   </span>
                </div>
             </div>
             <?php
             // SELECT logged in user name
-            $logged_user_name = isset($_SESSION['loggedIn']['user']) ? $_SESSION['loggedIn']['user'] : (isset($_SESSION['beheerderLoggedIn']['user']) ? $_SESSION['beheerderLoggedIn']['user'] : null);
+            $logged_user_name = isset($_SESSION['logged_in']['user']) ? $_SESSION['logged_in']['user'] : (isset($_SESSION['admin_logged_in']['user']) ? $_SESSION['admin_logged_in']['user'] : null);
+            // If there isn't a set username this should mean there isn't logged in yet, if that's the case we send the user to the home page
             if ($logged_user_name == null) {
-               echo 'Dit zou niet mogen gebeuren.';
-               echo 'U zal worden herleidt naar de thuis pagina';
-               header('Refresh: 4; url=index.php', true, 0);
-               exit();
+               // Fix from: https://stackoverflow.com/questions/27123470/redirect-in-php-without-use-of-header-method
+               echo 'Dit zou niet mogen gebeuren.<br>
+               U zal worden herleidt naar de thuis pagina';
+
+               echo '<meta http-equiv="refresh" content="0; URL=http://localhost/html_php_gip/sunshine-html/index.php">';
             } else {
-               // SELECT gebruiker en klant ID's
-               $sqlSelectIdsUser = 'SELECT id_gebruiker, id_klant FROM gebruikers WHERE gebruiker_naam = ?';
-               $stmt = $pdo->prepare($sqlSelectIdsUser);
-               $stmt->execute([$logged_user_name]);
-               $IdsUser = $stmt->fetch(PDO::FETCH_ASSOC);
+               // SELECT user and customer ID's
+               $ids_user = sql_select_ids_user($pdo, $logged_user_name);
             }
 
-
-            if (isset($_POST['editFinish'])) {
+            // If the user has sent the POST 'edit_finish' from the form where they can edit their information we update their information accordingly
+            if (isset($_POST['edit_finish'])) {
                unset($_POST['edit']);
-               unset($_POST['editFinish']);
-               // All de form input veranderen naar variabelen
-               $user_name = $_POST['gebruiker_naam'];
+               unset($_POST['edit_finish']);
 
-               // SELECT de ingegeven gebruiker naam als deze voorkomt
-               $sqlSelectUserName = 'SELECT gebruiker_naam FROM gebruikers WHERE gebruiker_naam = ?';
-               $stmt = $pdo->prepare($sqlSelectUserName);
-               $stmt->execute([$user_name]);
-               $result = $stmt->fetch(PDO::FETCH_ASSOC);
+               // SELECT the POST username from the database
+               $result = sql_select_user_username($pdo);
                if (isset($result)) {
                   $user_name = null;
                }
 
-               $customerFields = array('voornaam', 'achternaam', 'email', 'geboortedatum');
-               $addressFields = array('postcode', 'straat', 'nummer');
-               $customerCount = implode(', ', array_fill(0, count($customerFields) + 1, '?'));
-               $addressCount = implode(', ', array_fill(0, count($addressFields) + 1, '?'));
-               $customerValues = array();
-               $addressValues = array();
+               // Change the form input into two array variables
+               $customer_fields = array('voornaam', 'achternaam', 'email', 'geboortedatum');
+               $address_fields = array('postcode', 'straat', 'nummer');
+               $customer_count = implode(', ', array_fill(0, count($customer_fields) + 1, '?'));
+               $address_count = implode(', ', array_fill(0, count($address_fields) + 1, '?'));
+               $customer_values = array();
+               $address_values = array();
 
-               // Specifiek klant INSERT klaar zetten
-               foreach ($customerFields as $field) {
+               // Specifically prepare the customer INSERT
+               foreach ($customer_fields as $field) {
                   if (isset($_POST[$field])) {
-                     $customerValues[] = $_POST[$field];
+                     $customer_values[] = $_POST[$field];
                   }
                }
-               // Specifiek adres INSERT klaar zetten
-               foreach ($addressFields as $field) {
+               // Specifically prepare the address INSERT
+               foreach ($address_fields as $field) {
                   if (isset($_POST[$field])) {
-                     $addressValues[] = $_POST[$field];
+                     $address_values[] = $_POST[$field];
                   }
                }
 
-               // We gaan eerst zien als de klant al dan niet bestaat
-               if (!isset($IdsUser['id_klant']) || $IdsUser['id_klant'] == 0) {
-                  // Als de gebruiker geen klant is:
-                  // INSERT nieuwe klant
-                  $sqlInsertCustomer = 'INSERT INTO klant (id_gebruiker, voornaam, achternaam, email, geboortedatum) VALUES (' . $customerCount . ')';
-                  $stmt = $pdo->prepare($sqlInsertCustomer);
+               // Check if there is a set customer ID or one that is equal to 0
+               if (!isset($ids_user['id_klant']) || $ids_user['id_klant'] == 0) {
+                  // If there isn't a customer ID or it is set to 0:
 
-                  // De logged in gebruiker ID en de klant INSERT info samenbrengen
-                  $values = array_merge(array($IdsUser['id_gebruiker']), $customerValues);
-                  $stmt->execute($values);
+                  // Bring the logged in user ID and customer INSERT info together
+                  $values = array_merge(array($ids_user['id_gebruiker']), $customer_values);
 
-                  // SELECT de nieuwe klant ID
-                  $sqlSelectIdCustomer = 'SELECT id_klant FROM klant WHERE id_gebruiker = ?';
-                  $stmt = $pdo->prepare($sqlSelectIdCustomer);
-                  $stmt->execute([$IdsUser['id_gebruiker']]);
-                  $IdCustomer = $stmt->fetch(PDO::FETCH_ASSOC)['id_klant'];
+                  // INSERT new customer
+                  sql_insert_customer_info($pdo, $values, $customer_count);
 
-                  // UPDATE gebruiker met nieuwe klant ID
-                  $sqlUpdateUser = 'UPDATE gebruikers SET id_klant = ? WHERE id_gebruiker = ?';
-                  $stmt = $pdo->prepare($sqlUpdateUser);
-                  $stmt->execute([$IdCustomer, $IdsUser['id_gebruiker']]);
+                  // SELECT the new customer ID
+                  $ids_user['id_klant'] = sql_select_customer_id($pdo, $ids_user);
 
-                  // INSERT nieuw adres die we koppelen aan de klant
-                  $sqlInsertAddress = 'INSERT INTO adres (id_klant, postcode, straat, nummer) VALUES (' . $addressCount . ')';
-                  $stmt = $pdo->prepare($sqlInsertAddress);
-                  // De logged in gebruiker ID en de adres INSERT info samenbrengen
-                  $values = array_merge(array($IdCustomer), $addressValues);
-                  $stmt->execute($values);
+                  // UPDATE user with new customer ID
+                  sql_update_user_id($pdo, $ids_user);
 
-                  // SELECT de nieuwe adres ID
-                  $sqlSelectIdCustomer = 'SELECT id_adres FROM adres WHERE id_klant = ?';
-                  $stmt = $pdo->prepare($sqlSelectIdCustomer);
-                  $stmt->execute([$IdCustomer]);
-                  $IdAdres = $stmt->fetch(PDO::FETCH_ASSOC);
+                  // INSERT new address
+                  sql_insert_address_info($pdo, $ids_user, $address_count, $address_values);
 
-                  // UPDATE de klant met de nieuwe adres ID
-                  $sqlUpdateUser = 'UPDATE klant SET id_adres = ? WHERE id_gebruiker = ?';
-                  $stmt = $pdo->prepare($sqlUpdateUser);
-                  $stmt->execute([$IdAdres['id_adres'], $IdsUser['id_gebruiker']]);
+                  // SELECT the new address ID
+                  $id_address = sql_select_address_id($pdo, $ids_user);
+
+                  // UPDATE the customer with the new address ID
+                  sql_update_customer_address_id($pdo, $id_address, $ids_user);
                } else {
-                  // Als de gebruiker wel al een klant is:
-                  // UPDATE gebruiker met nieuwe gebruiker info
+                  // If there is a customer ID or it isn' set to 0:
+                  // If the POST username variable is set and if it isn't null
                   if (isset($user_name) && $user_name != null) {
-                     $sqlUpdateUser = 'UPDATE gebruikers SET gebruiker_naam = ? WHERE gebruiker_naam = ?';
-                     $stmt = $pdo->prepare($sqlUpdateUser);
-                     $stmt->execute([$user_name, $logged_user_name]);
+                     // UPDATE user with new user info
+                     sql_update_user_username($pdo, $user_name, $logged_user_name);
 
-                     if (isset($_SESSION['loggedIn'])) {
-                        $_SESSION['loggedIn']['user'] = $user_name;
-                     } else if (isset($_SESSION['beheerderLoggedIn'])) {
-                        $_SESSION['beheerderLoggedIn']['user'] = $user_name;
+                     if (isset($_SESSION['logged_in'])) {
+                        $_SESSION['logged_in']['user'] = $user_name;
+                     } else if (isset($_SESSION['admin_logged_in'])) {
+                        $_SESSION['admin_logged_in']['user'] = $user_name;
                      }
-                  }
-                  /** else if ($user_name == null) {
+                  } else if ($user_name == null) {
                      echo '<span>De ingegeven gebruikersnaam is al in gebruik<span><br>';
-                  } */
+                  }
+                  // Don't know why we unset here
                   unset($user_name);
 
 
                   /**
+                  // This bit is still here because I don't quite remember why it was here to begin with
                   // INSERT nieuwe klant
-                  $sqlInsertCustomer = "INSERT INTO klant (id_gebruiker, voornaam, achternaam, email, geboortedatum) VALUES ($insertCustomerCount)";
-                  $stmt = $pdo->prepare($sqlInsertCustomer);
+                  $sql_insert_customer = "INSERT INTO klant (id_gebruiker, voornaam, achternaam, email, geboortedatum) VALUES ($insertCustomerCount)";
+                  $stmt = $pdo->prepare($sql_insert_customer);
                   // De logged in gebruiker ID en de klant INSERT info samenbrengen
-                  $customerValues = array_merge(array($IdsUser["id_gebruiker"]), $insertCustomerValues);
-                  $stmt->execute($customerValues);
+                  $customer_values = array_merge(array($ids_user["id_gebruiker"]), $insertCustomerValues);
+                  $stmt->execute($customer_values);
                    */
 
 
-                  // UPDATE klant met nieuwe klant info
-                  $sqlUpdateCustomer = 'UPDATE klant SET voornaam = ?, achternaam = ?, email = ?, geboortedatum = ? WHERE id_gebruiker = ?';
-                  $stmt = $pdo->prepare($sqlUpdateCustomer);
-                  $values = array_merge($customerValues, array($IdsUser['id_gebruiker']));
-                  $stmt->execute($values);
+                  // UPDATE customer with new customer info
+                  sql_update_customer_info($pdo, $customer_values, $ids_user);
 
-                  // SELECT adres info
-                  $sqlSelectAddress = 'SELECT * FROM adres WHERE id_klant = ?';
-                  $stmt = $pdo->prepare($sqlSelectAddress);
-                  $stmt->execute([$IdsUser['id_klant']]);
-                  $addressInfo = $stmt->fetch(PDO::FETCH_ASSOC);
+                  // SELECT address info
+                  $address_info = sql_select_address_info($pdo, $ids_user);
 
-                  if (empty($addressInfo)) {
-                     // INSERT nieuw adres die we koppelen aan de klant
-                     $sqlInsertAddress = 'INSERT INTO adres (id_klant, postcode, straat, nummer) VALUES (' . $addressCount . ')';
-                     $stmt = $pdo->prepare($sqlInsertAddress);
-                     // De logged in gebruiker klant ID en de adres INSERT info samenbrengen
-                     $values = array_merge(array($IdsUser['id_klant']), $addressValues);
-                     $stmt->execute($values);
+                  // If there isn't any address info
+                  if (empty($address_info)) {
+                     // INSERT new address
+                     sql_insert_address_info($pdo, $address_count, $ids_user, $address_values);
 
-                     // SELECT de nieuwe adres ID
-                     $sqlSelectIdCustomer = 'SELECT id_adres FROM adres WHERE id_klant = ?';
-                     $stmt = $pdo->prepare($sqlSelectIdCustomer);
-                     $stmt->execute([$IdsUser['id_klant']]);
-                     $IdAdres = $stmt->fetch(PDO::FETCH_ASSOC);
+                     // SELECT the new address ID
+                     $id_address = sql_select_address_id($pdo, $ids_user);
 
-                     // UPDATE de klant met de nieuwe adres ID
-                     $sqlUpdateUser = 'UPDATE klant SET id_adres = ? WHERE id_klant = ?';
-                     $stmt = $pdo->prepare($sqlUpdateUser);
-                     $stmt->execute([$IdAdres['id_adres'], $IdsUser['id_klant']]);
+                     // UPDATE the customer with the new address ID
+                     sql_update_customer_address_id($pdo, $id_address, $ids_user);
                   } else {
-                     // UPDATE adres met nieuwe adres info
-                     $sqlUpdateAdres = 'UPDATE adres SET postcode = ?, straat = ?, nummer = ? WHERE id_klant = ?';
-                     $stmt = $pdo->prepare($sqlUpdateAdres);
-                     $values = array_merge($addressValues, array($IdsUser['id_klant']));
-                     $stmt->execute($values);
+                     // If there is address info
+                     // UPDATE address with the new address info
+                     sql_update_address_info($pdo, $address_values, $ids_user);
                   }
                }
             }
+            // If the POST 'edit' isn't sent we'll try and gather all the relevant user information
+            // This'll also display all the information via several fieldsets
             if (!isset($_POST['edit'])) {
-               $logged_user_name = isset($_SESSION['loggedIn']['user']) ? $_SESSION['loggedIn']['user'] : (isset($_SESSION['beheerderLoggedIn']['user']) ? $_SESSION['beheerderLoggedIn']['user'] : null);
-               $sql = 'SELECT email, gebruiker_naam, voornaam, achternaam, geboortedatum, created_at, straat, nummer, postcode, producten, datum_handeling FROM gebruikers g, klant k, adres a, bestelling b WHERE g.gebruiker_naam = ? AND k.id_gebruiker = g.id_gebruiker AND k.id_adres = a.id_adres AND k.id_bestelling = b.id_bestelling';
-               $stmt = $pdo->prepare($sql);
-               $stmt->execute([$logged_user_name]);
-               $results = $stmt->fetch(PDO::FETCH_ASSOC);
+               $results = sql_select_user_customer_address_order_info($pdo, $logged_user_name);
                if (empty($results)) {
-                  $sql = 'SELECT email, gebruiker_naam, voornaam, achternaam, geboortedatum, created_at, straat, nummer, postcode FROM gebruikers g, klant k, adres a WHERE g.gebruiker_naam = ? AND k.id_gebruiker = g.id_gebruiker AND k.id_adres = a.id_adres';
-                  $stmt = $pdo->prepare($sql);
-                  $stmt->execute([$logged_user_name]);
-                  $results = $stmt->fetch(PDO::FETCH_ASSOC);
+                  // If we didn't manage to gather any results we assume that there isn't an order placed yet and try again
+                  $results = sql_select_user_customer_address_info($pdo, $logged_user_name);
                   if (empty($results)) {
-                     $sql = 'SELECT gebruiker_naam, created_at FROM gebruikers WHERE gebruiker_naam = ?';
-                     $stmt = $pdo->prepare($sql);
-                     $stmt->execute([$logged_user_name]);
-                     $results = $stmt->fetch(PDO::FETCH_ASSOC);
+                     // If we didn't manage to gather any results still we'll simply select the username and when the entry in the database was made
+                     $results = sql_select_user_info($pdo, $logged_user_name);
                   }
                } ?>
                <div class='fieldset-container'>
-                  <fieldset class='userOrder'>
+                  <!-- A fieldset to display the user's order -->
+                  <fieldset class='user_order'>
                      <legend>Uw info</legend>
                      <div class='seperator'></div>
                      <figure><img src='images/profile_icon.png' alt='#'></figure><br>
-                     <span>Lopende bestelling:</span><br>
-                     <?php
-                     // SELECT bestelling
-                     $sqlSelectOrder = 'SELECT producten FROM bestelling WHERE id_klant = ?';
-                     $stmt = $pdo->prepare($sqlSelectOrder);
-                     $stmt->execute([$IdsUser['id_klant']]);
-                     $CustomerOrder = $stmt->fetch(PDO::FETCH_ASSOC);
+                     <div id="list">
+                        <span>Lopende bestelling:</span><br>
+                        <?php
+                        // SELECT customer order
+                        $customer_order = sql_select_order($pdo, $ids_user);
 
-                     // Verwijder product van bestelling als aangegeven
-                     if (isset($_POST['remove_from_cart'])) {
-                        $post_product_name = $_POST['product_name'];
-                        // UPDATE bestelling
-                        $sqlUpdateOrder = 'UPDATE bestelling SET producten = ? WHERE id_klant = ?';
-                        $products = array();
-                        foreach ($CustomerOrder as $product) {
-                           $parts = explode('x', $product);
-                           $product_name = $parts[0];
-                           $product_quantity = $parts[1];
-                           $product_price = $parts[2];
-                           if ($post_product_name != $product_name) {
-                              array_push($products, $product_name . 'x' . $product_quantity . 'x' . $product_price);
+                        // Remove product(s) from the customer order if prompted
+                        if (isset($_POST['remove_from_cart'])) {
+                           // The UPDATE order query
+                           $sql_update_order = 'UPDATE bestelling SET producten = ? WHERE id_klant = ?';
+
+                           // Explode the original order for a list of products sepperated by a comma
+                           $customer_order_old = explode(', ', $customer_order['producten']);
+
+                           // Variables we'll need
+                           $customer_order_new = array();
+                           $products = array();
+                           $post_product_name = $_POST['product_name'];
+
+                           // For every product in the newly exploded order
+                           foreach ($customer_order_old as $product) {
+                              // Explode each product for the individual name, quantity and price
+                              $parts = explode('x', $product);
+                              $product_name = $parts[0];
+                              $product_quantity = $parts[1];
+                              $product_price = $parts[2];
+
+                              // If the product name isn't equal to the POST product name, we add the product info to an array
+                              if ($product_name != $post_product_name) {
+                                 array_push($products, $product_name . 'x' . $product_quantity . 'x' . $product_price);
+                              }
                            }
+
+                           // We implode the array so that every entry is sepperated by a comma
+                           $customer_order_new = implode(', ', $products);
+                           $stmt = $pdo->prepare($sql_update_order);
+                           // Execute
+                           $stmt->execute([$customer_order_new, $ids_user['id_klant']]);
+
+                           unset($_POST['remove_from_cart']);
+                           unset($_POST['product_name']);
+                           $customer_order['producten'] = $customer_order_new;
                         }
-                        $newproducts = implode(', ', $products);
-                        $stmt = $pdo->prepare($sqlUpdateOrder);
-                        $stmt->execute([$newproducts, $IdsUser['id_klant']]);
 
-                        unset($_POST['remove_from_cart']);
-                        unset($_POST['product_name']);
-                        unset($CustomerOrder);
-                        unset($_SESSION['cart']);
-                     }
+                        // Showing the order if it exist's
+                        if (!empty($customer_order['producten'])) {
+                           // Explode the original order for a list of products sepperated by a comma
+                           $customer_order_old = explode(', ', $customer_order['producten']);
 
-                     // Bestelling(en) tonen
-                     if (!empty($CustomerOrder['producten'])) {
-                        // Explode de bestelling tweemaal om weer te geven
-                        $CustomerOrderOld = explode(', ', $CustomerOrder['producten']);
-                        $CustomerOrderNew = array();
-                        $total_price = 0;
+                           // Variables we'll need
+                           $customer_order_new = array();
+                           $total_price = 0;
 
-                        echo '<ul>';
-                        foreach ($CustomerOrderOld as $product) {
-                           $parts = explode('x', $product);
-                           $product_name = $parts[0];
-                           $product_quantity = $parts[1];
-                           $product_price = $parts[2];
-                           $product_total_price = $product_price * $product_quantity;
-                           $total_price += $product_total_price;
-                           echo '<li>' . $product_name . ' x ' . $product_quantity . ' = €' . $product_total_price . ' <form method="post"><input type="hidden" name="product_name" value="' . $product_name . '"><button class="remove_btn" name="remove_from_cart" type="submit">Remove</button></form></li>';
+                           echo '<ul>';
+                           // For every product in the newly exploded order
+                           foreach ($customer_order_old as $product) {
+                              // Explode each product for the individual name, quantity and price
+                              $parts = explode('x', $product);
+                              $product_name = $parts[0];
+                              $product_quantity = $parts[1];
+                              $product_price = $parts[2];
+                              $product_total_price = $product_price * $product_quantity;
+                              $total_price += $product_total_price;
+                              // Displaying the product info along with a button to remove said product if need be
+                              echo '<li><span>' . $product_name . ' x ' . $product_quantity . ' = €' . $product_total_price . '</span><form method="post"><input type="hidden" name="product_name" value="' . $product_name . '"><div id="button"><button class="remove_btn" name="remove_from_cart" type="submit">Verwijder</button></div></form></li>';
+                           }
+                           echo '</ul>'; ?>
+                           <br><span>Uw totaal komt uit tot: € <?php echo $total_price; ?></span>
+                        <?php
+                        } else {
+                           // If the order doesn't exist
+                           echo '<p>Uw winkelmandje is leeg</p>';
                         }
-                        echo '</ul>'; ?>
-                        <br><span>Uw totaal komt uit tot: € <?php echo $total_price; ?></span>
-                     <?php
-                     } else {
-                        echo '<p>Uw winkelmandje is leeg</p>';
-                     }
-                     ?>
+                        ?>
+                     </div>
                   </fieldset>
 
-                  <fieldset class='userSkel'>
+                  <!-- A fieldset to display the user info if it exist's, or 'Onbekend' if it doesn't -->
+                  <fieldset class='user_info'>
                      <div class='seperator'></div>
-                     <span>Gebruikersnaam: </span><br>
-                     <span>Voornaam: </span><br>
-                     <span>Achternaam: </span><br>
-                     <span>Email: </span><br>
-                     <span>Leeftijd: </span><br>
-                     <span>Adres: </span><br>
-                     <span>Account gecreêrd op: </span><br>
+                     <div id='row'>
+                        <span>Gebruikersnaam: </span>
+                        <?php
+                        echo isset($results['gebruiker_naam']) ? '<span>' . $results['gebruiker_naam'] . '</span><br>' : '<span>Onbekend</span><br>';
+                        ?>
+                     </div>
+                     <div id='row'>
+                        <span>Voornaam: </span>
+                        <?php
+                        echo isset($results['voornaam']) ? '<span>' . $results['voornaam'] . '</span><br>' : '<span>Onbekend</span><br>';
+                        ?>
+                     </div>
+                     <div id='row'>
+                        <span>Achternaam: </span>
+                        <?php
+                        echo isset($results['achternaam']) ? '<span>' . $results['achternaam'] . '</span><br>' : '<span>Onbekend</span><br>';
+                        ?>
+                     </div>
+                     <div id='row'>
+                        <span>Email: </span>
+                        <?php
+                        echo isset($results['email']) ? '<span>' . $results['email'] . '</span><br>' : '<span>Onbekend</span><br>';
+                        ?>
+                     </div>
+                     <div id='row'>
+                        <span>Leeftijd: </span>
+                        <?php
+                        $current_date = date('Y-m-d');
+                        $diff = (isset($results['geboortedatum']) && $results['geboortedatum'] != '0000-00-00') ? date_diff(date_create($results['geboortedatum']), date_create($current_date)) : 'Onbekend';
+                        echo is_string($diff) != 1 ? '<span>' . $diff->format('%y') . ' Jaar</span><br>' : '<span>' . $diff . '</span><br>';
+                        ?>
+                     </div>
+                     <div id='row'>
+                        <span>Adres: </span>
+                        <?php
+                        $list = array();
+                        isset($results['straat']) ? (isset($results['nummer']) ? (isset($results['postcode']) ? ($list[0] = $results['straat'] and $list[1] = ' ' . $results['nummer'] and $list[2] = ' ' . $results['postcode']) : null) : ($list[0] = $results['straat'] and $list[1] = ' ' . $results['nummer'])) : $list[0] = 'Onbekend';
+                        echo '<span>';
+                        foreach ($list as $item) {
+                           echo $item;
+                        }
+                        echo '</span><br>';
+                        ?>
+                     </div>
+                     <div id='row'>
+                        <span>Account gecreêrd op: </span>
+                        <?php
+                        echo isset($results['gemaakt_op']) ? '<span>' . $results['gemaakt_op'] . '</span><br>' : '<span>Onbekend</span><br>';
+                        ?>
+                     </div>
                      <form method='post'>
                         <button class='send_btn' name='edit' type='submit' value='1' formtarget='_self'>Aanpassen</button>
                      </form>
                   </fieldset>
-
-                  <fieldset class='userInfo'>
-                     <div class='seperator'></div>
-                     <?php
-                     echo $results['gebruiker_naam'] . '<br>';
-                     echo (count($results) > 2) ? (isset($results['voornaam']) ? $results['voornaam'] . '<br>' : 'Onbekend<br>') : 'Onbekend<br>';
-                     echo (count($results) > 2) ? (isset($results['achternaam']) ? $results['achternaam'] . '<br>' : 'Onbekend<br>') : 'Onbekend<br>';
-                     echo (count($results) > 2) ? (isset($results['email']) ? $results['email'] . '<br>' : 'Onbekend<br>') : 'Onbekend<br>';
-                     $currentDate = date('Y-m-d');
-                     $diff = (count($results) > 2) ? (isset($results['geboortedatum']) ? date_diff(date_create($results['geboortedatum']), date_create($currentDate)) : 'Onbekend') : 'Onbekend';
-                     echo ($diff != 'Onbekend') ? $diff->format('%y') . ' Jaar<br>' : $diff . '<br>';
-
-                     $list = array();
-                     (count($results) > 2) ? (isset($results['straat']) ? (isset($results['nummer']) ? (isset($results['postcode']) ? ($list[0] = $results['straat'] and $list[1] = ' ' . $results['nummer'] and $list[2] = ' ' . $results['postcode']) : null) : ($list[0] = $results['straat'] and $list[1] = ' ' . $results['nummer'])) : $list[0] = $results['straat']) : 'Onbekend<br>';
-
-                     foreach ($list as $item) {
-                        echo $item;
-                     }
-                     echo '<br>';
-                     echo $results['created_at'] . '<br>';
-                     ?>
-                  </fieldset>
                </div>
             <?php
             } else {
+               // If the POST 'edit' is sent we'll allow the user to change certain pieces of information about themselfs in the database
+               $results = sql_select_user_info($pdo, $logged_user_name);
             ?>
-               <fieldset class='userInfo'>
+               <!-- A fieldset where the user can input new info about themselfs -->
+               <fieldset class='user_input'>
                   <legend>Uw info</legend>
                   <hr>
                   <form method='post'>
-                     <span>Gebruikersnaam: </span><input type="text" name="gebruiker_naam"><br>
-                     <span>Voornaam*: </span><input type="text" name="voornaam" required><br>
-                     <span>Achternaam*: </span><input type="text" name="achternaam" required><br>
-                     <span>Email*: </span><input type="email" name="email" required><br>
-                     <span>Geboortedatum: </span><input type="date" name="geboortedatum"><br><br>
+                     <div id='row'>
+                        <span>Gebruikersnaam: </span>
+                        <input type="text" name="gebruiker_naam" placeholder="<?php echo $results['gebruiker_naam']; ?>" readonly><br>
+                     </div>
+                     <div id='row'>
+                        <span>Voornaam*: </span>
+                        <input type="text" name="voornaam" required><br>
+                     </div>
+                     <div id='row'>
+                        <span>Achternaam*: </span>
+                        <input type="text" name="achternaam" required><br>
+                     </div>
+                     <div id='row'>
+                        <span>Email*: </span>
+                        <input type="email" name="email" required><br>
+                     </div>
+                     <div id='row'>
+                        <span>Geboortedatum: </span>
+                        <input type="date" name="geboortedatum"><br>
+                     </div>
                      <hr>
-                     <span>Adres</span><br>
-                     <span>Straatnaam*: </span><input type="text" name="straat" required><br>
-                     <span>Huisnummer*: </span><input type="number" name="nummer" required><br>
-                     <span>Postcode: </span><input type="number" name="postcode"><br>
-
-                     <button class='send_btn' name='editFinish' type='submit' value='1' formtarget='_self'>Beïndigen</button>
+                     <div id='row'>
+                        <span>Adres</span><br>
+                     </div>
+                     <div id='row'>
+                        <span>Straatnaam*: </span>
+                        <input type="text" name="straat" required><br>
+                     </div>
+                     <div id='row'>
+                        <span>Huisnummer*: </span>
+                        <input type="number" name="nummer" required><br>
+                     </div>
+                     <div id='row'>
+                        <span>Postcode: </span>
+                        <input type="number" name="postcode"><br>
+                     </div>
+                     <button class='send_btn' name='edit_finish' type='submit' value='1' formtarget='_self'>Beïndigen</button>
                   </form>
                </fieldset>
-            <?php
-            }
-            ?>
+            <?php }
+            // End PDO connection
+            $pdo = null; ?>
          </div>
       </div>
    </div>
@@ -474,10 +483,10 @@ if (isset($_POST["logout"])) {
             <div class="row">
                <div class="col-md-8 offset-md-2">
                   <div class="newslatter">
-                     <h4>Abboneer Aan Onze Nieuwsbrief</h4>
+                     <h4>Aboneer Aan Onze Nieuwsbrief</h4>
                      <form class="bottom_form">
                         <input class="enter" placeholder="Typ uw emailaddres" type="text" name="Typ uw emailaddres">
-                        <button class="sub_btn">Abboneer</button>
+                        <button class="sub_btn">Aboneer</button>
                      </form>
                   </div>
                </div>
